@@ -1,15 +1,27 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
+import { Piece } from '../../../classes/piece';
+import { FenParserService } from '../../../services/fen-parser.service';
 
 @Component({
 	selector: 'app-board',
 	templateUrl: './board.component.html',
 	styleUrls: ['./board.component.scss']
 })
-export class BoardComponent implements AfterViewInit {
+export class BoardComponent implements OnInit, AfterViewInit {
+	public pieces: Piece[] = [];
+
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
+
+	constructor(@Inject(FenParserService) private fenParserService: FenParserService) { }
+
+	public ngOnInit(): void {
+		let fenParseResult = this.fenParserService.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+		this.pieces = fenParseResult.pieces;
+	}
 
 	public ngAfterViewInit(): void {
 		this.updateBoardDimensions();
+		this.configureContextMenu();
 	}
 
 	public range(count: number): Array<number> {
@@ -32,5 +44,9 @@ export class BoardComponent implements AfterViewInit {
 
 	private updateBoardDimensions() {
 		this.board.nativeElement.style.height = getComputedStyle(this.board.nativeElement).width;
+	}
+
+	private configureContextMenu() {
+		this.board.nativeElement.oncontextmenu = () => { return false; }
 	}
 }
