@@ -1,3 +1,4 @@
-<chess-piece #piece [style.transform]="getPieceTransform()" [ngClass]="[getColorClass(), getPieceTypeClass()]">
+<chess-piece #piece [style.transform]="getPieceTransform()" [ngClass]="[getColorClass(), getPieceTypeClass()]"
+	[class.dragging]="isDragging" (mousedown)="onPieceMouseDown($event)" (touchstart)="onPieceTouchStart($event)">
 
 </chess-piece>

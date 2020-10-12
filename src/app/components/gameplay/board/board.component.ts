@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, Que
 import { BoardState } from 'src/app/classes/board-state';
 import { Piece } from '../../../classes/piece';
 import { FenParserService } from '../../../services/fen-parser.service';
+import { PieceComponent } from '../piece/piece.component';
 
 @Component({
 	selector: 'app-board',
@@ -13,7 +14,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	public flipBoard: boolean = false;
 
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
-	@ViewChildren('dynamicPiece') private dynamicPieces: QueryList<ElementRef<HTMLElement>>;
+	@ViewChildren('dynamicPiece') private dynamicPieces: QueryList<PieceComponent>;
 
 	constructor(@Inject(FenParserService) private fenParserService: FenParserService) { }
 
@@ -46,6 +47,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
 	private updateBoardDimensions() {
 		this.board.nativeElement.style.height = getComputedStyle(this.board.nativeElement).width;
+		this.notifyPiecesOfBoardSizeChange();
+	}
+
+	private notifyPiecesOfBoardSizeChange() {
+		this.dynamicPieces.forEach(piece => piece.onBoardSizeChange())
 	}
 
 	private configureContextMenu() {
