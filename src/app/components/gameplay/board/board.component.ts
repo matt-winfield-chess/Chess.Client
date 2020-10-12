@@ -1,15 +1,29 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { BoardState } from 'src/app/classes/board-state';
+import { Piece } from '../../../classes/piece';
+import { FenParserService } from '../../../services/fen-parser.service';
 
 @Component({
 	selector: 'app-board',
 	templateUrl: './board.component.html',
 	styleUrls: ['./board.component.scss']
 })
-export class BoardComponent implements AfterViewInit {
+export class BoardComponent implements OnInit, AfterViewInit {
+	public boardState: BoardState;
+	public flipBoard: boolean = false;
+
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
+	@ViewChildren('dynamicPiece') private dynamicPieces: QueryList<ElementRef<HTMLElement>>;
+
+	constructor(@Inject(FenParserService) private fenParserService: FenParserService) { }
+
+	public ngOnInit(): void {
+		this.boardState = this.fenParserService.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+	}
 
 	public ngAfterViewInit(): void {
 		this.updateBoardDimensions();
+		this.configureContextMenu();
 	}
 
 	public range(count: number): Array<number> {
@@ -32,5 +46,9 @@ export class BoardComponent implements AfterViewInit {
 
 	private updateBoardDimensions() {
 		this.board.nativeElement.style.height = getComputedStyle(this.board.nativeElement).width;
+	}
+
+	private configureContextMenu() {
+		this.board.nativeElement.oncontextmenu = () => { return false; }
 	}
 }

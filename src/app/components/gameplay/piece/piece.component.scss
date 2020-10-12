@@ -1,0 +1,72 @@
+chess-piece {
+	display: block;
+	position: absolute;
+	width: 12.5%;
+	height: 12.5%;
+	cursor: pointer;
+	background-size: contain;
+}
+
+.pawn {
+	&.white {
+		background-image: url('/assets/images/pawn-white.png');
+	}
+
+	&.black {
+		background-image: url('/assets/images/pawn-black.png');
+	}
+}
+
+.king {
+	&.white {
+		background-image: url('/assets/images/king-white.png');
+	}
+
+	&.black {
+		background-image: url('/assets/images/king-black.png');
+	}
+}
+
+.queen {
+	&.white {
+		background-image: url('/assets/images/queen-white.png');
+	}
+
+	&.black {
+		background-image: url('/assets/images/queen-black.png');
+	}
+}
+
+.rook {
+	&.white {
+		background-image: url('/assets/images/rook-white.png');
+	}
+
+	&.black {
+		background-image: url('/assets/images/rook-black.png');
+	}
+}
+
+.bishop {
+	&.white {
+		background-image: url('/assets/images/bishop-white.png');
+	}
+
+	&.black {
+		background-image: url('/assets/images/bishop-black.png');
+	}
+}
+
+.knight {
+	&.white {
+		background-image: url('/assets/images/knight-white.png');
+	}
+
+	&.black {
+		background-image: url('/assets/images/knight-black.png');
+	}
+}
+
+.dragging {
+	z-index: 10;
+}

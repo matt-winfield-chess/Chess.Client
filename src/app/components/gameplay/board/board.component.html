@@ -8,7 +8,8 @@
 	</chess-tiles>
 
 	<chess-pieces>
-		<app-piece [color]="'white'" [pieceType]="'pawn'" [xCoord]="2" [yCoord]="1" [board]="board"></app-piece>
-		<app-piece [color]="'black'" [pieceType]="'pawn'" [xCoord]="7" [yCoord]="7" [board]="board"></app-piece>
+		<app-piece #dynamicPiece *ngFor="let piece of boardState.pieces" [color]="piece.color"
+			[pieceType]="piece.pieceType" [xCoord]="piece.x" [yCoord]="piece.y" [flipBoard]="flipBoard" [board]="board">
+		</app-piece>
 	</chess-pieces>
 </chess-board>
