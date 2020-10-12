@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { BoardState } from 'src/app/classes/board-state';
 import { Piece } from '../../../classes/piece';
 import { FenParserService } from '../../../services/fen-parser.service';
@@ -10,8 +10,10 @@ import { FenParserService } from '../../../services/fen-parser.service';
 })
 export class BoardComponent implements OnInit, AfterViewInit {
 	public boardState: BoardState;
+	public flipBoard: boolean = false;
 
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
+	@ViewChildren('dynamicPiece') private dynamicPieces: QueryList<ElementRef<HTMLElement>>;
 
 	constructor(@Inject(FenParserService) private fenParserService: FenParserService) { }
 

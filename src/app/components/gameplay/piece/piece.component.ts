@@ -12,6 +12,7 @@ export class PieceComponent implements AfterViewInit {
 	@Input() yCoord: number;
 	@Input() color: PlayerColor;
 	@Input() pieceType: PieceType;
+	@Input() flipBoard: boolean;
 
 	@ViewChild('piece') piece: ElementRef<HTMLElement>;
 
@@ -33,8 +34,20 @@ export class PieceComponent implements AfterViewInit {
 		this.configureContextMenu();
 	}
 
+	public setFlipBoard(flipBoard: boolean) {
+		this.flipBoard = flipBoard;
+	}
+
 	public getPieceTransform(): string {
-		return `translate(${this.xCoord * 100}%, ${this.yCoord * 100}%)`;
+		let displayX = this.xCoord;
+		let displayY = this.yCoord;
+
+		if (this.flipBoard) {
+			displayX = 7 - displayX;
+			displayY = 7 - displayY;
+		}
+
+		return `translate(${displayX * 100}%, ${displayY * 100}%)`;
 	}
 
 	public getColorClass(): string {
