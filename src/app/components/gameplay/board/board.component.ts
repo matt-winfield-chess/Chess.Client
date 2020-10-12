@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
+import { BoardState } from 'src/app/classes/board-state';
 import { Piece } from '../../../classes/piece';
 import { FenParserService } from '../../../services/fen-parser.service';
 
@@ -8,15 +9,14 @@ import { FenParserService } from '../../../services/fen-parser.service';
 	styleUrls: ['./board.component.scss']
 })
 export class BoardComponent implements OnInit, AfterViewInit {
-	public pieces: Piece[] = [];
+	public boardState: BoardState;
 
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
 
 	constructor(@Inject(FenParserService) private fenParserService: FenParserService) { }
 
 	public ngOnInit(): void {
-		let fenParseResult = this.fenParserService.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
-		this.pieces = fenParseResult.pieces;
+		this.boardState = this.fenParserService.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
 	}
 
 	public ngAfterViewInit(): void {

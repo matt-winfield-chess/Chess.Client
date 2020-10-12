@@ -38,11 +38,11 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	public getColorClass(): string {
-		return this.colorClassMap.get(this.color);
+		return this.colorClassMap.get(this.color) ?? '';
 	}
 
 	public getPieceTypeClass(): string {
-		return this.pieceTypeClassMap.get(this.pieceType);
+		return this.pieceTypeClassMap.get(this.pieceType) ?? '';
 	}
 
 	private configureContextMenu() {

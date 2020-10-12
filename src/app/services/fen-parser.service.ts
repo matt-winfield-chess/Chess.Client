@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { FenParseResult } from '../classes/fen-parse-result';
+import { CastlingState } from '../classes/castling-state';
+import { BoardState } from '../classes/board-state';
 import { Piece } from '../classes/piece';
 import { PieceType } from '../enums/piece-type.enum';
 import { PlayerColor } from '../enums/player-color.enum';
@@ -17,16 +18,22 @@ export class FenParserService {
 		["k", PieceType.King]
 	]);
 
-	public parseFen(fen: string): FenParseResult {
-		let result = new FenParseResult();
+	public parseFen(fen: string): BoardState {
+		let result = new BoardState();
 
 		let fenComponents: string[] = fen.split(' ');
 		if (fenComponents.length != 6) {
 			result.valid = false;
 			return result;
 		}
+		result.valid = true;
 
 		result.pieces = this.parsePieces(fenComponents[0]);
+		result.activeColor = this.parseActiveColor(fenComponents[1]);
+		result.castlingState = this.parseCastlingState(fenComponents[2]);
+		// TODO: parse en-passant
+		result.halfmoveClock = this.parseNumberComponent(fenComponents[4]);
+		result.fullmoveNumber = this.parseNumberComponent(fenComponents[5])
 
 		return result;
 	}
@@ -50,6 +57,25 @@ export class FenParserService {
 			}
 		}
 		return pieces;
+	}
+
+	private parseActiveColor(activeColorString: string): PlayerColor {
+		return activeColorString == "w" ? PlayerColor.White : PlayerColor.Black;
+	}
+
+	private parseCastlingState(castleStateString: string): CastlingState {
+		let result = new CastlingState();
+
+		result.blackKingside = castleStateString.includes('k');
+		result.blackQueenside = castleStateString.includes('q');
+		result.whiteKingside = castleStateString.includes('K');
+		result.whiteQueenside = castleStateString.includes('Q');
+
+		return result;
+	}
+
+	private parseNumberComponent(componentValue: string): number {
+		return parseInt(componentValue);
 	}
 
 	private getPieceFromCharacter(character: string, rank: number, file: number): Piece {
