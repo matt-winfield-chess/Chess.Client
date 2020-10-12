@@ -1,0 +1,31 @@
+@import 'mixins/responsive-sizes.scss';
+
+chess-board {
+	display: block;
+	position: absolute;
+	width: 600px;
+	background-color: grey;
+	border: 1px solid black;
+	margin: auto auto;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	@include phone-only {
+		box-sizing: border-box;
+		width: calc(100% - 20px);
+	}
+}
+
+chess-tile {
+	display: block;
+	position: absolute;
+	width: 12.5%;
+	height: 12.5%;
+	cursor: pointer;
+	background-color: #F0D9B5;
+
+	&.dark {
+		background-color: #B58863;
+	}
+}

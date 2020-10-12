@@ -1,0 +1,14 @@
+<chess-board #board draggable="false" ondragstart="return false;">
+	<chess-tiles>
+		<ng-container *ngFor="let y of range(8)">
+			<chess-tile *ngFor="let x of range(8)" [attr.data-x]="x" [attr.data-y]="y" [class.dark]="isDarkSquare(x, y)"
+				[style.left]="getTilePositioning(x)" [style.top]="getTilePositioning(y)" draggable="false">
+			</chess-tile>
+		</ng-container>
+	</chess-tiles>
+
+	<chess-pieces>
+		<app-piece [color]="'white'" [pieceType]="'pawn'" [xCoord]="2" [yCoord]="1" [board]="board"></app-piece>
+		<app-piece [color]="'black'" [pieceType]="'pawn'" [xCoord]="7" [yCoord]="7" [board]="board"></app-piece>
+	</chess-pieces>
+</chess-board>
