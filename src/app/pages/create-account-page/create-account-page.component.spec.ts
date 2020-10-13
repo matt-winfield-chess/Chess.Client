@@ -2,11 +2,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
-
 import { CreateAccountPageComponent } from './create-account-page.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { UsersService } from 'src/app/services/http/users/users.service';
 import { ApiResponse } from 'src/app/classes/models/api-response';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CreateAccountPageComponent', () => {
 	let component: CreateAccountPageComponent;
@@ -18,7 +18,7 @@ describe('CreateAccountPageComponent', () => {
 
 		TestBed.configureTestingModule({
 			declarations: [CreateAccountPageComponent],
-			imports: [HttpClientModule, ToastrModule.forRoot(), NgxSpinnerModule, RouterTestingModule],
+			imports: [HttpClientModule, ToastrModule.forRoot(), NgxSpinnerModule, RouterTestingModule, BrowserAnimationsModule],
 			providers: [
 				{ provide: UsersService, useValue: usersServiceSpy }
 			]
