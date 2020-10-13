@@ -1,0 +1,40 @@
+@import '../../../styles/themes/themes.scss';
+@import '../../../styles/themes/themify.scss';
+
+.navbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+
+	@include themify($themes) {
+		background-color: themed('navbarColor');
+	}
+}
+
+.title, button {
+	display: inline-block;
+}
+
+.title {
+	margin: 10px 0;
+	padding: 5px 20px;
+
+	@include themify($themes) {
+		border-right: themed('navbarBorders');
+	}
+}
+
+button {
+	padding: 10px 15px;
+	margin: 10px 20px;
+	border: none;
+
+	@include themify($themes) {
+		background-color: themed('navbarButtonBackgroundColor');
+		color: themed('primaryFontColor');
+		&:hover {
+			background-color: themed('navbarButtonHoverColor');
+		}
+	}
+}
