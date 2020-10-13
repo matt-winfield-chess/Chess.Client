@@ -1,6 +1,13 @@
 <div class="navbar">
 	<a class="title" routerLink="/">Chess</a>
 	<div class="right-contents">
-		<button routerLink="/create-account" class="sign-up button">Sign Up</button>
+		<ng-container *ngIf="!shouldShowLoggedInButtons()">
+			<button routerLink="/create-account" class="sign-up button">Sign up</button>
+			<button routerLink="/log-in" class="log-in button">Log in</button>
+		</ng-container>
+		<ng-container *ngIf="shouldShowLoggedInButtons()">
+			<div class="username">{{getUsername()}}</div>
+			<button (click)="logOut()" class="log-out button">Log out</button>
+		</ng-container>
 	</div>
 </div>

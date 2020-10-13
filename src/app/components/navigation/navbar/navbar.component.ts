@@ -1,15 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { LoginStateService } from 'src/app/services/login-state.service';
 
 @Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+	selector: 'app-navbar',
+	templateUrl: './navbar.component.html',
+	styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
 
-  constructor() { }
+	constructor(@Inject(LoginStateService) private loginStateService: LoginStateService) { }
 
-  ngOnInit(): void {
-  }
+	public shouldShowLoggedInButtons(): boolean {
+		return this.loginStateService.isLoggedIn();
+	}
 
+	public getUsername(): string {
+		return this.loginStateService.getUsername();
+	}
+
+	public logOut(): void {
+		this.loginStateService.clearToken();
+	}
 }

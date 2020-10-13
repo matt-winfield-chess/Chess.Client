@@ -1,0 +1,13 @@
+<div class="log-in-form">
+	<div class="username-container field-container">
+		<label for="username">Username</label>
+		<input [(ngModel)]="username" id="username" />
+	</div>
+
+	<div class="password-container field-container">
+		<label for="password">Password</label>
+		<input [(ngModel)]="password" id="password" type="password" />
+	</div>
+
+	<button class="submit" type="submit" (click)="logIn()">Log in</button>
+</div>

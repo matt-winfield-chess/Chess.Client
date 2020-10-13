@@ -17,6 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { LogInComponent } from './pages/log-in/log-in.component';
 
 export function load(config: ConfigService) {
 	return () => config.load();
@@ -32,6 +33,7 @@ export function load(config: ConfigService) {
 		HomePageComponent,
 		GamePageComponent,
 		ThemeComponent,
+		LogInComponent,
 	],
 	imports: [
 		CommonModule,
@@ -40,7 +42,11 @@ export function load(config: ConfigService) {
 		AppRoutingModule,
 		FormsModule,
 		BrowserAnimationsModule,
-		ToastrModule.forRoot(),
+		ToastrModule.forRoot({
+			progressBar: true,
+			closeButton: true,
+			positionClass: 'toast-top-center'
+		}),
 		NgxSpinnerModule
 	],
 	providers: [
