@@ -5,7 +5,7 @@
   @each $theme, $map in $themes {
 
 	// :host-context() additionally needed to break from angular style isolation
-    :host-context(.theme-#{$theme}) ::ng-deep & {
+    .theme-#{$theme} &, :host-context(.theme-#{$theme}) & {
       $theme-map: () !global;
       @each $key, $submap in $map {
         $value: map-get(map-get($themes, $theme), '#{$key}');
