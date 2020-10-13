@@ -1,1 +1,22 @@
-<p>create-account-page works!</p>
+<div class="sign-up-form">
+	<div class="username-container field-container">
+		<label for="username">Username</label>
+		<input [(ngModel)]="username" id="username" />
+
+		<div *ngIf="displayInvalidUsernameMessage" class="error">Invalid username!</div>
+	</div>
+
+	<div class="password-container field-container">
+		<label for="password">Password</label>
+		<input [(ngModel)]="password" id="password" type="password" />
+		<div *ngIf="displayInvalidPasswordMessage" class="error">Invalid password!</div>
+	</div>
+
+	<div class="password-confirm-container field-container">
+		<label for="password-confirm">Confirm Password</label>
+		<input [(ngModel)]="passwordConfirm" id="password-confirm" type="password" />
+		<div *ngIf="displayNonMatchingPasswords" class="error">Passwords must match!</div>
+	</div>
+
+	<button class="submit" type="submit" (click)="signUp()">Sign Up</button>
+</div>

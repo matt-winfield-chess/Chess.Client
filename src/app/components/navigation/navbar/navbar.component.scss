@@ -19,9 +19,11 @@
 .title {
 	margin: 10px 0;
 	padding: 5px 20px;
+	text-decoration: none;
 
 	@include themify($themes) {
 		border-right: themed('navbarBorders');
+		color: themed('primaryFontColor');
 	}
 }
 
