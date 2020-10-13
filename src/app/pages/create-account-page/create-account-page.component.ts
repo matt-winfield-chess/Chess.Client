@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { UsersService } from '../../services/http/users/users.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
 	selector: 'app-create-account-page',
@@ -18,7 +19,7 @@ export class CreateAccountPageComponent {
 	public displayNonMatchingPasswords: boolean = false;
 
 	constructor(@Inject(UsersService) private usersService: UsersService, @Inject(ToastrService) private toastr: ToastrService,
-		@Inject(Router) private router: Router) { }
+		@Inject(NgxSpinnerService) private spinner: NgxSpinnerService, @Inject(Router) private router: Router) { }
 
 	public async signUp(): Promise<void> {
 		this.resetErrorMessages();
@@ -28,7 +29,9 @@ export class CreateAccountPageComponent {
 		if (hasErrors) return;
 
 		try {
+			this.spinner.show();
 			let accountCreationResult = await this.usersService.createAccount(this.username, this.password);
+			this.spinner.hide();
 
 			if (accountCreationResult.isSuccess) {
 				this.router.navigate(['/']);

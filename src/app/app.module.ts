@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 export function load(config: ConfigService) {
 	return () => config.load();
@@ -39,7 +40,8 @@ export function load(config: ConfigService) {
 		AppRoutingModule,
 		FormsModule,
 		BrowserAnimationsModule,
-		ToastrModule.forRoot()
+		ToastrModule.forRoot(),
+		NgxSpinnerModule
 	],
 	providers: [
 		{
