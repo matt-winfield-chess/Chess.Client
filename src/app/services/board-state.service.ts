@@ -99,6 +99,7 @@ export class BoardStateService {
 				this.boardState.castlingState.whiteQueenside = false;
 			} else {
 				this.boardState.castlingState.blackKingside = false;
+
 				this.boardState.castlingState.blackQueenside = false;
 			}
 		}
