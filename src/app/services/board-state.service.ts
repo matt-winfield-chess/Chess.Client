@@ -39,6 +39,8 @@ export class BoardStateService {
 			let movementValidationResult = this.ValidateMove(piece, newX, newY);
 			if (!movementValidationResult.isValid) return;
 
+			this.handleEnPassant(piece, movementValidationResult);
+
 			this.applyMove(movementValidationResult.move);
 
 			if (movementValidationResult.isCastleMove) {
@@ -50,11 +52,29 @@ export class BoardStateService {
 		}
 	}
 
+	public getLegalMoves(piece: Piece): Move[] {
+		let legalMoves: Move[] = []
+
+		for (let x: number = 0; x < 8; x++) {
+			for (let y: number = 0; y < 8; y++) {
+				let validationResult = this.ValidateMove(piece, x, y);
+				if (validationResult.isValid) {
+					legalMoves.push({
+						oldX: piece.x,
+						oldY: piece.y,
+						newX: x,
+						newY: y
+					})
+				}
+			}
+		}
+
+		return legalMoves;
+	}
+
 	private ValidateMove(piece: Piece, newX: number, newY: number): MoveValidationResult {
 		if (piece.x == newX && piece.y == newY) return new MoveValidationResult({ isValid: false });
 		if (piece.color != this.boardState.activeColor) return new MoveValidationResult({ isValid: false });
-
-		let outputResult = new MoveValidationResult({ isValid: false });
 
 		for (let movementStrategy of piece.movementStrategies) {
 			let movementValidationResult = movementStrategy.isValidMove({
@@ -65,10 +85,10 @@ export class BoardStateService {
 			}, piece.color);
 
 			if (movementValidationResult.isValid) {
-				outputResult = this.handleSuccessfulMovementValidationResult(movementValidationResult, piece);
+				return movementValidationResult;
 			}
 		}
-		return outputResult;
+		return new MoveValidationResult({ isValid: false });
 	}
 
 	private applyMove(move: Move) {
@@ -91,19 +111,8 @@ export class BoardStateService {
 		}
 	}
 
-	private handleSuccessfulMovementValidationResult(movementValidationResult: MoveValidationResult, piece: Piece): MoveValidationResult {
-		let move = movementValidationResult.move;
+	private handleEnPassant(piece: Piece, movementValidationResult: MoveValidationResult) {
 		let movementDirection = piece.color == PlayerColor.White ? -1 : 1;
-
-		let outputResult = new MoveValidationResult({
-			isValid: true,
-			move: move
-		});
-
-		if (movementValidationResult.isCastleMove) {
-			outputResult.isCastleMove = true;
-			outputResult.castleRookMove = movementValidationResult.castleRookMove;
-		}
 
 		if (movementValidationResult.isEnPassantCapture) {
 			let capturedPiece: Piece = this.getPieceOnSquare(this.boardState.enPassantTargetSquare[0], this.boardState.enPassantTargetSquare[1] - movementDirection);
@@ -111,12 +120,10 @@ export class BoardStateService {
 		}
 
 		if (movementValidationResult.isEnPassantTarget) {
-			this.boardState.enPassantTargetSquare = [move.newX, (move.oldY + move.newY) / 2]
+			this.boardState.enPassantTargetSquare = [movementValidationResult.move.newX, (piece.y + movementValidationResult.move.newY) / 2]
 		} else {
 			this.boardState.enPassantTargetSquare = null;
 		}
-
-		return outputResult;
 	}
 
 	private removeEnPassantCapturedPiece(piece: Piece) {
