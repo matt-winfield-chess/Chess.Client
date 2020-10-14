@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Piece } from 'src/app/classes/piece';
 import { BoardComponent } from '../board/board.component';
 
 import { PieceComponent } from './piece.component';
@@ -19,6 +20,7 @@ describe('PieceComponent', () => {
 		fixture = TestBed.createComponent(PieceComponent);
 		component = fixture.componentInstance;
 		component.board = document.createElement('chess-board');
+		component.piece = new Piece();
 		fixture.detectChanges();
 	});
 
@@ -28,8 +30,8 @@ describe('PieceComponent', () => {
 
 	it('should display in flipped position if flipBoard is set', () => {
 		component.setFlipBoard(true);
-		component.xCoord = 0;
-		component.yCoord = 0;
+		component.piece.x = 0;
+		component.piece.y = 0;
 
 		let result = component.getPieceTransform();
 

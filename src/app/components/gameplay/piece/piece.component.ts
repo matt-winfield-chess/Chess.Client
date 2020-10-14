@@ -1,6 +1,10 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, Input, ViewChild } from '@angular/core';
+import { Piece } from 'src/app/classes/piece';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
+import { BoardStateService } from 'src/app/services/board-state.service';
+import { MovementStrategy } from '../../../classes/movement-strategies/movement-strategy'
+import { MovementStrategyFactoryService } from '../../../services/factories/movement-strategy-factory.service'
 
 @Component({
 	selector: 'app-piece',
@@ -8,14 +12,11 @@ import { PlayerColor } from 'src/app/enums/player-color.enum';
 	styleUrls: ['./piece.component.scss']
 })
 export class PieceComponent implements AfterViewInit {
-	@Input() xCoord: number;
-	@Input() yCoord: number;
-	@Input() color: PlayerColor;
-	@Input() pieceType: PieceType;
+	@Input() piece: Piece;
 	@Input() flipBoard: boolean;
 	@Input() board: HTMLElement;
 
-	@ViewChild('piece') piece: ElementRef<HTMLElement>;
+	@ViewChild('piece') pieceElement: ElementRef<HTMLElement>;
 
 	public isDragging: boolean = false;
 	private draggingXPosition: number = 0;
@@ -37,9 +38,13 @@ export class PieceComponent implements AfterViewInit {
 		[PieceType.Knight, "knight"]
 	])
 
+	constructor(@Inject(BoardStateService) private boardStateService: BoardStateService,
+		@Inject(MovementStrategyFactoryService) private movementStrategyFactory: MovementStrategyFactoryService) { }
+
 	public ngAfterViewInit(): void {
 		this.updateDimensions();
 		this.configureContextMenu();
+		this.piece.movementStrategies = this.movementStrategyFactory.createStrategies(this.piece.pieceType);
 	}
 
 	public onBoardSizeChange(): void {
@@ -51,26 +56,20 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	public getPieceTransform(): string {
-		let displayX = this.xCoord;
-		let displayY = this.yCoord;
-
-		if (this.flipBoard) {
-			displayX = 7 - displayX;
-			displayY = 7 - displayY;
-		}
+		let displayPosition = this.convertDisplayPosition(this.piece.x, this.piece.y)
 
 		if (this.isDragging) {
 			return this.getDraggingTransform();
 		}
-		return `translate(${displayX * 100}%, ${displayY * 100}%)`;
+		return `translate(${displayPosition[0] * 100}%, ${displayPosition[1] * 100}%)`;
 	}
 
 	public getColorClass(): string {
-		return this.colorClassMap.get(this.color) ?? '';
+		return this.colorClassMap.get(this.piece.color) ?? '';
 	}
 
 	public getPieceTypeClass(): string {
-		return this.pieceTypeClassMap.get(this.pieceType) ?? '';
+		return this.pieceTypeClassMap.get(this.piece.pieceType) ?? '';
 	}
 
 	public onPieceMouseDown(event: MouseEvent): void {
@@ -119,9 +118,17 @@ export class PieceComponent implements AfterViewInit {
 		let newYCoord = Math.round((newYPosition / this.boundingRect.height) - 0.5);
 
 		if (this.isValidCoordinate(newXCoord, newYCoord)) {
-			this.xCoord = newXCoord;
-			this.yCoord = newYCoord;
+			let realNewPosition = this.convertDisplayPosition(newXCoord, newYCoord);
+			this.boardStateService.notifyMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1]);
 		}
+	}
+
+	// Converts to/from display and real position
+	private convertDisplayPosition(x: number, y: number): [number, number] {
+		if (this.flipBoard) {
+			return [7 - x, 7 - y];
+		}
+		return [x, y];
 	}
 
 	private isValidCoordinate(x: number, y: number): boolean {
@@ -130,12 +137,12 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	private updateDimensions() {
-		this.boundingRect = this.piece.nativeElement.getBoundingClientRect();
+		this.boundingRect = this.pieceElement.nativeElement.getBoundingClientRect();
 		this.boardBoundingRect = this.board.getBoundingClientRect();
 	}
 
 	private configureContextMenu() {
-		this.piece.nativeElement.oncontextmenu = () => { return false; }
+		this.pieceElement.nativeElement.oncontextmenu = () => { return false; }
 	}
 
 	private getDraggingTransform() {
