@@ -47,6 +47,7 @@ export class BoardStateService {
 
 	private isLegalMove(piece: Piece, newX: number, newY: number) {
 		if (piece.x == newX && piece.y == newY) return false;
+		if (piece.color != this.boardState.activeColor) return false;
 
 		for (let movementStrategy of piece.movementStrategies) {
 			if (movementStrategy.isValidMove(piece.x, piece.y, newX, newY, piece.color)) {
