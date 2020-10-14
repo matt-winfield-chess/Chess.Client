@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { CastlingState } from '../classes/castling-state';
 import { BoardState } from '../classes/board-state';
 import { Piece } from '../classes/piece';
 import { PieceType } from '../enums/piece-type.enum';
 import { PlayerColor } from '../enums/player-color.enum';
+import { CoordinateNotationParserService } from './coordinate-notation-parser.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -18,6 +19,8 @@ export class FenParserService {
 		["k", PieceType.King]
 	]);
 
+	constructor(@Inject(CoordinateNotationParserService) private coordinateNotationParser: CoordinateNotationParserService) { }
+
 	public parseFen(fen: string): BoardState {
 		let result = new BoardState();
 
@@ -31,7 +34,7 @@ export class FenParserService {
 		result.pieces = this.parsePieces(fenComponents[0]);
 		result.activeColor = this.parseActiveColor(fenComponents[1]);
 		result.castlingState = this.parseCastlingState(fenComponents[2]);
-		// TODO: parse en-passant
+		result.enPassantTargetSquare = this.coordinateNotationParser.toCoordinate(fenComponents[3]);
 		result.halfmoveClock = this.parseNumberComponent(fenComponents[4]);
 		result.fullmoveNumber = this.parseNumberComponent(fenComponents[5])
 

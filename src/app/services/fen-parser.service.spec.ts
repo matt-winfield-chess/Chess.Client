@@ -132,4 +132,31 @@ describe('FenParserService', () => {
 		expect(castlingState.blackKingside).toBeFalse();
 		expect(castlingState.blackQueenside).toBeTrue();
 	});
+
+	it('should identify correct en-passant target square e3', () => {
+		let testFen = '8/8/8/8/8/8/8/8 w q e3 0 1';
+
+		let result = service.parseFen(testFen);
+
+		expect(result.valid).toBeTrue();
+		expect(result.enPassantTargetSquare).toEqual([4, 5]);
+	});
+
+	it('should identify correct en-passant target square e6', () => {
+		let testFen = '8/8/8/8/8/8/8/8 w q e6 0 1';
+
+		let result = service.parseFen(testFen);
+
+		expect(result.valid).toBeTrue();
+		expect(result.enPassantTargetSquare).toEqual([4, 2]);
+	});
+
+	it('should identify correct en-passant target square d3', () => {
+		let testFen = '8/8/8/8/8/8/8/8 w q d3 0 1';
+
+		let result = service.parseFen(testFen);
+
+		expect(result.valid).toBeTrue();
+		expect(result.enPassantTargetSquare).toEqual([3, 5]);
+	});
 });

@@ -7,8 +7,14 @@ export class PawnMovementStrategy extends MovementStrategy {
 	public isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
 		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
 		if (!this.isMovingInCorrectDirection(move.oldY, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
+		if (this.isEnPassantCapture(move)) return new MoveValidationResult({ isValid: true, move: move, isEnPassantCapture: true });
 		if (this.isCapture(move, playerColor)) return new MoveValidationResult({ isValid: true, move: move });
-		return new MoveValidationResult({ isValid: this.isValidMoveForward(move, playerColor), move: move });
+
+		return new MoveValidationResult({
+			isValid: this.isValidMoveForward(move, playerColor),
+			move: move,
+			isEnPassantTarget: this.isEnPassantTarget(move)
+		});
 	}
 
 	private isMovingInCorrectDirection(oldY: number, newY: number, playerColor: PlayerColor) {
@@ -24,7 +30,13 @@ export class PawnMovementStrategy extends MovementStrategy {
 		return capturedPiece.color != playerColor;
 	}
 
-	private isValidMoveForward(move: Move, playerColor: PlayerColor) {
+	private isEnPassantCapture(move: Move): boolean {
+		let enPassantTargetSquare = this.boardStateService.getBoardState().enPassantTargetSquare;
+		if (!enPassantTargetSquare) return false;
+		return enPassantTargetSquare[0] == move.newX && enPassantTargetSquare[1] == move.newY;
+	}
+
+	private isValidMoveForward(move: Move, playerColor: PlayerColor): boolean {
 		if (move.oldX != move.newX) return false;
 		let correctDirection = this.getCorrectMovementDirection(playerColor);
 		let maxDistance = this.canMoveTwoSquares(move.oldY, playerColor) ? 2 : 1;
@@ -54,5 +66,9 @@ export class PawnMovementStrategy extends MovementStrategy {
 			if (piece != null) return true;
 		}
 		return false;
+	}
+
+	private isEnPassantTarget(move: Move): boolean {
+		return Math.abs(move.newY - move.oldY) == 2;
 	}
 }

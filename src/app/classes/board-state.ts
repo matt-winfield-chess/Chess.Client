@@ -7,7 +7,7 @@ export class BoardState {
 	public pieces: Piece[];
 	public activeColor: PlayerColor = PlayerColor.White;
 	public castlingState: CastlingState = new CastlingState();
-	public enPassantTargetSquare: string;
+	public enPassantTargetSquare: [number, number];
 	public halfmoveClock: number = 1;
 	public fullmoveNumber: number = 1;
 }
