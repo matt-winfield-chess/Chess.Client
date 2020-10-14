@@ -8,8 +8,11 @@ import { MovementStrategy } from './movement-strategy';
 
 export class CastleMovementStrategy extends MovementStrategy {
 	public isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
-		if (!this.isCastlingAvailable(move, playerColor)) return { isValid: false, move: move };
-		return { isValid: !this.isBlocked(move), move: move };
+		if (!this.isCastlingAvailable(move, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
+		if (this.isBlocked(move)) return new MoveValidationResult({ isValid: false, move: move });
+
+		var rookMove = this.getRookMove(move);
+		return new MoveValidationResult({ isValid: true, move: move, isCastleMove: true, castleRookMove: rookMove });
 	}
 
 	private isCastlingAvailable(move: Move, playerColor: PlayerColor): boolean {
@@ -44,5 +47,23 @@ export class CastleMovementStrategy extends MovementStrategy {
 			}
 		}
 		return false;
+	}
+
+	private getRookMove(move: Move) {
+		if (move.newX == 2) { // Queenside castle
+			return {
+				oldX: 0,
+				oldY: move.oldY,
+				newX: 3,
+				newY: move.oldY
+			}
+		}
+
+		return {
+			oldX: 7,
+			oldY: move.oldY,
+			newX: 5,
+			newY: move.oldY
+		}
 	}
 }

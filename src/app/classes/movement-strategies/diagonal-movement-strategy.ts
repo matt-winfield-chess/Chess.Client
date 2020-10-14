@@ -5,9 +5,9 @@ import { MovementStrategy } from './movement-strategy';
 
 export class DiagonalMovementStrategy extends MovementStrategy {
 	isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
-		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return { isValid: false, move: move };
-		if (!this.isDiagonal(move)) return { isValid: false, move: move };
-		return { isValid: !this.isBlocked(move), move: move };
+		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
+		if (!this.isDiagonal(move)) return new MoveValidationResult({ isValid: false, move: move });
+		return new MoveValidationResult({ isValid: !this.isBlocked(move), move: move });
 	}
 
 	private isDiagonal(move: Move): boolean {

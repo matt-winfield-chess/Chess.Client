@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { BoardState } from '../classes/board-state';
+import { Move } from '../classes/move';
+import { MoveValidationResult } from '../classes/move-validation-result';
 import { Piece } from '../classes/piece';
 import { PieceType } from '../enums/piece-type.enum';
 import { PlayerColor } from '../enums/player-color.enum';
@@ -34,22 +36,25 @@ export class BoardStateService {
 		var piece = this.piecePositions[oldY][oldX];
 
 		if (piece) {
-			if (!this.isLegalMove(piece, newX, newY)) return;
+			let movementValidationResult = this.ValidateMove(piece, newX, newY);
+			if (!movementValidationResult.isValid) return;
 
-			piece.x = newX;
-			piece.y = newY;
+			this.applyMove(movementValidationResult.move);
 
-			this.piecePositions[oldY][oldX] = null;
-			this.piecePositions[newY][newX] = piece;
+			if (movementValidationResult.isCastleMove) {
+				this.applyMove(movementValidationResult.castleRookMove);
+			}
 
 			this.updateBoardStateCounters();
 			this.updateCastlingRights(piece, oldX, oldY);
 		}
 	}
 
-	private isLegalMove(piece: Piece, newX: number, newY: number) {
-		if (piece.x == newX && piece.y == newY) return false;
-		if (piece.color != this.boardState.activeColor) return false;
+	private ValidateMove(piece: Piece, newX: number, newY: number): MoveValidationResult {
+		if (piece.x == newX && piece.y == newY) return new MoveValidationResult({ isValid: false });
+		if (piece.color != this.boardState.activeColor) return new MoveValidationResult({ isValid: false });
+
+		let outputResult = new MoveValidationResult({ isValid: false });
 
 		for (let movementStrategy of piece.movementStrategies) {
 			let movementValidationResult = movementStrategy.isValidMove({
@@ -60,10 +65,26 @@ export class BoardStateService {
 			}, piece.color);
 
 			if (movementValidationResult.isValid) {
-				return true;
+				outputResult.isValid = true;
+				outputResult.move = movementValidationResult.move;
+
+				if (movementValidationResult.isCastleMove) {
+					outputResult.isCastleMove = true;
+					outputResult.castleRookMove = movementValidationResult.castleRookMove;
+				}
 			}
 		}
-		return false;
+		return outputResult;
+	}
+
+	private applyMove(move: Move,) {
+		var piece = this.piecePositions[move.oldY][move.oldX];
+
+		piece.x = move.newX;
+		piece.y = move.newY;
+
+		this.piecePositions[move.oldY][move.oldX] = null;
+		this.piecePositions[move.newY][move.newX] = piece;
 	}
 
 	private updateCastlingRights(piece: Piece, oldX: number, oldY: number): void {
@@ -85,7 +106,7 @@ export class BoardStateService {
 
 	private updateCastlingRightsForRookMovement(piece: Piece, oldX: number, oldY: number): void {
 		if (piece.pieceType == PieceType.Rook) {
-			if (piece.color = PlayerColor.White) {
+			if (piece.color == PlayerColor.White) {
 				if (oldX == 0 && oldY == 7) {
 					this.boardState.castlingState.whiteQueenside = false;
 				} else if (oldX == 7 && oldY == 7) {

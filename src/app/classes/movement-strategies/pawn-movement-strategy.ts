@@ -5,10 +5,10 @@ import { MovementStrategy } from './movement-strategy';
 
 export class PawnMovementStrategy extends MovementStrategy {
 	public isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
-		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return { isValid: false, move: move };
-		if (!this.isMovingInCorrectDirection(move.oldY, move.newY, playerColor)) return { isValid: false, move: move };
-		if (this.isCapture(move, playerColor)) return { isValid: true, move: move };
-		return { isValid: this.isValidMoveForward(move, playerColor), move: move };
+		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
+		if (!this.isMovingInCorrectDirection(move.oldY, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
+		if (this.isCapture(move, playerColor)) return new MoveValidationResult({ isValid: true, move: move });
+		return new MoveValidationResult({ isValid: this.isValidMoveForward(move, playerColor), move: move });
 	}
 
 	private isMovingInCorrectDirection(oldY: number, newY: number, playerColor: PlayerColor) {
