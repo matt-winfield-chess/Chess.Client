@@ -1,9 +1,0 @@
-@import '../../../styles/themes/themes.scss';
-@import '../../../styles/themes/themify.scss';
-
-#background {
-	@include themify($themes) {
-		background-color: themed('pageBackgroundColor');
-		color: themed('primaryFontColor');
-	}
-}

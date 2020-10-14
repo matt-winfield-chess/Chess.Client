@@ -9,7 +9,6 @@ import { NavbarComponent } from './components/navigation/navbar/navbar.component
 import { CreateAccountPageComponent } from './pages/create-account-page/create-account-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { GamePageComponent } from './pages/game-page/game-page.component';
-import { ThemeComponent } from './components/theming/theme/theme.component';
 import { FormsModule } from '@angular/forms';
 import { ConfigService } from './services/config/config.service';
 import { CommonModule } from '@angular/common';
@@ -32,7 +31,6 @@ export function load(config: ConfigService) {
 		CreateAccountPageComponent,
 		HomePageComponent,
 		GamePageComponent,
-		ThemeComponent,
 		LogInComponent,
 	],
 	imports: [
