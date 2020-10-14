@@ -51,18 +51,12 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	public getPieceTransform(): string {
-		let displayX = this.xCoord;
-		let displayY = this.yCoord;
-
-		if (this.flipBoard) {
-			displayX = 7 - displayX;
-			displayY = 7 - displayY;
-		}
+		let displayPosition = this.convertDisplayPosition(this.xCoord, this.yCoord)
 
 		if (this.isDragging) {
 			return this.getDraggingTransform();
 		}
-		return `translate(${displayX * 100}%, ${displayY * 100}%)`;
+		return `translate(${displayPosition[0] * 100}%, ${displayPosition[1] * 100}%)`;
 	}
 
 	public getColorClass(): string {
@@ -119,9 +113,19 @@ export class PieceComponent implements AfterViewInit {
 		let newYCoord = Math.round((newYPosition / this.boundingRect.height) - 0.5);
 
 		if (this.isValidCoordinate(newXCoord, newYCoord)) {
-			this.xCoord = newXCoord;
-			this.yCoord = newYCoord;
+			let realPosition = this.convertDisplayPosition(newXCoord, newYCoord);
+
+			this.xCoord = realPosition[0];
+			this.yCoord = realPosition[1];
 		}
+	}
+
+	// Converts to/from display and real position
+	private convertDisplayPosition(x: number, y: number): [number, number] {
+		if (this.flipBoard) {
+			return [7 - x, 7 - y];
+		}
+		return [x, y];
 	}
 
 	private isValidCoordinate(x: number, y: number): boolean {
