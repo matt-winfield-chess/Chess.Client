@@ -18,7 +18,7 @@ export class StraightMovementStrategy extends MovementStrategy {
 		let xIncrement = Math.sign(move.newX - move.oldX);
 		let yIncrement = Math.sign(move.newY - move.oldY);
 
-		for (let step: number = 1; step < Math.abs(move.newX - move.oldX); step++) {
+		for (let step: number = 1; step < Math.max(Math.abs(move.newX - move.oldX), Math.abs(move.newY - move.oldY)); step++) {
 			let positionToCheck: [number, number] = [move.oldX + (step * xIncrement), move.oldY + (step * yIncrement)];
 
 			let pieceAtPosition = this.boardStateService.getPieceOnSquare(positionToCheck[0], positionToCheck[1]);

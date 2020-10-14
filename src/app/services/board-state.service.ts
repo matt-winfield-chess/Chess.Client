@@ -1,4 +1,6 @@
+import { flatten } from '@angular/compiler';
 import { Inject, Injectable } from '@angular/core';
+import { ToastContainerModule } from 'ngx-toastr';
 import { BoardState } from '../classes/board-state';
 import { Move } from '../classes/move';
 import { MoveValidationResult } from '../classes/move-validation-result';
@@ -14,6 +16,9 @@ export class BoardStateService {
 
 	private boardState: BoardState;
 	private piecePositions: Piece[][]; // stores piece at it's current position for more efficient retrieval by x/y coordinate
+
+	private previousBoardState: BoardState = new BoardState(); // Points between last move, for revertMove()
+	private previousPiecePositions: Piece[][] = [];
 
 	constructor(@Inject(FenParserService) private fenParserService: FenParserService) {
 		this.initialiseBoardState(this.fenParserService.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'));
@@ -57,7 +62,7 @@ export class BoardStateService {
 
 		for (let x: number = 0; x < 8; x++) {
 			for (let y: number = 0; y < 8; y++) {
-				let validationResult = this.ValidateMove(piece, x, y);
+				let validationResult = this.ValidateMove(piece, x, y, true, false);
 				if (validationResult.isValid) {
 					legalMoves.push({
 						oldX: piece.x,
@@ -75,9 +80,11 @@ export class BoardStateService {
 	public isKingInCheck(kingColor: PlayerColor): boolean {
 		let flattenedBoard = this.piecePositions.reduce((prev, curr) => prev.concat(curr));
 		let opponentColor: PlayerColor = kingColor == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
-		let king: Piece = flattenedBoard.find(p => p.pieceType == PieceType.King && p.color == kingColor);
+
+		let king: Piece = flattenedBoard.find(p => p?.pieceType == PieceType.King && p?.color == kingColor);
 
 		for (let piece of flattenedBoard) {
+			if (piece == null) continue;
 			if (piece.color != opponentColor) continue;
 
 			let legalMoves = this.getLegalMoves(piece);
@@ -90,9 +97,9 @@ export class BoardStateService {
 		return false;
 	}
 
-	private ValidateMove(piece: Piece, newX: number, newY: number): MoveValidationResult {
+	private ValidateMove(piece: Piece, newX: number, newY: number, ignoreColor: boolean = false, validateChecks: boolean = true): MoveValidationResult {
 		if (piece.x == newX && piece.y == newY) return new MoveValidationResult({ isValid: false });
-		if (piece.color != this.boardState.activeColor) return new MoveValidationResult({ isValid: false });
+		if (piece.color != this.boardState.activeColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
 
 		for (let movementStrategy of piece.movementStrategies) {
 			let movementValidationResult = movementStrategy.isValidMove({
@@ -103,22 +110,44 @@ export class BoardStateService {
 			}, piece.color);
 
 			if (movementValidationResult.isValid) {
+				if (validateChecks) {
+					this.applyMove(movementValidationResult.move, true);
+
+					if (this.isKingInCheck(piece.color)) {
+						movementValidationResult.isValid = false;
+					}
+
+					this.revertMove(movementValidationResult.move);
+				}
 				return movementValidationResult;
 			}
 		}
 		return new MoveValidationResult({ isValid: false });
 	}
 
-	private applyMove(move: Move) {
+	private applyMove(move: Move, testMove: boolean = false) {
+		this.setRevertPoint();
+
 		var piece = this.piecePositions[move.oldY][move.oldX];
 
-		this.removeCapturedPiece(move);
+		if (!testMove) {
+			this.removeCapturedPiece(move);
+		}
 
 		piece.x = move.newX;
 		piece.y = move.newY;
 
 		this.piecePositions[move.oldY][move.oldX] = null;
 		this.piecePositions[move.newY][move.newX] = piece;
+	}
+
+	private revertMove(move: Move) {
+		let piece = this.getPieceOnSquare(move.newX, move.newY);
+		piece.x = move.oldX;
+		piece.y = move.oldY;
+
+		this.boardState = this.previousBoardState;
+		this.piecePositions = this.previousPiecePositions;
 	}
 
 	private removeCapturedPiece(move: Move) {
@@ -148,6 +177,18 @@ export class BoardStateService {
 		this.piecePositions[piece.y][piece.x] = null;
 		let index = this.boardState.pieces.indexOf(piece);
 		this.boardState.pieces.splice(index, 1);
+	}
+
+	private setRevertPoint(): void {
+		Object.assign(this.previousBoardState, this.boardState);
+
+		this.previousPiecePositions = []
+		for (let y: number = 0; y < 8; y++) {
+			this.previousPiecePositions.push([])
+			for (let x: number = 0; x < 8; x++) {
+				this.previousPiecePositions[y].push(this.piecePositions[y][x]);
+			}
+		}
 	}
 
 	private updateCastlingRights(piece: Piece, oldX: number, oldY: number): void {
