@@ -4,7 +4,7 @@
 @mixin themify($themes: $themes) {
   @each $theme, $map in $themes {
 
-	// :host-context() additionally needed to break from angular style isolation
+	// :host-context() allows accessing the theme element outside of current component higher in the DOM
     .theme-#{$theme} &, :host-context(.theme-#{$theme}) & {
       $theme-map: () !global; // Theme map used in themed function
       @each $key, $value in $map {
