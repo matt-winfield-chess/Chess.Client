@@ -33,6 +33,8 @@ export class BoardStateService {
 		var piece = this.piecePositions[oldY][oldX];
 
 		if (piece) {
+			if (!this.isLegalMove(piece, newX, newY)) return;
+
 			piece.x = newX;
 			piece.y = newY;
 
@@ -41,6 +43,17 @@ export class BoardStateService {
 
 			this.updateBoardStateCounters();
 		}
+	}
+
+	private isLegalMove(piece: Piece, newX: number, newY: number) {
+		if (piece.x == newX && piece.y == newY) return false;
+
+		for (let movementStrategy of piece.movementStrategies) {
+			if (movementStrategy.isValidMove(piece.x, piece.y, newX, newY, piece.color)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private synchronizeInternalPiecePositionsToBoardState(): void {

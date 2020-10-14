@@ -24,8 +24,6 @@ export class PieceComponent implements AfterViewInit {
 	private boundingRect: DOMRect;
 	private boardBoundingRect: DOMRect;
 
-	private movementStrategies: MovementStrategy[];
-
 	private colorClassMap: Map<PlayerColor, string> = new Map<PlayerColor, string>([
 		[PlayerColor.White, "white"],
 		[PlayerColor.Black, "black"]
@@ -46,7 +44,7 @@ export class PieceComponent implements AfterViewInit {
 	public ngAfterViewInit(): void {
 		this.updateDimensions();
 		this.configureContextMenu();
-		this.movementStrategies = this.movementStrategyFactory.createStrategies(this.piece.pieceType);
+		this.piece.movementStrategies = this.movementStrategyFactory.createStrategies(this.piece.pieceType);
 	}
 
 	public onBoardSizeChange(): void {
@@ -121,9 +119,7 @@ export class PieceComponent implements AfterViewInit {
 
 		if (this.isValidCoordinate(newXCoord, newYCoord)) {
 			let realNewPosition = this.convertDisplayPosition(newXCoord, newYCoord);
-			if (this.isLegalMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1])) {
-				this.boardStateService.notifyMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1]);
-			}
+			this.boardStateService.notifyMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1]);
 		}
 	}
 
@@ -133,17 +129,6 @@ export class PieceComponent implements AfterViewInit {
 			return [7 - x, 7 - y];
 		}
 		return [x, y];
-	}
-
-	private isLegalMove(oldX: number, oldY: number, newX: number, newY: number): boolean {
-		if (oldX == newX && oldY == newY) return false;
-
-		for (let movementStrategy of this.movementStrategies) {
-			if (movementStrategy.isValidMove(oldX, oldY, newX, newY, this.piece.color)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private isValidCoordinate(x: number, y: number): boolean {
