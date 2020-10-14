@@ -8,8 +8,8 @@
 	</chess-tiles>
 
 	<chess-pieces>
-		<app-piece #dynamicPiece *ngFor="let piece of boardState.pieces" [color]="piece.color"
-			[pieceType]="piece.pieceType" [xCoord]="piece.x" [yCoord]="piece.y" [flipBoard]="flipBoard" [board]="board">
+		<app-piece #dynamicPiece *ngFor="let piece of boardStateService.boardState.pieces" [piece]="piece"
+			[flipBoard]="flipBoard" [board]="board">
 		</app-piece>
 	</chess-pieces>
 </chess-board>

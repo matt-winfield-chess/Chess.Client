@@ -1,6 +1,8 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { Piece } from 'src/app/classes/piece';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
+import { BoardStateService } from 'src/app/services/board-state.service';
 
 @Component({
 	selector: 'app-piece',
@@ -8,14 +10,11 @@ import { PlayerColor } from 'src/app/enums/player-color.enum';
 	styleUrls: ['./piece.component.scss']
 })
 export class PieceComponent implements AfterViewInit {
-	@Input() xCoord: number;
-	@Input() yCoord: number;
-	@Input() color: PlayerColor;
-	@Input() pieceType: PieceType;
+	@Input() piece: Piece;
 	@Input() flipBoard: boolean;
 	@Input() board: HTMLElement;
 
-	@ViewChild('piece') piece: ElementRef<HTMLElement>;
+	@ViewChild('piece') pieceElement: ElementRef<HTMLElement>;
 
 	public isDragging: boolean = false;
 	private draggingXPosition: number = 0;
@@ -37,6 +36,8 @@ export class PieceComponent implements AfterViewInit {
 		[PieceType.Knight, "knight"]
 	])
 
+	constructor(@Inject(BoardStateService) private boardStateService: BoardStateService) { }
+
 	public ngAfterViewInit(): void {
 		this.updateDimensions();
 		this.configureContextMenu();
@@ -51,7 +52,7 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	public getPieceTransform(): string {
-		let displayPosition = this.convertDisplayPosition(this.xCoord, this.yCoord)
+		let displayPosition = this.convertDisplayPosition(this.piece.x, this.piece.y)
 
 		if (this.isDragging) {
 			return this.getDraggingTransform();
@@ -60,11 +61,11 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	public getColorClass(): string {
-		return this.colorClassMap.get(this.color) ?? '';
+		return this.colorClassMap.get(this.piece.color) ?? '';
 	}
 
 	public getPieceTypeClass(): string {
-		return this.pieceTypeClassMap.get(this.pieceType) ?? '';
+		return this.pieceTypeClassMap.get(this.piece.pieceType) ?? '';
 	}
 
 	public onPieceMouseDown(event: MouseEvent): void {
@@ -113,10 +114,8 @@ export class PieceComponent implements AfterViewInit {
 		let newYCoord = Math.round((newYPosition / this.boundingRect.height) - 0.5);
 
 		if (this.isValidCoordinate(newXCoord, newYCoord)) {
-			let realPosition = this.convertDisplayPosition(newXCoord, newYCoord);
-
-			this.xCoord = realPosition[0];
-			this.yCoord = realPosition[1];
+			let realNewPosition = this.convertDisplayPosition(newXCoord, newYCoord);
+			this.boardStateService.notifyMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1]);
 		}
 	}
 
@@ -134,12 +133,12 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	private updateDimensions() {
-		this.boundingRect = this.piece.nativeElement.getBoundingClientRect();
+		this.boundingRect = this.pieceElement.nativeElement.getBoundingClientRect();
 		this.boardBoundingRect = this.board.getBoundingClientRect();
 	}
 
 	private configureContextMenu() {
-		this.piece.nativeElement.oncontextmenu = () => { return false; }
+		this.pieceElement.nativeElement.oncontextmenu = () => { return false; }
 	}
 
 	private getDraggingTransform() {
