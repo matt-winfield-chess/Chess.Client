@@ -5,6 +5,7 @@ import { MovementStrategy } from 'src/app/classes/movement-strategies/movement-s
 import { PawnMovementStrategy } from 'src/app/classes/movement-strategies/pawn-movement-strategy';
 import { SingleSquareMovementStrategy } from 'src/app/classes/movement-strategies/single-square-movement-strategy';
 import { StraightMovementStrategy } from 'src/app/classes/movement-strategies/straight-movement-strategy';
+import { CastleMovementStrategy } from 'src/app/classes/movement-strategies/castle-movement-strategy';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { BoardStateService } from '../board-state.service';
 
@@ -28,7 +29,7 @@ export class MovementStrategyFactoryService {
 			case PieceType.Queen:
 				return [new DiagonalMovementStrategy(this.boardStateService), new StraightMovementStrategy(this.boardStateService)];
 			case PieceType.King:
-				return [new SingleSquareMovementStrategy(this.boardStateService)];
+				return [new SingleSquareMovementStrategy(this.boardStateService), new CastleMovementStrategy(this.boardStateService)];
 		}
 	}
 }

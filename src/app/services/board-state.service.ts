@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { BoardState } from '../classes/board-state';
 import { Piece } from '../classes/piece';
+import { PieceType } from '../enums/piece-type.enum';
 import { PlayerColor } from '../enums/player-color.enum';
 import { FenParserService } from './fen-parser.service';
 
@@ -42,6 +43,7 @@ export class BoardStateService {
 			this.piecePositions[newY][newX] = piece;
 
 			this.updateBoardStateCounters();
+			this.updateCastlingRights(piece, oldX, oldY);
 		}
 	}
 
@@ -50,11 +52,53 @@ export class BoardStateService {
 		if (piece.color != this.boardState.activeColor) return false;
 
 		for (let movementStrategy of piece.movementStrategies) {
-			if (movementStrategy.isValidMove(piece.x, piece.y, newX, newY, piece.color)) {
+			let movementValidationResult = movementStrategy.isValidMove({
+				oldX: piece.x,
+				oldY: piece.y,
+				newX: newX,
+				newY: newY
+			}, piece.color);
+
+			if (movementValidationResult.isValid) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private updateCastlingRights(piece: Piece, oldX: number, oldY: number): void {
+		this.updateCastlingRightsForKingMovement(piece);
+		this.updateCastlingRightsForRookMovement(piece, oldX, oldY);
+	}
+
+	private updateCastlingRightsForKingMovement(piece: Piece): void {
+		if (piece.pieceType == PieceType.King) {
+			if (piece.color == PlayerColor.White) {
+				this.boardState.castlingState.whiteKingside = false;
+				this.boardState.castlingState.whiteQueenside = false;
+			} else {
+				this.boardState.castlingState.blackKingside = false;
+				this.boardState.castlingState.blackQueenside = false;
+			}
+		}
+	}
+
+	private updateCastlingRightsForRookMovement(piece: Piece, oldX: number, oldY: number): void {
+		if (piece.pieceType == PieceType.Rook) {
+			if (piece.color = PlayerColor.White) {
+				if (oldX == 0 && oldY == 7) {
+					this.boardState.castlingState.whiteQueenside = false;
+				} else if (oldX == 7 && oldY == 7) {
+					this.boardState.castlingState.whiteKingside = false;
+				}
+			} else {
+				if (oldX == 0 && oldY == 0) {
+					this.boardState.castlingState.blackQueenside = false;
+				} else if (oldX == 7 && oldY == 0) {
+					this.boardState.castlingState.blackKingside = false;
+				}
+			}
+		}
 	}
 
 	private synchronizeInternalPiecePositionsToBoardState(): void {

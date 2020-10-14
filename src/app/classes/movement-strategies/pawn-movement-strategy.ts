@@ -1,17 +1,14 @@
 import { PlayerColor } from 'src/app/enums/player-color.enum';
-import { BoardStateService } from 'src/app/services/board-state.service';
+import { Move } from '../move';
+import { MoveValidationResult } from '../move-validation-result';
 import { MovementStrategy } from './movement-strategy';
 
 export class PawnMovementStrategy extends MovementStrategy {
-	constructor(protected boardStateService: BoardStateService) {
-		super(boardStateService);
-	}
-
-	public isValidMove(oldX: number, oldY: number, newX: number, newY: number, playerColor: PlayerColor): boolean {
-		if (!this.isSquareUsable(newX, newY, playerColor)) return false;
-		if (!this.isMovingInCorrectDirection(oldY, newY, playerColor)) return false;
-		if (this.isCapture(oldX, oldY, newX, newY, playerColor)) return true;
-		return this.isValidMoveForward(oldX, oldY, newX, newY, playerColor);
+	public isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
+		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return { isValid: false, move: move };
+		if (!this.isMovingInCorrectDirection(move.oldY, move.newY, playerColor)) return { isValid: false, move: move };
+		if (this.isCapture(move, playerColor)) return { isValid: true, move: move };
+		return { isValid: this.isValidMoveForward(move, playerColor), move: move };
 	}
 
 	private isMovingInCorrectDirection(oldY: number, newY: number, playerColor: PlayerColor) {
@@ -19,23 +16,23 @@ export class PawnMovementStrategy extends MovementStrategy {
 		return Math.sign(newY - oldY) == correctDirection
 	}
 
-	private isCapture(oldX: number, oldY: number, newX: number, newY: number, playerColor: PlayerColor): boolean {
-		if (Math.abs(newX - oldX) != 1 || Math.abs(newY - oldY) != 1) return false;
+	private isCapture(move: Move, playerColor: PlayerColor): boolean {
+		if (Math.abs(move.newX - move.oldX) != 1 || Math.abs(move.newY - move.oldY) != 1) return false;
 
-		let capturedPiece = this.boardStateService.getPieceOnSquare(newX, newY);
+		let capturedPiece = this.boardStateService.getPieceOnSquare(move.newX, move.newY);
 		if (capturedPiece == null) return false;
 		return capturedPiece.color != playerColor;
 	}
 
-	private isValidMoveForward(oldX: number, oldY: number, newX: number, newY: number, playerColor: PlayerColor) {
-		if (oldX != newX) return false;
+	private isValidMoveForward(move: Move, playerColor: PlayerColor) {
+		if (move.oldX != move.newX) return false;
 		let correctDirection = this.getCorrectMovementDirection(playerColor);
-		let maxDistance = this.canMoveTwoSquares(oldY, playerColor) ? 2 : 1;
+		let maxDistance = this.canMoveTwoSquares(move.oldY, playerColor) ? 2 : 1;
 
-		let distance = newY - oldY;
+		let distance = move.newY - move.oldY;
 		if (Math.sign(distance) != correctDirection) return false;
 
-		if (this.isForwardMovementBlocked(oldX, oldY, maxDistance, correctDirection)) return false;
+		if (this.isForwardMovementBlocked(move.oldX, move.oldY, maxDistance, correctDirection)) return false;
 
 		return Math.abs(distance) > 0 && Math.abs(distance) <= maxDistance;
 	}

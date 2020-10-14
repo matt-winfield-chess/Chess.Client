@@ -1,28 +1,25 @@
 import { PlayerColor } from 'src/app/enums/player-color.enum';
-import { BoardStateService } from 'src/app/services/board-state.service';
+import { Move } from '../move';
+import { MoveValidationResult } from '../move-validation-result';
 import { MovementStrategy } from './movement-strategy';
 
 export class DiagonalMovementStrategy extends MovementStrategy {
-	constructor(protected boardStateService: BoardStateService) {
-		super(boardStateService);
+	isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
+		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return { isValid: false, move: move };
+		if (!this.isDiagonal(move)) return { isValid: false, move: move };
+		return { isValid: !this.isBlocked(move), move: move };
 	}
 
-	isValidMove(oldX: number, oldY: number, newX: number, newY: number, playerColor: PlayerColor): boolean {
-		if (!this.isSquareUsable(newX, newY, playerColor)) return false;
-		if (!this.isDiagonal(oldX, oldY, newX, newY)) return false;
-		return !this.isBlocked(oldX, oldY, newX, newY);
+	private isDiagonal(move: Move): boolean {
+		return Math.abs(move.newX - move.oldX) == Math.abs(move.newY - move.oldY);
 	}
 
-	private isDiagonal(oldX: number, oldY: number, newX: number, newY: number): boolean {
-		return Math.abs(newX - oldX) == Math.abs(newY - oldY);
-	}
+	private isBlocked(move: Move): boolean {
+		let xIncrement = Math.sign(move.newX - move.oldX);
+		let yIncrement = Math.sign(move.newY - move.oldY);
 
-	private isBlocked(oldX: number, oldY: number, newX: number, newY: number): boolean {
-		let xIncrement = Math.sign(newX - oldX);
-		let yIncrement = Math.sign(newY - oldY);
-
-		for (let step: number = 1; step < Math.abs(newX - oldX); step++) {
-			let positionToCheck: [number, number] = [oldX + (step * xIncrement), oldY + (step * yIncrement)];
+		for (let step: number = 1; step < Math.abs(move.newX - move.oldX); step++) {
+			let positionToCheck: [number, number] = [move.oldX + (step * xIncrement), move.oldY + (step * yIncrement)];
 
 			let pieceAtPosition = this.boardStateService.getPieceOnSquare(positionToCheck[0], positionToCheck[1]);
 			if (pieceAtPosition != null) return true;
