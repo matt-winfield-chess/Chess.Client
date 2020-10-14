@@ -72,6 +72,24 @@ export class BoardStateService {
 		return legalMoves;
 	}
 
+	public isKingInCheck(kingColor: PlayerColor): boolean {
+		let flattenedBoard = this.piecePositions.reduce((prev, curr) => prev.concat(curr));
+		let opponentColor: PlayerColor = kingColor == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
+		let king: Piece = flattenedBoard.find(p => p.pieceType == PieceType.King && p.color == kingColor);
+
+		for (let piece of flattenedBoard) {
+			if (piece.color != opponentColor) continue;
+
+			let legalMoves = this.getLegalMoves(piece);
+			for (let move of legalMoves) {
+				if (move.newX == king.x && move.newY == king.y) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private ValidateMove(piece: Piece, newX: number, newY: number): MoveValidationResult {
 		if (piece.x == newX && piece.y == newY) return new MoveValidationResult({ isValid: false });
 		if (piece.color != this.boardState.activeColor) return new MoveValidationResult({ isValid: false });
