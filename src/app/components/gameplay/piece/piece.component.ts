@@ -1,8 +1,10 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, Input, ViewChild } from '@angular/core';
 import { Piece } from 'src/app/classes/piece';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
 import { BoardStateService } from 'src/app/services/board-state.service';
+import { MovementStrategy } from '../../../classes/movement-strategies/movement-strategy'
+import { MovementStrategyFactoryService } from '../../../services/factories/movement-strategy-factory.service'
 
 @Component({
 	selector: 'app-piece',
@@ -22,6 +24,8 @@ export class PieceComponent implements AfterViewInit {
 	private boundingRect: DOMRect;
 	private boardBoundingRect: DOMRect;
 
+	private movementStrategies: MovementStrategy[];
+
 	private colorClassMap: Map<PlayerColor, string> = new Map<PlayerColor, string>([
 		[PlayerColor.White, "white"],
 		[PlayerColor.Black, "black"]
@@ -36,11 +40,13 @@ export class PieceComponent implements AfterViewInit {
 		[PieceType.Knight, "knight"]
 	])
 
-	constructor(@Inject(BoardStateService) private boardStateService: BoardStateService) { }
+	constructor(@Inject(BoardStateService) private boardStateService: BoardStateService,
+		@Inject(MovementStrategyFactoryService) private movementStrategyFactory: MovementStrategyFactoryService) { }
 
 	public ngAfterViewInit(): void {
 		this.updateDimensions();
 		this.configureContextMenu();
+		this.movementStrategies = this.movementStrategyFactory.createStrategies(this.piece.pieceType);
 	}
 
 	public onBoardSizeChange(): void {
@@ -115,7 +121,9 @@ export class PieceComponent implements AfterViewInit {
 
 		if (this.isValidCoordinate(newXCoord, newYCoord)) {
 			let realNewPosition = this.convertDisplayPosition(newXCoord, newYCoord);
-			this.boardStateService.notifyMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1]);
+			if (this.isLegalMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1])) {
+				this.boardStateService.notifyMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1]);
+			}
 		}
 	}
 
@@ -125,6 +133,17 @@ export class PieceComponent implements AfterViewInit {
 			return [7 - x, 7 - y];
 		}
 		return [x, y];
+	}
+
+	private isLegalMove(oldX: number, oldY: number, newX: number, newY: number): boolean {
+		if (oldX == newX && oldY == newY) return false;
+
+		for (let movementStrategy of this.movementStrategies) {
+			if (movementStrategy.isValidMove(oldX, oldY, newX, newY, this.piece.color)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private isValidCoordinate(x: number, y: number): boolean {

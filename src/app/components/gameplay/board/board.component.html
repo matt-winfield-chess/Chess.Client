@@ -8,7 +8,7 @@
 	</chess-tiles>
 
 	<chess-pieces>
-		<app-piece #dynamicPiece *ngFor="let piece of boardStateService.boardState.pieces" [piece]="piece"
+		<app-piece #dynamicPiece *ngFor="let piece of boardStateService.getBoardState().pieces" [piece]="piece"
 			[flipBoard]="flipBoard" [board]="board">
 		</app-piece>
 	</chess-pieces>

@@ -9,7 +9,7 @@ import { BoardStateService } from '../../../services/board-state.service'
 	templateUrl: './board.component.html',
 	styleUrls: ['./board.component.scss']
 })
-export class BoardComponent implements OnInit, AfterViewInit {
+export class BoardComponent implements AfterViewInit {
 	public flipBoard: boolean = false;
 
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
@@ -17,10 +17,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
 	constructor(@Inject(BoardStateService) public boardStateService: BoardStateService,
 		@Inject(FenParserService) private fenParserService: FenParserService) { }
-
-	public ngOnInit(): void {
-		this.boardStateService.boardState = this.fenParserService.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
-	}
 
 	public ngAfterViewInit(): void {
 		this.updateBoardDimensions();
