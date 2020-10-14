@@ -77,14 +77,24 @@ export class BoardStateService {
 		return outputResult;
 	}
 
-	private applyMove(move: Move,) {
+	private applyMove(move: Move) {
 		var piece = this.piecePositions[move.oldY][move.oldX];
+
+		this.removeCapturedPiece(move);
 
 		piece.x = move.newX;
 		piece.y = move.newY;
 
 		this.piecePositions[move.oldY][move.oldX] = null;
 		this.piecePositions[move.newY][move.newX] = piece;
+	}
+
+	private removeCapturedPiece(move: Move) {
+		let capturedPiece = this.piecePositions[move.newY][move.newX];
+		if (capturedPiece != null) {
+			let index = this.boardState.pieces.indexOf(capturedPiece);
+			this.boardState.pieces.splice(index, 1);
+		}
 	}
 
 	private updateCastlingRights(piece: Piece, oldX: number, oldY: number): void {
