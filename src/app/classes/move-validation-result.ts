@@ -9,4 +9,6 @@ export class MoveValidationResult {
 	public isValid: boolean;
 	public isCastleMove: boolean;
 	public castleRookMove: Move;
+	public isEnPassantTarget: boolean;
+	public isEnPassantCapture: boolean;
 }

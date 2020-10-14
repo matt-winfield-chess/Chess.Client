@@ -65,13 +65,7 @@ export class BoardStateService {
 			}, piece.color);
 
 			if (movementValidationResult.isValid) {
-				outputResult.isValid = true;
-				outputResult.move = movementValidationResult.move;
-
-				if (movementValidationResult.isCastleMove) {
-					outputResult.isCastleMove = true;
-					outputResult.castleRookMove = movementValidationResult.castleRookMove;
-				}
+				outputResult = this.handleSuccessfulMovementValidationResult(movementValidationResult, piece);
 			}
 		}
 		return outputResult;
@@ -95,6 +89,40 @@ export class BoardStateService {
 			let index = this.boardState.pieces.indexOf(capturedPiece);
 			this.boardState.pieces.splice(index, 1);
 		}
+	}
+
+	private handleSuccessfulMovementValidationResult(movementValidationResult: MoveValidationResult, piece: Piece): MoveValidationResult {
+		let move = movementValidationResult.move;
+		let movementDirection = piece.color == PlayerColor.White ? -1 : 1;
+
+		let outputResult = new MoveValidationResult({
+			isValid: true,
+			move: move
+		});
+
+		if (movementValidationResult.isCastleMove) {
+			outputResult.isCastleMove = true;
+			outputResult.castleRookMove = movementValidationResult.castleRookMove;
+		}
+
+		if (movementValidationResult.isEnPassantCapture) {
+			let capturedPiece: Piece = this.getPieceOnSquare(this.boardState.enPassantTargetSquare[0], this.boardState.enPassantTargetSquare[1] - movementDirection);
+			this.removeEnPassantCapturedPiece(capturedPiece);
+		}
+
+		if (movementValidationResult.isEnPassantTarget) {
+			this.boardState.enPassantTargetSquare = [move.newX, (move.oldY + move.newY) / 2]
+		} else {
+			this.boardState.enPassantTargetSquare = null;
+		}
+
+		return outputResult;
+	}
+
+	private removeEnPassantCapturedPiece(piece: Piece) {
+		this.piecePositions[piece.y][piece.x] = null;
+		let index = this.boardState.pieces.indexOf(piece);
+		this.boardState.pieces.splice(index, 1);
 	}
 
 	private updateCastlingRights(piece: Piece, oldX: number, oldY: number): void {
