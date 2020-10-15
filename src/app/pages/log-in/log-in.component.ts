@@ -33,6 +33,10 @@ export class LogInComponent {
 			return;
 		}
 
-		this.toastr.error(loginResult.errors.join(', '), 'Login failed!');
+		if (loginResult.errors) {
+			this.toastr.error(loginResult.errors.join(', '), 'Login failed!');
+		} else {
+			this.toastr.error('Failed to connect', 'Login failed!');
+		}
 	}
 }

@@ -36,8 +36,10 @@ export class CreateAccountPageComponent {
 			if (accountCreationResult.isSuccess) {
 				this.router.navigate(['/']);
 				this.toastr.success('Account created successfully!');
-			} else {
+			} else if (accountCreationResult.errors) {
 				this.toastr.error(accountCreationResult.errors.join(', '), 'Account creation failed!');
+			} else {
+				this.toastr.error('Failed to connect', 'Account creation failed!');
 			}
 		} catch (e) {
 			this.toastr.error(e.message, 'Account creation failed!');
