@@ -1,24 +1,30 @@
-@import 'app/styles/themes/themes.scss';
-@import 'app/styles/themes/themify.scss';
+@import "app/styles/themes/themes.scss";
+@import "app/styles/themes/themify.scss";
+@import url("https://use.typekit.net/ofr3zca.css");
 
-html, body, app-root {
+html,
+body,
+app-root {
 	width: 100%;
 	height: 100%;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
-	font-family: 'Open Sans', sans-serif;
+	font-family: "atrament-web", sans-serif;
+	font-size: 22px;
 }
 
 button {
-	font-family: 'Open Sans', sans-serif;
+	font-family: "atrament-web", sans-serif;
+	font-size: 20px;
 }
 
 app-root {
 	display: block;
 }
 
-#app-container, #background {
+#app-container,
+#background {
 	width: 100%;
 	height: 100%;
 }
