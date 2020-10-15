@@ -17,6 +17,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { LogInComponent } from './pages/log-in/log-in.component';
+import { PawnPromotionComponent } from './components/gameplay/pawn-promotion/pawn-promotion.component';
 
 export function load(config: ConfigService) {
 	return () => config.load();
@@ -32,6 +33,7 @@ export function load(config: ConfigService) {
 		HomePageComponent,
 		GamePageComponent,
 		LogInComponent,
+		PawnPromotionComponent,
 	],
 	imports: [
 		CommonModule,
