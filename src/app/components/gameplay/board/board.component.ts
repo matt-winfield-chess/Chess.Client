@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { BoardState } from 'src/app/classes/board-state';
-import { FenParserService } from '../../../services/fen-parser.service';
 import { PieceComponent } from '../piece/piece.component';
 import { BoardStateService } from '../../../services/board-state.service'
+import { Piece } from 'src/app/classes/piece';
+import { Coordinate } from '../../../classes/coordinate';
+import { Move } from 'src/app/classes/move';
 
 @Component({
 	selector: 'app-board',
@@ -11,16 +12,17 @@ import { BoardStateService } from '../../../services/board-state.service'
 })
 export class BoardComponent implements AfterViewInit {
 	public flipBoard: boolean = false;
+	public legalMoveHighlightedSquares: Coordinate[] = []
 
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
 	@ViewChildren('dynamicPiece') private dynamicPieces: QueryList<PieceComponent>;
 
-	constructor(@Inject(BoardStateService) public boardStateService: BoardStateService,
-		@Inject(FenParserService) private fenParserService: FenParserService) { }
+	constructor(@Inject(BoardStateService) public boardStateService: BoardStateService) { }
 
 	public ngAfterViewInit(): void {
 		this.updateBoardDimensions();
 		this.configureContextMenu();
+		this.boardStateService.subscribeToMoves((move: Move) => this.onMove(move));
 	}
 
 	public range(count: number): Array<number> {
@@ -35,10 +37,29 @@ export class BoardComponent implements AfterViewInit {
 		return (x + y) % 2 == 1;
 	}
 
+	public isHighlighted(x: number, y: number): boolean {
+		return this.legalMoveHighlightedSquares.some(position => position.x == x && position.y == y);
+	}
+
+	public onPieceSelected(piece: Piece) {
+		this.legalMoveHighlightedSquares = [];
+		let legalMoves = this.boardStateService.getLegalMoves(piece);
+		for (let move of legalMoves) {
+			this.legalMoveHighlightedSquares.push({
+				x: move.newX,
+				y: move.newY
+			});
+		}
+	}
+
 	// Fired when viewport is resized
 	@HostListener('window:resize', ['$event'])
 	public onResize(event: Event): void {
 		this.updateBoardDimensions();
+	}
+
+	private onMove(move: Move) {
+		this.legalMoveHighlightedSquares = [];
 	}
 
 	private updateBoardDimensions() {
