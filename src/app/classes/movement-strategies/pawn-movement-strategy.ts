@@ -47,7 +47,7 @@ export class PawnMovementStrategy extends MovementStrategy {
 		let distance = move.newY - move.oldY;
 		if (Math.sign(distance) != correctDirection) return false;
 
-		if (this.isForwardMovementBlocked(move.oldX, move.oldY, maxDistance, correctDirection)) return false;
+		if (this.isForwardMovementBlocked(move.oldX, move.oldY, distance, correctDirection)) return false;
 
 		return Math.abs(distance) > 0 && Math.abs(distance) <= maxDistance;
 	}
@@ -63,8 +63,8 @@ export class PawnMovementStrategy extends MovementStrategy {
 		return oldY == 1;
 	}
 
-	private isForwardMovementBlocked(oldX: number, oldY: number, maxDistance: number, correctDirection: number): boolean {
-		for (let i = 1; i <= maxDistance; i++) {
+	private isForwardMovementBlocked(oldX: number, oldY: number, distance: number, correctDirection: number): boolean {
+		for (let i = 1; i <= distance; i++) {
 			let piece = this.boardStateService.getPieceOnSquare(oldX, oldY + i * correctDirection);
 			if (piece != null) return true;
 		}
