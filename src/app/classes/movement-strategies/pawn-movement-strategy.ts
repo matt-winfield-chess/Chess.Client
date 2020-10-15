@@ -7,13 +7,14 @@ export class PawnMovementStrategy extends MovementStrategy {
 	public isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
 		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
 		if (!this.isMovingInCorrectDirection(move.oldY, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
-		if (this.isEnPassantCapture(move, playerColor)) return new MoveValidationResult({ isValid: true, move: move, isEnPassantCapture: true });
-		if (this.isCapture(move, playerColor)) return new MoveValidationResult({ isValid: true, move: move });
+		if (this.isEnPassantCapture(move, playerColor)) return new MoveValidationResult({ isValid: true, move: move, isEnPassantCapture: true, isPromotion: this.isPromotion(move) });
+		if (this.isCapture(move, playerColor)) return new MoveValidationResult({ isValid: true, move: move, isPromotion: this.isPromotion(move) });
 
 		return new MoveValidationResult({
 			isValid: this.isValidMoveForward(move, playerColor),
 			move: move,
-			isEnPassantTarget: this.isEnPassantTarget(move)
+			isEnPassantTarget: this.isEnPassantTarget(move),
+			isPromotion: this.isPromotion(move)
 		});
 	}
 
@@ -72,5 +73,9 @@ export class PawnMovementStrategy extends MovementStrategy {
 
 	private isEnPassantTarget(move: Move): boolean {
 		return Math.abs(move.newY - move.oldY) == 2;
+	}
+
+	private isPromotion(move: Move): boolean {
+		return move.newY == 0 || move.newY == 7;
 	}
 }

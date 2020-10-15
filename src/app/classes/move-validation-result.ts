@@ -11,4 +11,5 @@ export class MoveValidationResult {
 	public castleRookMove: Move;
 	public isEnPassantTarget: boolean;
 	public isEnPassantCapture: boolean;
+	public isPromotion: boolean;
 }
