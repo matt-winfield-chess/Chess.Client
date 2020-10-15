@@ -1,6 +1,7 @@
 import { flatten } from '@angular/compiler';
-import { Inject, Injectable } from '@angular/core';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { ToastContainerModule } from 'ngx-toastr';
+import { Observable } from 'rxjs';
 import { BoardState } from '../classes/board-state';
 import { Move } from '../classes/move';
 import { MoveValidationResult } from '../classes/move-validation-result';
@@ -20,6 +21,8 @@ export class BoardStateService {
 	private previousBoardState: BoardState = new BoardState(); // Points between last move, for revertMove()
 	private previousPiecePositions: Piece[][] = [];
 
+	private moveSubscribers: ((move: Move) => void)[] = [];
+
 	constructor(@Inject(FenParserService) private fenParserService: FenParserService) {
 		this.initialiseBoardState(this.fenParserService.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'));
 	}
@@ -35,6 +38,10 @@ export class BoardStateService {
 
 	public getBoardState(): BoardState {
 		return this.boardState;
+	}
+
+	public subscribeToMoves(onMove: (move: Move) => void): void {
+		this.moveSubscribers.push(onMove);
 	}
 
 	public notifyMove(oldX: number, oldY: number, newX: number, newY: number): void {
@@ -59,10 +66,11 @@ export class BoardStateService {
 
 	public getLegalMoves(piece: Piece): Move[] {
 		let legalMoves: Move[] = []
+		if (piece.color != this.boardState.activeColor) return legalMoves;
 
 		for (let x: number = 0; x < 8; x++) {
 			for (let y: number = 0; y < 8; y++) {
-				let validationResult = this.ValidateMove(piece, x, y, true, false);
+				let validationResult = this.ValidateMove(piece, x, y, true);
 				if (validationResult.isValid) {
 					legalMoves.push({
 						oldX: piece.x,
@@ -95,6 +103,87 @@ export class BoardStateService {
 		if (this.isKingAttackedByKing(kingX, kingY, opponentColor, board)) return true;
 
 		return false;
+	}
+
+	private ValidateMove(piece: Piece, newX: number, newY: number, ignoreColor: boolean = false): MoveValidationResult {
+		if (piece.x == newX && piece.y == newY) return new MoveValidationResult({ isValid: false });
+		if (piece.color != this.boardState.activeColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
+
+		for (let movementStrategy of piece.movementStrategies) {
+			let movementValidationResult = movementStrategy.isValidMove({
+				oldX: piece.x,
+				oldY: piece.y,
+				newX: newX,
+				newY: newY
+			}, piece.color);
+
+			if (movementValidationResult.isValid) {
+				let testBoard = this.duplicateBoard();
+				this.applyTestMove(movementValidationResult.move, testBoard);
+
+				if (this.isKingInCheck(piece.color, testBoard)) {
+					movementValidationResult.isValid = false;
+				} else {
+					this.notifyMoveSubscribersOfMove(movementValidationResult.move);
+				}
+				return movementValidationResult;
+			}
+		}
+		return new MoveValidationResult({ isValid: false });
+	}
+
+	private applyMove(move: Move) {
+		var piece = this.piecePositions[move.oldY][move.oldX];
+
+		this.removeCapturedPiece(move);
+
+		piece.x = move.newX;
+		piece.y = move.newY;
+
+		this.piecePositions[move.oldY][move.oldX] = null;
+		this.piecePositions[move.newY][move.newX] = piece;
+	}
+
+	private applyTestMove(move: Move, board: Piece[][]) {
+		var piece = board[move.oldY][move.oldX];
+
+		board[move.oldY][move.oldX] = null;
+		board[move.newY][move.newX] = piece;
+	}
+
+	private removeCapturedPiece(move: Move) {
+		let capturedPiece = this.piecePositions[move.newY][move.newX];
+		if (capturedPiece != null) {
+			let index = this.boardState.pieces.indexOf(capturedPiece);
+			this.boardState.pieces.splice(index, 1);
+		}
+	}
+
+	private handleEnPassant(piece: Piece, movementValidationResult: MoveValidationResult) {
+		let movementDirection = piece.color == PlayerColor.White ? -1 : 1;
+
+		if (movementValidationResult.isEnPassantCapture) {
+			let capturedPiece: Piece = this.getPieceOnSquare(this.boardState.enPassantTargetSquare[0], this.boardState.enPassantTargetSquare[1] - movementDirection);
+			this.removeEnPassantCapturedPiece(capturedPiece);
+		}
+
+		if (movementValidationResult.isEnPassantTarget) {
+			this.boardState.enPassantTargetSquare = [movementValidationResult.move.newX, (piece.y + movementValidationResult.move.newY) / 2]
+		} else {
+			this.boardState.enPassantTargetSquare = null;
+		}
+	}
+
+	private removeEnPassantCapturedPiece(piece: Piece) {
+		this.piecePositions[piece.y][piece.x] = null;
+		let index = this.boardState.pieces.indexOf(piece);
+		this.boardState.pieces.splice(index, 1);
+	}
+
+	private notifyMoveSubscribersOfMove(move: Move) {
+		for (let moveSubscriber of this.moveSubscribers) {
+			moveSubscriber(move);
+		}
 	}
 
 	private isKingAttackedInStraightLine(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
@@ -191,81 +280,6 @@ export class BoardStateService {
 			}
 		}
 		return false;
-	}
-
-	private ValidateMove(piece: Piece, newX: number, newY: number, ignoreColor: boolean = false, validateChecks: boolean = true): MoveValidationResult {
-		if (piece.x == newX && piece.y == newY) return new MoveValidationResult({ isValid: false });
-		if (piece.color != this.boardState.activeColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
-
-		for (let movementStrategy of piece.movementStrategies) {
-			let movementValidationResult = movementStrategy.isValidMove({
-				oldX: piece.x,
-				oldY: piece.y,
-				newX: newX,
-				newY: newY
-			}, piece.color);
-
-			if (movementValidationResult.isValid) {
-				if (validateChecks) {
-					let testBoard = this.duplicateBoard();
-					this.applyTestMove(movementValidationResult.move, testBoard);
-
-					if (this.isKingInCheck(piece.color, testBoard)) {
-						movementValidationResult.isValid = false;
-					}
-				}
-				return movementValidationResult;
-			}
-		}
-		return new MoveValidationResult({ isValid: false });
-	}
-
-	private applyMove(move: Move) {
-		var piece = this.piecePositions[move.oldY][move.oldX];
-
-		this.removeCapturedPiece(move);
-
-		piece.x = move.newX;
-		piece.y = move.newY;
-
-		this.piecePositions[move.oldY][move.oldX] = null;
-		this.piecePositions[move.newY][move.newX] = piece;
-	}
-
-	private applyTestMove(move: Move, board: Piece[][]) {
-		var piece = board[move.oldY][move.oldX];
-
-		board[move.oldY][move.oldX] = null;
-		board[move.newY][move.newX] = piece;
-	}
-
-	private removeCapturedPiece(move: Move) {
-		let capturedPiece = this.piecePositions[move.newY][move.newX];
-		if (capturedPiece != null) {
-			let index = this.boardState.pieces.indexOf(capturedPiece);
-			this.boardState.pieces.splice(index, 1);
-		}
-	}
-
-	private handleEnPassant(piece: Piece, movementValidationResult: MoveValidationResult) {
-		let movementDirection = piece.color == PlayerColor.White ? -1 : 1;
-
-		if (movementValidationResult.isEnPassantCapture) {
-			let capturedPiece: Piece = this.getPieceOnSquare(this.boardState.enPassantTargetSquare[0], this.boardState.enPassantTargetSquare[1] - movementDirection);
-			this.removeEnPassantCapturedPiece(capturedPiece);
-		}
-
-		if (movementValidationResult.isEnPassantTarget) {
-			this.boardState.enPassantTargetSquare = [movementValidationResult.move.newX, (piece.y + movementValidationResult.move.newY) / 2]
-		} else {
-			this.boardState.enPassantTargetSquare = null;
-		}
-	}
-
-	private removeEnPassantCapturedPiece(piece: Piece) {
-		this.piecePositions[piece.y][piece.x] = null;
-		let index = this.boardState.pieces.indexOf(piece);
-		this.boardState.pieces.splice(index, 1);
 	}
 
 	private duplicateBoard(): Piece[][] {

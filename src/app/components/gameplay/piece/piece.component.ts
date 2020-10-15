@@ -1,9 +1,8 @@
-import { AfterViewInit, Component, ElementRef, Inject, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, Output, ViewChild } from '@angular/core';
 import { Piece } from 'src/app/classes/piece';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
 import { BoardStateService } from 'src/app/services/board-state.service';
-import { MovementStrategy } from '../../../classes/movement-strategies/movement-strategy'
 import { MovementStrategyFactoryService } from '../../../services/factories/movement-strategy-factory.service'
 
 @Component({
@@ -15,6 +14,8 @@ export class PieceComponent implements AfterViewInit {
 	@Input() piece: Piece;
 	@Input() flipBoard: boolean;
 	@Input() board: HTMLElement;
+
+	@Output() onPieceSelected = new EventEmitter<Piece>();
 
 	@ViewChild('piece') pieceElement: ElementRef<HTMLElement>;
 
@@ -77,6 +78,7 @@ export class PieceComponent implements AfterViewInit {
 		this.draggingYPosition = event.clientY;
 
 		this.isDragging = true;
+		this.onPieceSelected.emit(this.piece);
 
 		document.onmouseup = (event) => this.stopDragging(event)
 		document.onmousemove = (event) => this.dragPiece(event)

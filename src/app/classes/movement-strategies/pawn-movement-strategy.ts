@@ -7,7 +7,7 @@ export class PawnMovementStrategy extends MovementStrategy {
 	public isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
 		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
 		if (!this.isMovingInCorrectDirection(move.oldY, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move: move });
-		if (this.isEnPassantCapture(move)) return new MoveValidationResult({ isValid: true, move: move, isEnPassantCapture: true });
+		if (this.isEnPassantCapture(move, playerColor)) return new MoveValidationResult({ isValid: true, move: move, isEnPassantCapture: true });
 		if (this.isCapture(move, playerColor)) return new MoveValidationResult({ isValid: true, move: move });
 
 		return new MoveValidationResult({
@@ -30,9 +30,11 @@ export class PawnMovementStrategy extends MovementStrategy {
 		return capturedPiece.color != playerColor;
 	}
 
-	private isEnPassantCapture(move: Move): boolean {
+	private isEnPassantCapture(move: Move, playerColor: PlayerColor): boolean {
 		let enPassantTargetSquare = this.boardStateService.getBoardState().enPassantTargetSquare;
 		if (!enPassantTargetSquare) return false;
+		if (enPassantTargetSquare[0] != move.oldX - 1 && enPassantTargetSquare[0] != move.oldX + 1) return false;
+		if (Math.abs(move.newY - move.oldY) != 1) return false;
 		return enPassantTargetSquare[0] == move.newX && enPassantTargetSquare[1] == move.newY;
 	}
 

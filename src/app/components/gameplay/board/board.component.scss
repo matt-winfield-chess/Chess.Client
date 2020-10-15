@@ -1,4 +1,4 @@
-@import 'mixins/responsive-sizes.scss';
+@import "mixins/responsive-sizes.scss";
 
 chess-board {
 	display: block;
@@ -23,9 +23,21 @@ chess-tile {
 	width: 12.5%;
 	height: 12.5%;
 	cursor: pointer;
-	background-color: #F0D9B5;
+	background-color: #f0d9b5;
 
 	&.dark {
-		background-color: #B58863;
+		background-color: #b58863;
+	}
+
+	&.highlighted::after {
+		background-color: rgb(105, 158, 62);
+		opacity: 0.6;
+		content: " ";
+		display: block;
+		position: absolute;
+		height: 100%;
+		top: 0;
+		left: 0;
+		right: 0;
 	}
 }
