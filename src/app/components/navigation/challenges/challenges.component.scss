@@ -1,0 +1,34 @@
+@import "../../../styles/themes/themify.scss";
+@import "../../../styles/themes/themes.scss";
+
+.challenges {
+	position: absolute;
+	top: 100px;
+	right: 50px;
+	width: 200px;
+}
+
+.challenge {
+	border-radius: 5px;
+	width: 100%;
+	height: 100px;
+
+	@include themify($themes) {
+		background-color: themed("notificationBackgroundColor");
+	}
+}
+
+.challenge-info {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	.username {
+		font-size: 26px;
+		margin: 5px;
+	}
+
+	.vs {
+		font-size: 20px;
+	}
+}
