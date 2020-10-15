@@ -1,6 +1,7 @@
 {
 	"HOST_API": "https://localhost:44389",
 	"API_ENDPOINTS": {
+		"CHALLENGE_HUB": "/ChallengeHub",
 		"USERS": "/api/users",
 		"AUTHENTICATE": "/api/authentication/authenticate"
 	}

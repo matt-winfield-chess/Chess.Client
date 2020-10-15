@@ -18,6 +18,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { LogInComponent } from './pages/log-in/log-in.component';
 import { PawnPromotionComponent } from './components/gameplay/pawn-promotion/pawn-promotion.component';
+import { ChallengesComponent } from './components/navigation/challenges/challenges.component';
 
 export function load(config: ConfigService) {
 	return () => config.load();
@@ -34,6 +35,7 @@ export function load(config: ConfigService) {
 		GamePageComponent,
 		LogInComponent,
 		PawnPromotionComponent,
+		ChallengesComponent,
 	],
 	imports: [
 		CommonModule,
