@@ -77,20 +77,116 @@ export class BoardStateService {
 		return legalMoves;
 	}
 
-	public isKingInCheck(kingColor: PlayerColor): boolean {
-		let flattenedBoard = this.piecePositions.reduce((prev, curr) => prev.concat(curr));
+	public isKingInCheck(kingColor: PlayerColor, board: Piece[][] = this.piecePositions): boolean {
 		let opponentColor: PlayerColor = kingColor == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
 
-		let king: Piece = flattenedBoard.find(p => p?.pieceType == PieceType.King && p?.color == kingColor);
+		let isKingPredicate = (piece: Piece) => piece?.pieceType == PieceType.King && piece?.color == kingColor;
 
-		for (let piece of flattenedBoard) {
-			if (piece == null) continue;
-			if (piece.color != opponentColor) continue;
+		let kingY = board.findIndex(rank => rank.some(isKingPredicate));
+		if (kingY === undefined) return false;
 
-			let legalMoves = this.getLegalMoves(piece);
-			for (let move of legalMoves) {
-				if (move.newX == king.x && move.newY == king.y) {
-					return true;
+		let kingX = board[kingY].findIndex(isKingPredicate);
+		if (kingX === undefined) return false;
+
+		if (this.isKingAttackedInStraightLine(kingX, kingY, opponentColor, board)) return true;
+		if (this.isKingAttackedDiagonally(kingX, kingY, opponentColor, board)) return true;
+		if (this.isKingAttackedByPawn(kingX, kingY, opponentColor, board)) return true;
+		if (this.isKingAttackedByKnight(kingX, kingY, opponentColor, board)) return true;
+		if (this.isKingAttackedByKing(kingX, kingY, opponentColor, board)) return true;
+
+		return false;
+	}
+
+	private isKingAttackedInStraightLine(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+		let validPieces = [PieceType.Queen, PieceType.Rook];
+		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 1, 0, validPieces)) return true;
+		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, -1, 0, validPieces)) return true;
+		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 0, 1, validPieces)) return true;
+		return this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 0, -1, validPieces)
+	}
+
+	private isKingAttackedDiagonally(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+		let validPieces = [PieceType.Queen, PieceType.Bishop];
+
+		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 1, 1, validPieces)) return true;
+		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 1, -1, validPieces)) return true;
+		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, -1, 1, validPieces)) return true;
+		return this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, -1, -1, validPieces);
+	}
+
+	private isKingAttackedByLineOfSightPiece(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][],
+		xIncrement: number, yIncrement: number, validPieces: PieceType[]): boolean {
+		let x = kingX + xIncrement;
+		let y = kingY + yIncrement;
+
+		while (x >= 0 && x < 8 && y >= 0 && y < 8) {
+			let piece = board[y][x];
+			if (piece != null) {
+				if (piece.color == opponentColor) {
+					if (validPieces.some(type => piece.pieceType == type)) {
+						return true;
+					}
+					break;
+				} else {
+					break;
+				}
+			}
+			x += xIncrement;
+			y += yIncrement;
+		}
+		return false;
+	}
+
+	private isKingAttackedByPawn(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+		let opponentMovementDirection = opponentColor == PlayerColor.White ? -1 : 1;
+
+		if (kingY - opponentMovementDirection < 0) return false;
+
+		if (kingX - 1 >= 0) {
+			let candidateAttacker1 = board[kingY - opponentMovementDirection][kingX - 1];
+			if (candidateAttacker1 != null && candidateAttacker1.pieceType == PieceType.Pawn && candidateAttacker1.color == opponentColor) {
+				return true;
+			}
+		}
+
+		if (kingX + 1 < 8) {
+			let candidateAttacker2 = board[kingY - opponentMovementDirection][kingX + 1];
+			if (candidateAttacker2 != null && candidateAttacker2.pieceType == PieceType.Pawn && candidateAttacker2.color == opponentColor) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private isKingAttackedByKnight(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+		if (this.doesSquareHaveOpponentKnight(kingX + 2, kingY + 1, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(kingX + 2, kingY - 1, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(kingX - 2, kingY + 1, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(kingX - 2, kingY - 1, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(kingX + 1, kingY + 2, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(kingX + 1, kingY - 2, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(kingX - 1, kingY + 2, opponentColor, board)) return true;
+		return this.doesSquareHaveOpponentKnight(kingX - 1, kingY - 2, opponentColor, board);
+	}
+
+	private doesSquareHaveOpponentKnight(x: number, y: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+		if (x < 0 || x >= 8 || y < 0 || y >= 8) return false;
+		let piece = board[y][x];
+		if (piece == null) return false;
+		return piece.pieceType == PieceType.Knight && piece.color == opponentColor;
+	}
+
+	private isKingAttackedByKing(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+		for (let x = kingX - 1; x <= kingX + 1; x++) {
+			for (let y = kingY - 1; y <= kingY + 1; y++) {
+				if (x < 0 || x >= 8 || y < 0 || y >= 8) continue;
+				if (x == kingX && y == kingY) continue;
+				let piece = board[y][x];
+				if (piece != null) {
+					if (piece.pieceType == PieceType.King && piece.color == opponentColor) {
+						return true;
+					}
 				}
 			}
 		}
@@ -111,13 +207,12 @@ export class BoardStateService {
 
 			if (movementValidationResult.isValid) {
 				if (validateChecks) {
-					this.applyMove(movementValidationResult.move, true);
+					let testBoard = this.duplicateBoard();
+					this.applyTestMove(movementValidationResult.move, testBoard);
 
-					if (this.isKingInCheck(piece.color)) {
+					if (this.isKingInCheck(piece.color, testBoard)) {
 						movementValidationResult.isValid = false;
 					}
-
-					this.revertMove(movementValidationResult.move);
 				}
 				return movementValidationResult;
 			}
@@ -125,14 +220,10 @@ export class BoardStateService {
 		return new MoveValidationResult({ isValid: false });
 	}
 
-	private applyMove(move: Move, testMove: boolean = false) {
-		this.setRevertPoint();
-
+	private applyMove(move: Move) {
 		var piece = this.piecePositions[move.oldY][move.oldX];
 
-		if (!testMove) {
-			this.removeCapturedPiece(move);
-		}
+		this.removeCapturedPiece(move);
 
 		piece.x = move.newX;
 		piece.y = move.newY;
@@ -141,13 +232,11 @@ export class BoardStateService {
 		this.piecePositions[move.newY][move.newX] = piece;
 	}
 
-	private revertMove(move: Move) {
-		let piece = this.getPieceOnSquare(move.newX, move.newY);
-		piece.x = move.oldX;
-		piece.y = move.oldY;
+	private applyTestMove(move: Move, board: Piece[][]) {
+		var piece = board[move.oldY][move.oldX];
 
-		this.boardState = this.previousBoardState;
-		this.piecePositions = this.previousPiecePositions;
+		board[move.oldY][move.oldX] = null;
+		board[move.newY][move.newX] = piece;
 	}
 
 	private removeCapturedPiece(move: Move) {
@@ -179,16 +268,15 @@ export class BoardStateService {
 		this.boardState.pieces.splice(index, 1);
 	}
 
-	private setRevertPoint(): void {
-		Object.assign(this.previousBoardState, this.boardState);
-
-		this.previousPiecePositions = []
+	private duplicateBoard(): Piece[][] {
+		let output: Piece[][] = []
 		for (let y: number = 0; y < 8; y++) {
-			this.previousPiecePositions.push([])
+			output.push([])
 			for (let x: number = 0; x < 8; x++) {
-				this.previousPiecePositions[y].push(this.piecePositions[y][x]);
+				output[y].push(this.piecePositions[y][x]);
 			}
 		}
+		return output;
 	}
 
 	private updateCastlingRights(piece: Piece, oldX: number, oldY: number): void {
