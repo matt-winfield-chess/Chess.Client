@@ -39,4 +39,25 @@ app-root {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+
+	.modal-content {
+		position: absolute;
+		border-radius: 10px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		.title {
+			font-weight: bold;
+			position: relative;
+			top: -10px;
+		}
+
+		.close {
+			cursor: pointer;
+			position: absolute;
+			top: 7px;
+			right: 10px;
+		}
+	}
 }

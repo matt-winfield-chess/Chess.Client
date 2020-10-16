@@ -16,7 +16,7 @@ export class GameSettingsModalComponent {
 	constructor(@Inject(LoginStateService) private loginStateService: LoginStateService,
 		@Inject(ToastrService) private toastr: ToastrService) { }
 
-	public close() {
+	public close(): void {
 		this.onClose.emit();
 	}
 
