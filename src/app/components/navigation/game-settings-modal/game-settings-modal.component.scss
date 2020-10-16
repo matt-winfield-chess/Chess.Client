@@ -1,0 +1,14 @@
+@import "../../../styles/themes/themify.scss";
+@import "../../../styles/themes/themes.scss";
+
+.modal-content {
+	padding: 50px;
+
+	@include themify($themes) {
+		background-color: themed("modalBackgroundColor");
+	}
+}
+
+.options {
+	margin: 10px;
+}

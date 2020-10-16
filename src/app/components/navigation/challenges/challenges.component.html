@@ -1,0 +1,13 @@
+<div class="challenges">
+	<div *ngFor="let challenge of activeChallenges" class="challenge">
+		<div class="challenge-info">
+			<div class="username challenger">{{challenge.challenger.username}}</div>
+			<span class="vs">vs</span>
+			<div class="username recipient">{{challenge.recipient.username}}</div>
+		</div>
+		<div class="challenge-buttons">
+			<button class="accept button" (click)="accept(challenge)">Accept</button>
+			<button class="decline button" (click)="decline(challenge)">Decline</button>
+		</div>
+	</div>
+</div>

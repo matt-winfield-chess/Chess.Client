@@ -1,2 +1,6 @@
-<p>Home page</p>
-<button routerLink="game">Play</button>
+<div class="page-container">
+	<h2 class="title">Home</h2>
+	<button (click)="openGameSettingsModal()" class="play button">Play</button>
+</div>
+<app-game-settings-modal [hidden]="!shouldShowGameSettingsModal" (onClose)="closeGameSettingsModal()">
+</app-game-settings-modal>

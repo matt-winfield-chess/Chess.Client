@@ -8,6 +8,8 @@ $themes: (
 		navbarBorders: 1px solid black,
 		navbarButtonBackgroundColor: rgb(175, 175, 175),
 		navbarButtonHoverColor: rgb(190, 190, 190),
+		notificationBackgroundColor: rgb(216, 216, 216),
+		modalBackgroundColor: rgb(255, 255, 255),
 	),
 	dark: (
 		pageBackgroundColor: #181a1b,
@@ -16,5 +18,7 @@ $themes: (
 		navbarBorders: 1px solid white,
 		navbarButtonBackgroundColor: #2a2c2e,
 		navbarButtonHoverColor: #36393b,
+		notificationBackgroundColor: #323638,
+		modalBackgroundColor: rgb(39, 39, 39),
 	),
 );

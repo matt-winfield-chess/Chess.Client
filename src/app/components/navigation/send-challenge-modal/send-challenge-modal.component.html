@@ -1,0 +1,22 @@
+<div class="modal-background">
+	<div class="modal-content">
+		<div class="close" (click)="close()"><i class="fas fa-times"></i></div>
+		<div class="title">Send Challenge</div>
+		<div class="input">
+			<label for="challengeUsernameInput">Username</label>
+			<input [(ngModel)]="username" id="challengeUsernameInput" />
+		</div>
+		<div class="input">
+			<label for="challengerColor">Your Color</label>
+			<select [(ngModel)]="challengerColor" id="challengerColor">
+				<option value="0">Random</option>
+				<option value="1">White</option>
+				<option value="2">Black</option>
+			</select>
+		</div>
+		<div class="buttons">
+			<button (click)="sendChallenge()" class="button">Send</button>
+			<button class="button" (click)="close()">Cancel</button>
+		</div>
+	</div>
+</div>
