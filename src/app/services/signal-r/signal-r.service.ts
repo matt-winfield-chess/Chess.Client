@@ -8,7 +8,7 @@ import { SignalRMethod } from './signal-r-method';
 @Injectable({
 	providedIn: 'root'
 })
-export abstract class SignalRService {
+export class SignalRService {
 	protected _hubConnection: HubConnection;
 	private _hasStarted: boolean = false;
 	private _hubStartPromise: Promise<boolean | void>;
