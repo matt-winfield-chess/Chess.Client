@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { LoginStateService } from 'src/app/services/login-state.service';
 
 @Component({
 	selector: 'app-game-settings-modal',
@@ -9,14 +11,21 @@ export class GameSettingsModalComponent {
 
 	@Output() public onClose: EventEmitter<void> = new EventEmitter();
 
-	private shouldShowSendChallengeModal: boolean = false;
+	public shouldShowSendChallengeModal: boolean = false;
+
+	constructor(@Inject(LoginStateService) private loginStateService: LoginStateService,
+		@Inject(ToastrService) private toastr: ToastrService) { }
 
 	public close() {
 		this.onClose.emit();
 	}
 
 	public showSendChallengeModal(): void {
-		this.shouldShowSendChallengeModal = true;
+		if (!this.loginStateService.isLoggedIn()) {
+			this.toastr.error('You must be logged in to send a challenge', 'Cannot send challenge');
+		} else {
+			this.shouldShowSendChallengeModal = true;
+		}
 	}
 
 	public hideSendChallengeModal(): void {
