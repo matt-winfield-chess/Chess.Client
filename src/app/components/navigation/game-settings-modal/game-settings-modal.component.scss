@@ -1,0 +1,19 @@
+@import "../../../styles/themes/themify.scss";
+@import "../../../styles/themes/themes.scss";
+
+.modal-content {
+	position: absolute;
+	padding: 50px;
+	border-radius: 10px;
+
+	@include themify($themes) {
+		background-color: themed("modalBackgroundColor");
+	}
+}
+
+.close {
+	cursor: pointer;
+	position: absolute;
+	top: 7px;
+	right: 10px;
+}

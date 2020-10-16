@@ -19,6 +19,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { LogInComponent } from './pages/log-in/log-in.component';
 import { PawnPromotionComponent } from './components/gameplay/pawn-promotion/pawn-promotion.component';
 import { ChallengesComponent } from './components/navigation/challenges/challenges.component';
+import { GameSettingsModalComponent } from './components/navigation/game-settings-modal/game-settings-modal.component';
 
 export function load(config: ConfigService) {
 	return () => config.load();
@@ -36,6 +37,7 @@ export function load(config: ConfigService) {
 		LogInComponent,
 		PawnPromotionComponent,
 		ChallengesComponent,
+		GameSettingsModalComponent,
 	],
 	imports: [
 		CommonModule,

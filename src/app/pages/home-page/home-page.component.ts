@@ -6,4 +6,13 @@ import { Component } from '@angular/core';
 	styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent {
+	public shouldShowGameSettingsModal = false;
+
+	public openGameSettingsModal(): void {
+		this.shouldShowGameSettingsModal = true;
+	}
+
+	public closeGameSettingsModal(): void {
+		this.shouldShowGameSettingsModal = false;
+	}
 }
