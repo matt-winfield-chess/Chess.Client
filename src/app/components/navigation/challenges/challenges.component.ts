@@ -31,7 +31,7 @@ export class ChallengesComponent implements OnInit {
 
 	}
 
-	public async dismiss(challenge: Challenge): Promise<void> {
+	public async decline(challenge: Challenge): Promise<void> {
 		await this.challengeService.deleteChallenge(challenge.challenger.id, challenge.recipient.id);
 
 		let challengeIndex = this.activeChallenges.findIndex(c =>

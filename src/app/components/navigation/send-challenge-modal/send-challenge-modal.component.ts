@@ -12,12 +12,13 @@ export class SendChallengeModalComponent {
 
 	@Output() public onClose: EventEmitter<void> = new EventEmitter();
 	public username: string;
+	public challengerColor: ChallengerColor = ChallengerColor.Random;
 
 	constructor(@Inject(ChallengesService) private challengesService: ChallengesService,
 		@Inject(ToastrService) private toastr: ToastrService) { }
 
 	public async sendChallenge(): Promise<void> {
-		let result = await this.challengesService.sendChallenge(this.username, ChallengerColor.Random);
+		let result = await this.challengesService.sendChallenge(this.username, parseInt(this.challengerColor.toString()));
 
 		if (result?.isSuccess) {
 			this.toastr.success('Challenge sent successfully');
