@@ -4,8 +4,10 @@
 		<div class="title">Game Options</div>
 		<div class="options">
 			<button class="button" routerLink="game">Play Alone</button>
-			<button class="button">Challenge User</button>
+			<button class="button" (click)="showSendChallengeModal()">Challenge User</button>
 		</div>
 		<button class="button" (click)="close()">Cancel</button>
 	</div>
 </div>
+<app-send-challenge-modal [hidden]="!shouldShowSendChallengeModal" (onClose)="hideSendChallengeModal()">
+</app-send-challenge-modal>

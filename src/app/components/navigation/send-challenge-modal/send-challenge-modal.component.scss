@@ -1,0 +1,32 @@
+@import "../../../styles/themes/themify.scss";
+@import "../../../styles/themes/themes.scss";
+
+.modal-content {
+	position: absolute;
+	padding: 50px;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	@include themify($themes) {
+		background-color: themed("modalBackgroundColor");
+	}
+}
+
+.title {
+	font-weight: bold;
+	position: relative;
+	top: -10px;
+}
+
+.options {
+	margin: 10px;
+}
+
+.close {
+	cursor: pointer;
+	position: absolute;
+	top: 7px;
+	right: 10px;
+}
