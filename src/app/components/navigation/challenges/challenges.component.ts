@@ -19,7 +19,7 @@ export class ChallengesComponent implements OnInit {
 		@Inject(ChallengesService) private challengeService: ChallengesService,
 		@Inject(LoginStateService) private loginStateService: LoginStateService) {
 		this.challengeHubService.onMethod(SignalRMethod.NewChallenge, (challenge) => this.onChallengeRecieved(challenge));
-		this.loginStateService.subscribeToLogIn(() => this.syncChallenges());
+		this.loginStateService.subscribeToLogIn(() => this.onLogIn());
 		this.loginStateService.subscribeToLogOut(() => this.onLogOut());
 	}
 
@@ -39,6 +39,11 @@ export class ChallengesComponent implements OnInit {
 			&& c.recipient.id == challenge.recipient.id);
 
 		this.activeChallenges.splice(challengeIndex, 1);
+	}
+
+	private onLogIn(): void {
+		this.syncChallenges();
+		this.challengeHubService.reconnect();
 	}
 
 	private onLogOut(): void {

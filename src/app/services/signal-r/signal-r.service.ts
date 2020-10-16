@@ -9,7 +9,7 @@ import { SignalRMethod } from './signal-r-method';
 	providedIn: 'root'
 })
 export abstract class SignalRService {
-	private _hubConnection: HubConnection;
+	protected _hubConnection: HubConnection;
 	private _hasStarted: boolean = false;
 	private _hubStartPromise: Promise<boolean | void>;
 	private _onConnectFailBehaviours: (() => void)[] = [];
@@ -55,6 +55,11 @@ export abstract class SignalRService {
 				this._hubConnection.on(methodName, errorHandledMethod)
 			);
 		}
+	}
+
+	public reconnect(): void {
+		this._hubConnection.stop();
+		this.startConnection();
 	}
 
 	private buildConnection(): HubConnection {
