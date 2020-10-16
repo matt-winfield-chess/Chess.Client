@@ -69,7 +69,10 @@ export abstract class SignalRService {
 	}
 
 	private startConnection(): void {
-		this.spinner.show();
+		if (this._connectionAttemptCount == 1) {
+			this.spinner.show();
+		}
+
 		this._hubStartPromise = this._hubConnection
 			.start()
 			.then(() => {
@@ -78,11 +81,12 @@ export abstract class SignalRService {
 			})
 			.catch(error => {
 				console.warn("Error while starting connection: " + error);
+				this.spinner.hide();
 
 				if (this._connectionAttemptCount++ < this._maxConnectionAttempts) {
 					setTimeout(() => this.startConnection(), 3000);
 				} else {
-					console.error("Failed to connect after " + this._connectionAttemptCount + " attempts")
+					console.error("Failed to connect after " + this._connectionAttemptCount + " attempts");
 					this._onConnectFailBehaviours.forEach(onConnectFailBehaviour => {
 						onConnectFailBehaviour();
 					});

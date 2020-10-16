@@ -1,20 +1,30 @@
 @import "../../../styles/themes/themify.scss";
 @import "../../../styles/themes/themes.scss";
+@import "../../../styles/mixins/responsive-sizes.scss";
 
 .challenges {
 	position: absolute;
-	top: 100px;
+	top: 60px;
 	right: 50px;
 	width: 200px;
+
+	@include phone-only {
+		right: 20px;
+	}
 }
 
 .challenge {
 	border-radius: 5px;
 	width: 100%;
 	height: 100px;
+	margin: 10px;
 
 	@include themify($themes) {
 		background-color: themed("notificationBackgroundColor");
+	}
+
+	@include phone-only {
+		height: 80px;
 	}
 }
 
