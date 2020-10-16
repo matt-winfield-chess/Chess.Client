@@ -39,7 +39,7 @@ export function load(config: ConfigService) {
 		PawnPromotionComponent,
 		ChallengesComponent,
 		GameSettingsModalComponent,
-		SendChallengeModalComponent,
+		SendChallengeModalComponent
 	],
 	imports: [
 		CommonModule,

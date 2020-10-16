@@ -6,6 +6,14 @@
 			<label for="challengeUsernameInput">Username</label>
 			<input [(ngModel)]="username" id="challengeUsernameInput" />
 		</div>
+		<div class="input">
+			<label for="challengerColor">Your Color</label>
+			<select id="challengerColor">
+				<option value="0">Random</option>
+				<option value="1">White</option>
+				<option value="2">Black</option>
+			</select>
+		</div>
 		<div class="buttons">
 			<button (click)="sendChallenge()" class="button">Send</button>
 			<button class="button" (click)="close()">Cancel</button>

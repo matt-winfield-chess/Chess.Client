@@ -47,6 +47,10 @@ app-root {
 		flex-direction: column;
 		align-items: center;
 
+		label {
+			margin-right: 10px;
+		}
+
 		.title {
 			font-weight: bold;
 			position: relative;
