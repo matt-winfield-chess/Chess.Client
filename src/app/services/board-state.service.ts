@@ -1,5 +1,6 @@
 import { flatten } from '@angular/compiler';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastContainerModule } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import { BoardState } from '../classes/board-state';
@@ -18,12 +19,16 @@ export class BoardStateService {
 	private boardState: BoardState;
 	private piecePositions: Piece[][]; // stores piece at it's current position for more efficient retrieval by x/y coordinate
 
-	private previousBoardState: BoardState = new BoardState(); // Points between last move, for revertMove()
-	private previousPiecePositions: Piece[][] = [];
-
 	private moveSubscribers: ((move: Move) => void)[] = [];
 
-	constructor(@Inject(FenParserService) private fenParserService: FenParserService) {
+	constructor(@Inject(FenParserService) private fenParserService: FenParserService, @Inject(Router) private router: Router) {
+		this.setBoardToStandardStartingPosition();
+		this.router.events.subscribe((event) => {
+			this.setBoardToStandardStartingPosition();
+		})
+	}
+
+	public setBoardToStandardStartingPosition() {
 		this.initialiseBoardState(this.fenParserService.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'));
 	}
 
