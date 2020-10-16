@@ -58,6 +58,7 @@ export abstract class SignalRService {
 	}
 
 	public reconnect(): void {
+		this._connectionAttemptCount = 1;
 		this._hubConnection.stop();
 		this.startConnection();
 	}
