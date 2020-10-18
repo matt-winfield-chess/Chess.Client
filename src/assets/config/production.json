@@ -1,5 +1,5 @@
 {
-	"HOST_API": "https://localhost:44389",
+	"HOST_API": "https://chess-api.matt-winfield.com",
 	"API_ENDPOINTS": {
 		"CHALLENGE_HUB": "/ChallengeHub",
 		"USERS": "/api/users",
