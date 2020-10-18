@@ -91,6 +91,7 @@ export class PieceComponent implements AfterViewInit {
 		this.draggingYPosition = touch.clientY;
 
 		this.isDragging = true;
+		this.onPieceSelected.emit(this.piece);
 
 		document.ontouchend = (event) => this.stopDragging(event.changedTouches[0])
 		document.ontouchmove = (event) => this.dragPiece(event.changedTouches[0])
