@@ -1,24 +1,37 @@
 @import "themes.scss";
 
+@mixin themify-body($theme, $map) {
+	$theme-map: () !global; // Theme map used in themed function
+	@each $key, $value in $map {
+		$theme-map: map-merge(
+			$theme-map,
+			(
+				$key: $value,
+			)
+		) !global;
+	}
+
+	@content;
+
+	$theme-map: null !global; // Reset theme map
+}
+
 // mixin to generate css for different themes
 @mixin themify($themes: $themes) {
 	@each $theme, $map in $themes {
-		// :host-context() allows accessing the theme element higher in the DOM than the current component
-		.theme-#{$theme} &,
-		:host-context(.theme-#{$theme}) & {
-			$theme-map: () !global; // Theme map used in themed function
-			@each $key, $value in $map {
-				$theme-map: map-merge(
-					$theme-map,
-					(
-						$key: $value,
-					)
-				) !global;
+		.theme-#{$theme} & {
+			@include themify-body($theme, $map) {
+				@content;
 			}
+		}
 
-			@content;
-
-			$theme-map: null !global; // Reset theme map
+		// :host-context() allows accessing the theme element higher in the DOM than the current component
+		// Must be kept seperate from other declaration, since in global styles.scss :host-context returns an invalid element
+		// so would invalidate the other style
+		:host-context(.theme-#{$theme}) & {
+			@include themify-body($theme, $map) {
+				@content;
+			}
 		}
 	}
 }

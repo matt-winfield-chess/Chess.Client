@@ -17,6 +17,19 @@ app-root {
 button {
 	font-family: "atrament-web", sans-serif;
 	font-size: 20px;
+	border-radius: 5px;
+	box-shadow: none;
+	cursor: pointer;
+
+	@include themify($themes) {
+		background-color: themed("buttonBackgroundColor");
+		border: themed("buttonBorder");
+		color: themed("primaryFontColor");
+
+		&:hover {
+			background-color: themed("buttonHoverColor");
+		}
+	}
 }
 
 app-root {
