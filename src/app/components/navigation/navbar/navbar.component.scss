@@ -32,11 +32,9 @@ button {
 button {
 	padding: 10px 15px;
 	margin: 10px;
-	border: none;
 
 	@include themify($themes) {
 		background-color: themed("navbarButtonBackgroundColor");
-		color: themed("primaryFontColor");
 		&:hover {
 			background-color: themed("navbarButtonHoverColor");
 		}
