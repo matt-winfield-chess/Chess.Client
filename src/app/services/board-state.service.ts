@@ -1,8 +1,5 @@
-import { flatten } from '@angular/compiler';
-import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastContainerModule } from 'ngx-toastr';
-import { Observable } from 'rxjs';
 import { BoardState } from '../classes/board-state';
 import { Move } from '../classes/move';
 import { MoveValidationResult } from '../classes/move-validation-result';
@@ -18,6 +15,7 @@ export class BoardStateService {
 
 	private boardState: BoardState;
 	private piecePositions: Piece[][]; // stores piece at it's current position for more efficient retrieval by x/y coordinate
+	private playerColor: PlayerColor = null;
 
 	private moveSubscribers: ((move: Move) => void)[] = [];
 
@@ -35,6 +33,10 @@ export class BoardStateService {
 	public initialiseBoardState(boardState: BoardState): void {
 		this.boardState = boardState;
 		this.synchronizeInternalPiecePositionsToBoardState();
+	}
+
+	public setPlayerColor(color: PlayerColor): void {
+		this.playerColor = color;
 	}
 
 	public getPieceOnSquare(x: number, y: number): Piece {
@@ -133,6 +135,7 @@ export class BoardStateService {
 	private ValidateMove(piece: Piece, newX: number, newY: number, ignoreColor: boolean = false): MoveValidationResult {
 		if (piece.x == newX && piece.y == newY) return new MoveValidationResult({ isValid: false });
 		if (piece.color != this.boardState.activeColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
+		if (this.playerColor !== null && piece.color != this.playerColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
 
 		for (let movementStrategy of piece.movementStrategies) {
 			let movementValidationResult = movementStrategy.isValidMove({

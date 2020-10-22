@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { JwtTokenBody } from 'src/app/classes/jwt-token-body';
 
 @Injectable({
 	providedIn: 'root'
@@ -51,11 +52,22 @@ export class LoginStateService {
 		return localStorage.getItem(this.localStorageUsernameKey);
 	}
 
+	public getUserId(): number {
+		let claims = this.parseJwt(this.getToken());
+		return parseInt(claims.id);
+	}
+
 	public subscribeToLogIn(onLogIn: () => void): void {
 		this.logInSubscribers.push(onLogIn);
 	}
 
 	public subscribeToLogOut(onLogOut: () => void): void {
 		this.logOutSubscribers.push(onLogOut);
+	}
+
+	private parseJwt(token: string): JwtTokenBody {
+		let base64Payload = token.split('.')[1];
+		let jsonPayload = atob(base64Payload);
+		return JSON.parse(jsonPayload);
 	}
 }

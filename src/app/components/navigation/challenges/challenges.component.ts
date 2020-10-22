@@ -5,6 +5,7 @@ import { SignalRMethod } from 'src/app/services/signal-r/signal-r-method';
 import { ChallengesService } from 'src/app/services/http/challenges/challenges.service';
 import { LoginStateService } from 'src/app/services/login-state.service';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
 	selector: 'app-challenges',
@@ -18,6 +19,7 @@ export class ChallengesComponent implements OnInit {
 	constructor(@Inject(ChallengeHubSignalRService) private challengeHubService: ChallengeHubSignalRService,
 		@Inject(ChallengesService) private challengeService: ChallengesService,
 		@Inject(LoginStateService) private loginStateService: LoginStateService,
+		@Inject(ToastrService) private toastr: ToastrService,
 		@Inject(Router) private router: Router) {
 		this.challengeHubService.onMethod(SignalRMethod.NewChallenge, (challenge) => this.onChallengeRecieved(challenge));
 		this.loginStateService.subscribeToLogIn(() => this.onLogIn());
@@ -28,8 +30,20 @@ export class ChallengesComponent implements OnInit {
 		this.syncChallenges();
 	}
 
-	public accept(challenge: Challenge): void {
+	public async accept(challenge: Challenge): Promise<void> {
+		let result = await this.challengeService.acceptChallenge(challenge);
 
+		if (result?.isSuccess) {
+			let game = result.data;
+			this.router.navigate(['/game', game.id]);
+			this.syncChallenges();
+		} else {
+			if (result?.errors) {
+				this.toastr.error(result.errors.join(', '), 'Failed to accept challenge');
+			} else {
+				this.toastr.error('Failed to accept challenge');
+			}
+		}
 	}
 
 	public async decline(challenge: Challenge): Promise<void> {
