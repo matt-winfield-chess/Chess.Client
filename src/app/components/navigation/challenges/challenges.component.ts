@@ -6,6 +6,7 @@ import { ChallengesService } from 'src/app/services/http/challenges/challenges.s
 import { LoginStateService } from 'src/app/services/login-state.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { Game } from 'src/app/classes/models/game';
 
 @Component({
 	selector: 'app-challenges',
@@ -22,6 +23,7 @@ export class ChallengesComponent implements OnInit {
 		@Inject(ToastrService) private toastr: ToastrService,
 		@Inject(Router) private router: Router) {
 		this.challengeHubService.onMethod(SignalRMethod.NewChallenge, (challenge) => this.onChallengeRecieved(challenge));
+		this.challengeHubService.onMethod(SignalRMethod.ChallengeAccepted, (game) => this.onChallengeAccepted(game));
 		this.loginStateService.subscribeToLogIn(() => this.onLogIn());
 		this.loginStateService.subscribeToLogOut(() => this.onLogOut());
 	}
@@ -76,5 +78,10 @@ export class ChallengesComponent implements OnInit {
 
 	private onChallengeRecieved(challenge: Challenge): void {
 		this.activeChallenges.push(challenge);
+	}
+
+	private onChallengeAccepted(game: Game): void {
+		console.log(game);
+		this.router.navigate(['/game', game.id]);
 	}
 }
