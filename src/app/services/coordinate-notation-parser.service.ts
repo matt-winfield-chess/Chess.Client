@@ -28,7 +28,7 @@ export class CoordinateNotationParserService {
 			oldY: this.toCoordinate(lowercaseNotation.substring(0, 2))[1],
 			newX: this.toCoordinate(lowercaseNotation.substring(2))[0],
 			newY: this.toCoordinate(lowercaseNotation.substring(2))[1]
-		}
+		};
 	}
 
 	public convertCoordinateToNotation(coordinate: [number, number]): string {

@@ -16,9 +16,9 @@ export class ChallengesService {
 	public async getChallenges(): Promise<ApiResponse<Challenge[]>> {
 		let url = this.configService.getApiEndpoint('RECEIVED_CHALLENGES');
 
-		let headers = new HttpHeaders({ 'Authorization': `Bearer ${this.loginStateService.getToken()}` });
+		let headers = new HttpHeaders({ Authorization: `Bearer ${this.loginStateService.getToken()}` });
 
-		return await this.http.get<ApiResponse<Challenge[]>>(url, { headers: headers }).toPromise().catch(reason => {
+		return await this.http.get<ApiResponse<Challenge[]>>(url, { headers }).toPromise().catch(reason => {
 			return reason.error;
 		});
 	}
@@ -27,9 +27,9 @@ export class ChallengesService {
 		let url = this.configService.getApiEndpoint('DELETE_CHALLENGE');
 		url += `/${challengerId}/${recipientId}`;
 
-		let headers = new HttpHeaders({ 'Authorization': `Bearer ${this.loginStateService.getToken()}` });
+		let headers = new HttpHeaders({ Authorization: `Bearer ${this.loginStateService.getToken()}` });
 
-		return await this.http.delete<ApiResponse<void>>(url, { headers: headers }).toPromise().catch(reason => {
+		return await this.http.delete<ApiResponse<void>>(url, { headers }).toPromise().catch(reason => {
 			return reason.error;
 		});
 	}
@@ -37,12 +37,12 @@ export class ChallengesService {
 	public async sendChallenge(username: string, challengerColor: ChallengerColor): Promise<ApiResponse<void>> {
 		let url = this.configService.getApiEndpoint('SEND_CHALLENGE');
 
-		let headers = new HttpHeaders({ 'Authorization': `Bearer ${this.loginStateService.getToken()}` });
+		let headers = new HttpHeaders({ Authorization: `Bearer ${this.loginStateService.getToken()}` });
 
 		return await this.http.post<ApiResponse<Challenge[]>>(url, {
-			username: username,
-			challengerColor: challengerColor
-		}, { headers: headers }).toPromise().catch(reason => {
+			username,
+			challengerColor
+		}, { headers }).toPromise().catch(reason => {
 			return reason.error;
 		});
 	}

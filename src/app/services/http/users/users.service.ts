@@ -13,8 +13,8 @@ export class UsersService {
 	public async createAccount(username: string, password: string): Promise<ApiResponse<number>> {
 		let url = this.configService.getApiEndpoint('USERS');
 		return await this.http.post<ApiResponse<number>>(url, {
-			username: username,
-			password: password
+			username,
+			password
 		}).toPromise().catch(reason => {
 			return reason.error;
 		});

@@ -21,8 +21,9 @@ import { PawnPromotionComponent } from './components/gameplay/pawn-promotion/paw
 import { ChallengesComponent } from './components/navigation/challenges/challenges.component';
 import { GameSettingsModalComponent } from './components/navigation/game-settings-modal/game-settings-modal.component';
 import { SendChallengeModalComponent } from './components/navigation/send-challenge-modal/send-challenge-modal.component';
+import { OfflineGamePageComponent } from './pages/offline-game-page/offline-game-page.component';
 
-export function load(config: ConfigService) {
+export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
 }
 
@@ -39,7 +40,8 @@ export function load(config: ConfigService) {
 		PawnPromotionComponent,
 		ChallengesComponent,
 		GameSettingsModalComponent,
-		SendChallengeModalComponent
+		SendChallengeModalComponent,
+		OfflineGamePageComponent
 	],
 	imports: [
 		CommonModule,

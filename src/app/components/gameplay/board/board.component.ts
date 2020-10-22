@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Inject, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { PieceComponent } from '../piece/piece.component';
-import { BoardStateService } from '../../../services/board-state.service'
+import { BoardStateService } from '../../../services/board-state.service';
 import { Piece } from 'src/app/classes/piece';
 import { Coordinate } from '../../../classes/coordinate';
 import { Move } from 'src/app/classes/move';
@@ -12,7 +12,7 @@ import { Move } from 'src/app/classes/move';
 })
 export class BoardComponent implements AfterViewInit {
 	public flipBoard: boolean = false;
-	public legalMoveHighlightedSquares: Coordinate[] = []
+	public legalMoveHighlightedSquares: Coordinate[] = [];
 
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
 	@ViewChildren('dynamicPiece') private dynamicPieces: QueryList<PieceComponent>;
@@ -41,7 +41,7 @@ export class BoardComponent implements AfterViewInit {
 		return this.legalMoveHighlightedSquares.some(position => position.x == x && position.y == y);
 	}
 
-	public onPieceSelected(piece: Piece) {
+	public onPieceSelected(piece: Piece): void {
 		this.legalMoveHighlightedSquares = [];
 		let legalMoves = this.boardStateService.getLegalMoves(piece);
 		for (let move of legalMoves) {
@@ -58,20 +58,20 @@ export class BoardComponent implements AfterViewInit {
 		this.updateBoardDimensions();
 	}
 
-	private onMove(move: Move) {
+	private onMove(move: Move): void {
 		this.legalMoveHighlightedSquares = [];
 	}
 
-	private updateBoardDimensions() {
+	private updateBoardDimensions(): void {
 		this.board.nativeElement.style.height = getComputedStyle(this.board.nativeElement).width;
 		this.notifyPiecesOfBoardSizeChange();
 	}
 
-	private notifyPiecesOfBoardSizeChange() {
-		this.dynamicPieces.forEach(piece => piece.onBoardSizeChange())
+	private notifyPiecesOfBoardSizeChange(): void {
+		this.dynamicPieces.forEach(piece => piece.onBoardSizeChange());
 	}
 
-	private configureContextMenu() {
-		this.board.nativeElement.oncontextmenu = () => { return false; }
+	private configureContextMenu(): void {
+		this.board.nativeElement.oncontextmenu = () => false;
 	}
 }

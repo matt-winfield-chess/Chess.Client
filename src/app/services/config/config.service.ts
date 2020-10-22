@@ -6,28 +6,28 @@ import { environment } from 'src/environments/environment';
 	providedIn: 'root'
 })
 export class ConfigService {
-	private _loaded: boolean = false;
-	private _config: Object;
-	private _hostApi: string;
-	private _apiEndpoints: Object;
+	private loaded: boolean = false;
+	private config: Object;
+	private hostApi: string;
+	private apiEndpoints: Object;
 
 	constructor(private http: HttpClient) { }
 
 	public async load(): Promise<void> {
-		this._config = await this.http.get('./assets/config/' + environment.config + '.json').toPromise();
+		this.config = await this.http.get('./assets/config/' + environment.config + '.json').toPromise();
 
-		this._hostApi = this._config["HOST_API"];
-		this._apiEndpoints = this._config["API_ENDPOINTS"];
-		this._loaded = true;
+		this.hostApi = this.config['HOST_API'];
+		this.apiEndpoints = this.config['API_ENDPOINTS'];
+		this.loaded = true;
 	}
 
 	public getHost(): string {
-		if (!this._loaded) throw new Error("Config not loaded!");
-		return this._hostApi;
+		if (!this.loaded) throw new Error('Config not loaded!');
+		return this.hostApi;
 	}
 
-	public getApiEndpoint(endpointName: string) {
-		if (!this._loaded) throw new Error("Config not loaded!");
-		return this._hostApi + this._apiEndpoints[endpointName];
+	public getApiEndpoint(endpointName: string): string {
+		if (!this.loaded) throw new Error('Config not loaded!');
+		return this.hostApi + this.apiEndpoints[endpointName];
 	}
 }

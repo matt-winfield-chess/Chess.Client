@@ -11,12 +11,12 @@ import { CoordinateNotationParserService } from './coordinate-notation-parser.se
 })
 export class FenParserService {
 	private pieceTypeCharacterMap: Map<string, PieceType> = new Map<string, PieceType>([
-		["p", PieceType.Pawn],
-		["n", PieceType.Knight],
-		["b", PieceType.Bishop],
-		["r", PieceType.Rook],
-		["q", PieceType.Queen],
-		["k", PieceType.King]
+		['p', PieceType.Pawn],
+		['n', PieceType.Knight],
+		['b', PieceType.Bishop],
+		['r', PieceType.Rook],
+		['q', PieceType.Queen],
+		['k', PieceType.King]
 	]);
 
 	constructor(@Inject(CoordinateNotationParserService) private coordinateNotationParser: CoordinateNotationParserService) { }
@@ -36,7 +36,7 @@ export class FenParserService {
 		result.castlingState = this.parseCastlingState(fenComponents[2]);
 		result.enPassantTargetSquare = this.coordinateNotationParser.toCoordinate(fenComponents[3]);
 		result.halfmoveClock = this.parseNumberComponent(fenComponents[4]);
-		result.fullmoveNumber = this.parseNumberComponent(fenComponents[5])
+		result.fullmoveNumber = this.parseNumberComponent(fenComponents[5]);
 
 		return result;
 	}
@@ -47,8 +47,7 @@ export class FenParserService {
 		let x = 0;
 		let y = 0;
 
-		for (let i: number = 0; i < position.length; i++) {
-			let character = position[i];
+		for (let character of position) {
 			if (this.isNumber(character)) {
 				x += parseInt(character);
 			} else if (character == '/') {
@@ -63,7 +62,7 @@ export class FenParserService {
 	}
 
 	private parseActiveColor(activeColorString: string): PlayerColor {
-		return activeColorString == "w" ? PlayerColor.White : PlayerColor.Black;
+		return activeColorString == 'w' ? PlayerColor.White : PlayerColor.Black;
 	}
 
 	private parseCastlingState(castleStateString: string): CastlingState {
@@ -92,7 +91,7 @@ export class FenParserService {
 		return piece;
 	}
 
-	private isUpperCase(value: string) {
+	private isUpperCase(value: string): boolean {
 		return value == value.toUpperCase();
 	}
 

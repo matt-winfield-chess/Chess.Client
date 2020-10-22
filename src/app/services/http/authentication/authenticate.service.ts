@@ -14,8 +14,8 @@ export class AuthenticateService {
 	public async logIn(username: string, password: string): Promise<ApiResponse<LoginResponse>> {
 		let url = this.configService.getApiEndpoint('AUTHENTICATE');
 		return await this.http.post<ApiResponse<LoginResponse>>(url, {
-			username: username,
-			password: password
+			username,
+			password
 		}).toPromise().catch(reason => {
 			return reason.error;
 		});
