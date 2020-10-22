@@ -3,7 +3,7 @@ import { Piece } from 'src/app/classes/piece';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
 import { BoardStateService } from 'src/app/services/board-state.service';
-import { MovementStrategyFactoryService } from '../../../services/factories/movement-strategy-factory.service'
+import { MovementStrategyFactoryService } from '../../../services/factories/movement-strategy-factory.service';
 
 @Component({
 	selector: 'app-piece',
@@ -26,18 +26,18 @@ export class PieceComponent implements AfterViewInit {
 	private boardBoundingRect: DOMRect;
 
 	private colorClassMap: Map<PlayerColor, string> = new Map<PlayerColor, string>([
-		[PlayerColor.White, "white"],
-		[PlayerColor.Black, "black"]
-	])
+		[PlayerColor.White, 'white'],
+		[PlayerColor.Black, 'black']
+	]);
 
 	private pieceTypeClassMap: Map<PieceType, string> = new Map<PieceType, string>([
-		[PieceType.Pawn, "pawn"],
-		[PieceType.King, "king"],
-		[PieceType.Queen, "queen"],
-		[PieceType.Rook, "rook"],
-		[PieceType.Bishop, "bishop"],
-		[PieceType.Knight, "knight"]
-	])
+		[PieceType.Pawn, 'pawn'],
+		[PieceType.King, 'king'],
+		[PieceType.Queen, 'queen'],
+		[PieceType.Rook, 'rook'],
+		[PieceType.Bishop, 'bishop'],
+		[PieceType.Knight, 'knight']
+	]);
 
 	constructor(@Inject(BoardStateService) private boardStateService: BoardStateService,
 		@Inject(MovementStrategyFactoryService) private movementStrategyFactory: MovementStrategyFactoryService) { }
@@ -52,12 +52,12 @@ export class PieceComponent implements AfterViewInit {
 		this.updateDimensions();
 	}
 
-	public setFlipBoard(flipBoard: boolean) {
+	public setFlipBoard(flipBoard: boolean): void {
 		this.flipBoard = flipBoard;
 	}
 
 	public getPieceTransform(): string {
-		let displayPosition = this.convertDisplayPosition(this.piece.x, this.piece.y)
+		let displayPosition = this.convertDisplayPosition(this.piece.x, this.piece.y);
 
 		if (this.isDragging) {
 			return this.getDraggingTransform();
@@ -80,8 +80,8 @@ export class PieceComponent implements AfterViewInit {
 		this.isDragging = true;
 		this.onPieceSelected.emit(this.piece);
 
-		document.onmouseup = (event) => this.stopDragging(event)
-		document.onmousemove = (event) => this.dragPiece(event)
+		document.onmouseup = (evt) => this.stopDragging(evt);
+		document.onmousemove = (evt) => this.dragPiece(evt);
 	}
 
 	public onPieceTouchStart(event: TouchEvent): void {
@@ -93,8 +93,8 @@ export class PieceComponent implements AfterViewInit {
 		this.isDragging = true;
 		this.onPieceSelected.emit(this.piece);
 
-		document.ontouchend = (event) => this.stopDragging(event.changedTouches[0])
-		document.ontouchmove = (event) => this.dragPiece(event.changedTouches[0])
+		document.ontouchend = (evt) => this.stopDragging(evt.changedTouches[0]);
+		document.ontouchmove = (evt) => this.dragPiece(evt.changedTouches[0]);
 	}
 
 	private stopDragging(event: MouseEvent | Touch): void {
@@ -139,16 +139,16 @@ export class PieceComponent implements AfterViewInit {
 			&& x < 8 && y < 8;
 	}
 
-	private updateDimensions() {
+	private updateDimensions(): void {
 		this.boundingRect = this.pieceElement.nativeElement.getBoundingClientRect();
 		this.boardBoundingRect = this.board.getBoundingClientRect();
 	}
 
-	private configureContextMenu() {
-		this.pieceElement.nativeElement.oncontextmenu = () => { return false; }
+	private configureContextMenu(): void {
+		this.pieceElement.nativeElement.oncontextmenu = () => false;
 	}
 
-	private getDraggingTransform() {
+	private getDraggingTransform(): string {
 		let xPosition = this.draggingXPosition - this.boardBoundingRect.left;
 		let yPosition = this.draggingYPosition - this.boardBoundingRect.top;
 

@@ -7,6 +7,8 @@
 		"RECEIVED_CHALLENGES": "/api/challenge/receivedChallenges",
 		"SENT_CHALLENGES": "/api/challenge/sentChallenges",
 		"SEND_CHALLENGE": "/api/challenge/sendChallenge",
-		"DELETE_CHALLENGE": "/api/challenge/delete"
+		"DELETE_CHALLENGE": "/api/challenge/delete",
+		"ACCEPT_CHALLENGE": "/api/challenge/acceptChallenge",
+		"GET_GAME": "/api/game"
 	}
 }

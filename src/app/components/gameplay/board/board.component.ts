@@ -1,23 +1,33 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Inject, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { PieceComponent } from '../piece/piece.component';
-import { BoardStateService } from '../../../services/board-state.service'
+import { BoardStateService } from '../../../services/board-state.service';
 import { Piece } from 'src/app/classes/piece';
 import { Coordinate } from '../../../classes/coordinate';
 import { Move } from 'src/app/classes/move';
+import { BoardSettings } from 'src/app/classes/board-settings';
+import { PlayerColor } from 'src/app/enums/player-color.enum';
 
 @Component({
 	selector: 'app-board',
 	templateUrl: './board.component.html',
 	styleUrls: ['./board.component.scss']
 })
-export class BoardComponent implements AfterViewInit {
+export class BoardComponent implements OnInit, AfterViewInit {
+	@Input() public settings: BoardSettings;
 	public flipBoard: boolean = false;
-	public legalMoveHighlightedSquares: Coordinate[] = []
+	public legalMoveHighlightedSquares: Coordinate[] = [];
 
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
 	@ViewChildren('dynamicPiece') private dynamicPieces: QueryList<PieceComponent>;
 
 	constructor(@Inject(BoardStateService) public boardStateService: BoardStateService) { }
+
+	public ngOnInit(): void {
+		if (this.settings != null) {
+			this.flipBoard = this.settings.playerColor != PlayerColor.White;
+			this.boardStateService.setPlayerColor(this.settings.playerColor);
+		}
+	}
 
 	public ngAfterViewInit(): void {
 		this.updateBoardDimensions();
@@ -41,8 +51,13 @@ export class BoardComponent implements AfterViewInit {
 		return this.legalMoveHighlightedSquares.some(position => position.x == x && position.y == y);
 	}
 
-	public onPieceSelected(piece: Piece) {
+	public onPieceSelected(piece: Piece): void {
 		this.legalMoveHighlightedSquares = [];
+
+		if (this.settings != null && piece.color !== this.settings.playerColor) {
+			return;
+		}
+
 		let legalMoves = this.boardStateService.getLegalMoves(piece);
 		for (let move of legalMoves) {
 			this.legalMoveHighlightedSquares.push({
@@ -58,20 +73,20 @@ export class BoardComponent implements AfterViewInit {
 		this.updateBoardDimensions();
 	}
 
-	private onMove(move: Move) {
+	private onMove(move: Move): void {
 		this.legalMoveHighlightedSquares = [];
 	}
 
-	private updateBoardDimensions() {
+	private updateBoardDimensions(): void {
 		this.board.nativeElement.style.height = getComputedStyle(this.board.nativeElement).width;
 		this.notifyPiecesOfBoardSizeChange();
 	}
 
-	private notifyPiecesOfBoardSizeChange() {
-		this.dynamicPieces.forEach(piece => piece.onBoardSizeChange())
+	private notifyPiecesOfBoardSizeChange(): void {
+		this.dynamicPieces.forEach(piece => piece.onBoardSizeChange());
 	}
 
-	private configureContextMenu() {
-		this.board.nativeElement.oncontextmenu = () => { return false; }
+	private configureContextMenu(): void {
+		this.board.nativeElement.oncontextmenu = () => false;
 	}
 }

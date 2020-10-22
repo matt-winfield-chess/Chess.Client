@@ -36,9 +36,9 @@ describe('BoardComponent', () => {
 	});
 
 	it('should position tiles correctly', () => {
-		expect(component.getTilePositioning(0)).toBe('0%')
-		expect(component.getTilePositioning(1)).toBe('12.5%')
-		expect(component.getTilePositioning(7)).toBe('87.5%')
+		expect(component.getTilePositioning(0)).toBe('0%');
+		expect(component.getTilePositioning(1)).toBe('12.5%');
+		expect(component.getTilePositioning(7)).toBe('87.5%');
 	});
 
 	it('should render light/dark squares in the correct position (top left)', () => {

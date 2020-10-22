@@ -2,9 +2,11 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { ChallengeHubSignalRService } from '../../../services/signal-r/challenge-hub-signal-r.service';
 import { Challenge } from '../../../classes/models/challenge';
 import { SignalRMethod } from 'src/app/services/signal-r/signal-r-method';
-import { ChallengerColor } from 'src/app/enums/challenger-color.enum';
-import { ChallengesService } from 'src/app/services/http/challenges/challenges.service'
+import { ChallengesService } from 'src/app/services/http/challenges/challenges.service';
 import { LoginStateService } from 'src/app/services/login-state.service';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { Game } from 'src/app/classes/models/game';
 
 @Component({
 	selector: 'app-challenges',
@@ -17,8 +19,11 @@ export class ChallengesComponent implements OnInit {
 
 	constructor(@Inject(ChallengeHubSignalRService) private challengeHubService: ChallengeHubSignalRService,
 		@Inject(ChallengesService) private challengeService: ChallengesService,
-		@Inject(LoginStateService) private loginStateService: LoginStateService) {
+		@Inject(LoginStateService) private loginStateService: LoginStateService,
+		@Inject(ToastrService) private toastr: ToastrService,
+		@Inject(Router) private router: Router) {
 		this.challengeHubService.onMethod(SignalRMethod.NewChallenge, (challenge) => this.onChallengeRecieved(challenge));
+		this.challengeHubService.onMethod(SignalRMethod.ChallengeAccepted, (game) => this.onChallengeAccepted(game));
 		this.loginStateService.subscribeToLogIn(() => this.onLogIn());
 		this.loginStateService.subscribeToLogOut(() => this.onLogOut());
 	}
@@ -27,8 +32,20 @@ export class ChallengesComponent implements OnInit {
 		this.syncChallenges();
 	}
 
-	public accept(challenge: Challenge): void {
+	public async accept(challenge: Challenge): Promise<void> {
+		let result = await this.challengeService.acceptChallenge(challenge);
 
+		if (result?.isSuccess) {
+			let game = result.data;
+			this.router.navigate(['/game', game.id]);
+			this.syncChallenges();
+		} else {
+			if (result?.errors) {
+				this.toastr.error(result.errors.join(', '), 'Failed to accept challenge');
+			} else {
+				this.toastr.error('Failed to accept challenge');
+			}
+		}
 	}
 
 	public async decline(challenge: Challenge): Promise<void> {
@@ -59,7 +76,12 @@ export class ChallengesComponent implements OnInit {
 		}
 	}
 
-	private onChallengeRecieved(challenge: Challenge) {
+	private onChallengeRecieved(challenge: Challenge): void {
 		this.activeChallenges.push(challenge);
+	}
+
+	private onChallengeAccepted(game: Game): void {
+		console.log(game);
+		this.router.navigate(['/game', game.id]);
 	}
 }

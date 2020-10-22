@@ -9,91 +9,91 @@ import { SignalRMethod } from './signal-r-method';
 	providedIn: 'root'
 })
 export class SignalRService {
-	protected _hubConnection: HubConnection;
-	private _hasStarted: boolean = false;
-	private _hubStartPromise: Promise<boolean | void>;
-	private _onConnectFailBehaviours: (() => void)[] = [];
-	private _onDisconnectBehaviours: (() => void)[] = [];
-	private _onReconnectingBehaviours: (() => void)[] = [];
-	private _onReconnectedBehaviours: (() => void)[] = [];
+	protected hubConnection: HubConnection;
+	private hasStarted: boolean = false;
+	private hubStartPromise: Promise<boolean | void>;
+	private onConnectFailBehaviours: (() => void)[] = [];
+	private onDisconnectBehaviours: (() => void)[] = [];
+	private onReconnectingBehaviours: (() => void)[] = [];
+	private onReconnectedBehaviours: (() => void)[] = [];
 
-	private _connectionAttemptCount = 1;
-	private _maxConnectionAttempts = 5;
+	private connectionAttemptCount = 1;
+	private maxConnectionAttempts = 5;
 
-	constructor(private _configService: ConfigService, private spinner: NgxSpinnerService, private hubEndpointConfigName: string,
-		private _loginStateService: LoginStateService) {
-		this._hubConnection = this.buildConnection();
-		this._hubConnection.onclose(() => this.onclose())
-		this._hubConnection.onreconnecting(() => this.onreconnecting());
-		this._hubConnection.onreconnected(() => this.onreconnected())
+	constructor(private configService: ConfigService, private spinner: NgxSpinnerService, private hubEndpointConfigName: string,
+		private loginStateService: LoginStateService) {
+		this.hubConnection = this.buildConnection();
+		this.hubConnection.onclose(() => this.onclose());
+		this.hubConnection.onreconnecting(() => this.onreconnecting());
+		this.hubConnection.onreconnected(() => this.onreconnected());
 		this.startConnection();
 	}
 
-	public onConnectFail(newMethod: () => void) {
-		this._onDisconnectBehaviours.push(newMethod);
+	public onConnectFail(newMethod: () => void): void {
+		this.onDisconnectBehaviours.push(newMethod);
 	}
 
-	public onDisconnect(newMethod: () => void) {
-		this._onDisconnectBehaviours.push(newMethod);
+	public onDisconnect(newMethod: () => void): void {
+		this.onDisconnectBehaviours.push(newMethod);
 	}
 
-	public onReconnecting(newMethod: () => void) {
-		this._onReconnectingBehaviours.push(newMethod);
+	public onReconnecting(newMethod: () => void): void {
+		this.onReconnectingBehaviours.push(newMethod);
 	}
 
-	public onReconnected(newMethod: () => void) {
-		this._onReconnectedBehaviours.push(newMethod);
+	public onReconnected(newMethod: () => void): void {
+		this.onReconnectedBehaviours.push(newMethod);
 	}
 
 	public onMethod(methodName: SignalRMethod, newMethod: (...args: any[]) => void): void {
 		let errorHandledMethod = this.createErrorHandledSignalRMethod(newMethod);
 
-		if (this._hasStarted) { // If already started just add the method
-			this._hubConnection.on(methodName, errorHandledMethod)
+		if (this.hasStarted) { // If already started just add the method
+			this.hubConnection.on(methodName, errorHandledMethod);
 		} else { // If not, add the subscription once finished loading
-			this._hubStartPromise.then(() =>
-				this._hubConnection.on(methodName, errorHandledMethod)
+			this.hubStartPromise.then(() =>
+				this.hubConnection.on(methodName, errorHandledMethod)
 			);
 		}
 	}
 
 	public reconnect(): void {
-		this._connectionAttemptCount = 1;
-		this._hubConnection.stop();
+		this.connectionAttemptCount = 1;
+		this.hubConnection.stop();
 		this.startConnection();
 	}
 
 	private buildConnection(): HubConnection {
-		let hubUrl: string = this._configService.getApiEndpoint(this.hubEndpointConfigName);
+		let hubUrl: string = this.configService.getApiEndpoint(this.hubEndpointConfigName);
 
 		return new HubConnectionBuilder()
 			.withUrl(hubUrl, {
-				accessTokenFactory: () => this._loginStateService.getToken()
+				accessTokenFactory: () => this.loginStateService.getToken()
 			})
 			.withAutomaticReconnect()
 			.build();
 	}
 
 	private startConnection(): void {
-		if (this._connectionAttemptCount == 1) {
+		if (this.connectionAttemptCount == 1) {
 			this.spinner.show();
 		}
 
-		this._hubStartPromise = this._hubConnection
+		this.hubStartPromise = this.hubConnection
 			.start()
 			.then(() => {
-				this._hasStarted = true;
+				this.hasStarted = true;
 				this.spinner.hide();
 			})
 			.catch(error => {
-				console.warn("Error while starting connection: " + error);
+				console.warn('Error while starting connection: ' + error);
 				this.spinner.hide();
 
-				if (this._connectionAttemptCount++ < this._maxConnectionAttempts) {
+				if (this.connectionAttemptCount++ < this.maxConnectionAttempts) {
 					setTimeout(() => this.startConnection(), 3000);
 				} else {
-					console.error("Failed to connect after " + this._connectionAttemptCount + " attempts");
-					this._onConnectFailBehaviours.forEach(onConnectFailBehaviour => {
+					console.error(`Failed to connect after ${this.connectionAttemptCount} attempts`);
+					this.onConnectFailBehaviours.forEach(onConnectFailBehaviour => {
 						onConnectFailBehaviour();
 					});
 				}
@@ -101,22 +101,22 @@ export class SignalRService {
 	}
 
 	private onclose(): void {
-		console.error("SignalR disconnected!");
-		this._onDisconnectBehaviours.forEach(disconnectBehaviour => {
+		console.error('SignalR disconnected!');
+		this.onDisconnectBehaviours.forEach(disconnectBehaviour => {
 			disconnectBehaviour();
 		});
 	}
 
 	private onreconnecting(): void {
-		console.warn("SignalR connection lost, reconnecting");
-		this._onReconnectingBehaviours.forEach(reconnectingBehaviour => {
+		console.warn('SignalR connection lost, reconnecting');
+		this.onReconnectingBehaviours.forEach(reconnectingBehaviour => {
 			reconnectingBehaviour();
 		});
 	}
 
 	private onreconnected(): void {
-		console.log("Reconnected to SignalR");
-		this._onReconnectedBehaviours.forEach(reconnectedBehaviour => {
+		console.log('Reconnected to SignalR');
+		this.onReconnectedBehaviours.forEach(reconnectedBehaviour => {
 			reconnectedBehaviour();
 		});
 	}
@@ -124,10 +124,10 @@ export class SignalRService {
 	private createErrorHandledSignalRMethod(newMethod: (...args: any[]) => void): (...args: any[]) => void {
 		return (...args) => {
 			try {
-				newMethod(...args)
+				newMethod(...args);
 			} catch (e) {
 				console.error('ERROR in SignalR method:', e);
 			}
-		}
+		};
 	}
 }

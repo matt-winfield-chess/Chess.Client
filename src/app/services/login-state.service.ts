@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { JwtTokenBody } from 'src/app/classes/jwt-token-body';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class LoginStateService {
 
-	private _isLoggedIn: boolean;
+	private loggedIn: boolean;
 
 	private localStorageTokenKey: string = 'Chess:LoginToken';
 	private localStorageUsernameKey: string = 'Chess:Username';
@@ -15,14 +16,14 @@ export class LoginStateService {
 
 	constructor() {
 		if (localStorage.getItem('Chess:LoginToken')) {
-			this._isLoggedIn = true;
+			this.loggedIn = true;
 		}
 	}
 
 	public logIn(token: string, username: string): void {
 		localStorage.setItem(this.localStorageTokenKey, token);
 		localStorage.setItem(this.localStorageUsernameKey, username);
-		this._isLoggedIn = true;
+		this.loggedIn = true;
 
 		for (let onLogIn of this.logInSubscribers) {
 			onLogIn();
@@ -32,7 +33,7 @@ export class LoginStateService {
 	public clearToken(): void {
 		localStorage.removeItem(this.localStorageTokenKey);
 		localStorage.removeItem(this.localStorageUsernameKey);
-		this._isLoggedIn = false;
+		this.loggedIn = false;
 
 		for (let onLogOut of this.logOutSubscribers) {
 			onLogOut();
@@ -44,11 +45,16 @@ export class LoginStateService {
 	}
 
 	public isLoggedIn(): boolean {
-		return this._isLoggedIn;
+		return this.loggedIn;
 	}
 
 	public getUsername(): string {
 		return localStorage.getItem(this.localStorageUsernameKey);
+	}
+
+	public getUserId(): number {
+		let claims = this.parseJwt(this.getToken());
+		return parseInt(claims.id);
 	}
 
 	public subscribeToLogIn(onLogIn: () => void): void {
@@ -57,5 +63,11 @@ export class LoginStateService {
 
 	public subscribeToLogOut(onLogOut: () => void): void {
 		this.logOutSubscribers.push(onLogOut);
+	}
+
+	private parseJwt(token: string): JwtTokenBody {
+		let base64Payload = token.split('.')[1];
+		let jsonPayload = atob(base64Payload);
+		return JSON.parse(jsonPayload);
 	}
 }
