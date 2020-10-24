@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { ChallengeHubSignalRService } from '../../../services/signal-r/challenge-hub-signal-r.service';
 import { Challenge } from '../../../classes/models/challenge';
 import { SignalRMethod } from 'src/app/services/signal-r/signal-r-method';
@@ -7,6 +7,7 @@ import { LoginStateService } from 'src/app/services/login-state.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Game } from 'src/app/classes/models/game';
+import { NavbarButtonComponent } from '../navbar-button/navbar-button.component';
 
 @Component({
 	selector: 'app-challenges',
@@ -15,7 +16,10 @@ import { Game } from 'src/app/classes/models/game';
 })
 export class ChallengesComponent implements OnInit {
 
+	@ViewChild('challengesNavbarButton') challengesNavbarButton: NavbarButtonComponent;
+
 	public activeChallenges: Challenge[] = [];
+	public displayChallenges: boolean = false;
 
 	constructor(@Inject(ChallengeHubSignalRService) private challengeHubService: ChallengeHubSignalRService,
 		@Inject(ChallengesService) private challengeService: ChallengesService,
@@ -56,6 +60,12 @@ export class ChallengesComponent implements OnInit {
 			&& c.recipient.id == challenge.recipient.id);
 
 		this.activeChallenges.splice(challengeIndex, 1);
+		this.updateBadge();
+	}
+
+	public toggleChallengesVisibility(): void {
+		this.displayChallenges = this.displayChallenges ? false : true;
+		this.challengesNavbarButton.setActive(this.displayChallenges);
 	}
 
 	private onLogIn(): void {
@@ -74,14 +84,25 @@ export class ChallengesComponent implements OnInit {
 				this.activeChallenges = challengesResponse.data;
 			}
 		}
+		this.updateBadge();
 	}
 
 	private onChallengeRecieved(challenge: Challenge): void {
 		this.activeChallenges.push(challenge);
+		this.updateBadge();
 	}
 
 	private onChallengeAccepted(game: Game): void {
 		console.log(game);
 		this.router.navigate(['/game', game.id]);
+	}
+
+	private updateBadge(): void {
+		if (this.activeChallenges.length > 0) {
+			this.challengesNavbarButton.setBadgeText(this.activeChallenges.length.toString());
+			this.challengesNavbarButton.setBadgeVisible(true);
+		} else {
+			this.challengesNavbarButton.setBadgeVisible(false);
+		}
 	}
 }

@@ -1,0 +1,6 @@
+<button class="button" (click)="click()" [class.active]="active">
+	<div class="icon">
+		<ng-content></ng-content>
+	</div>
+	<div *ngIf="showBadge" class="badge">{{badgeContents}}</div>
+</button>

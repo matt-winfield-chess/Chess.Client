@@ -1,0 +1,42 @@
+@import "../../../styles/themes/themes.scss";
+@import "../../../styles/themes/themify.scss";
+
+button {
+	padding: 7px 10px;
+	margin: 5px;
+	position: relative;
+
+	@include themify($themes) {
+		background-color: themed("buttonBackgroundColor");
+		&:hover,
+		&.active {
+			background-color: themed("buttonHoverColor");
+		}
+
+		svg {
+			fill: themed("buttonSvgFill");
+		}
+	}
+}
+
+.icon {
+	width: 24px;
+	height: 24px;
+}
+
+.badge {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	padding: 1px 4px;
+	border-radius: 5px;
+	width: fit-content;
+	font-size: 16px;
+	transform: translate(50%, -50%);
+	z-index: 1;
+
+	@include themify($themes) {
+		color: themed("navbarBadgeFontColor");
+		background-color: themed("navbarBadgeBackgroundColor");
+	}
+}

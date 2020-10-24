@@ -2,7 +2,7 @@
 @import "../../../styles/themes/themes.scss";
 @import "../../../styles/mixins/responsive-sizes.scss";
 
-.challenges {
+.notifications {
 	position: absolute;
 	top: 70px;
 	right: 50px;
@@ -19,7 +19,7 @@
 	}
 }
 
-.challenge {
+.notification {
 	border-radius: 5px;
 	height: 100px;
 	margin: 10px;
@@ -33,22 +33,23 @@
 	}
 }
 
-.challenge-info {
+.info {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 
-	.username {
+	.title {
 		font-size: 26px;
-		margin: 5px;
 	}
 
-	.vs {
-		font-size: 20px;
+	.details {
+		font-size: 16px;
+		margin: 5px;
 	}
 }
 
-.challenge-buttons {
+.buttons {
 	display: flex;
 	justify-content: center;
 	align-items: center;

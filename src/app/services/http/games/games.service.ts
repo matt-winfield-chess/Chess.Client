@@ -22,4 +22,14 @@ export class GamesService {
 			.toPromise()
 			.catch(reason => reason.error);
 	}
+
+	public async getActiveGames(): Promise<ApiResponse<Game[]>> {
+		let url = this.configService.getApiEndpoint('ACTIVE_GAMES');
+
+		let headers = new HttpHeaders({ Authorization: `Bearer ${this.loginStateService.getToken()}` });
+
+		return this.http.get<ApiResponse<Game[]>>(url, { headers })
+			.toPromise()
+			.catch(reason => reason.error);
+	}
 }
