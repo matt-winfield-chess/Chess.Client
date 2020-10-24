@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { LoginStateService } from 'src/app/services/login-state.service';
 
 @Component({

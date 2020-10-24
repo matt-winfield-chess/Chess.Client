@@ -22,6 +22,8 @@ import { ChallengesComponent } from './components/navigation/challenges/challeng
 import { GameSettingsModalComponent } from './components/navigation/game-settings-modal/game-settings-modal.component';
 import { SendChallengeModalComponent } from './components/navigation/send-challenge-modal/send-challenge-modal.component';
 import { OfflineGamePageComponent } from './pages/offline-game-page/offline-game-page.component';
+import { NavbarButtonComponent } from './components/navigation/navbar-button/navbar-button.component';
+import { NotificationsComponent } from './components/navigation/notifications/notifications.component';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -41,7 +43,9 @@ export function load(config: ConfigService): () => Promise<void> {
 		ChallengesComponent,
 		GameSettingsModalComponent,
 		SendChallengeModalComponent,
-		OfflineGamePageComponent
+		OfflineGamePageComponent,
+		NavbarButtonComponent,
+		NotificationsComponent
 	],
 	imports: [
 		CommonModule,

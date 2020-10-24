@@ -9,6 +9,7 @@
 		"SEND_CHALLENGE": "/api/challenge/sendChallenge",
 		"DELETE_CHALLENGE": "/api/challenge/delete",
 		"ACCEPT_CHALLENGE": "/api/challenge/acceptChallenge",
-		"GET_GAME": "/api/game"
+		"GET_GAME": "/api/game",
+		"ACTIVE_GAMES": "/api/game/activeGames"
 	}
 }
