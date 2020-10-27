@@ -1,8 +1,10 @@
 import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { ToastrModule } from 'ngx-toastr';
 import { Observable, of } from 'rxjs';
+import { GameHubSignalRService } from 'src/app/services/signal-r/game-hub-signal-r.service';
 
 import { GamePageComponent } from './game-page.component';
 
@@ -20,9 +22,10 @@ describe('GamePageComponent', () => {
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
 			declarations: [GamePageComponent],
-			imports: [HttpClientModule, ToastrModule.forRoot()],
+			imports: [HttpClientModule, RouterTestingModule, ToastrModule.forRoot()],
 			providers: [
-				{ provide: ActivatedRoute, useValue: activatedRouteStub }
+				{ provide: ActivatedRoute, useValue: activatedRouteStub },
+				{ provide: GameHubSignalRService, useValue: jasmine.createSpyObj('GameHubSignalRService', ['onMethod']) }
 			]
 		})
 			.compileComponents();
