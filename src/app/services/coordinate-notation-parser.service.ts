@@ -32,7 +32,7 @@ export class CoordinateNotationParserService {
 	}
 
 	public convertCoordinateToNotation(coordinate: [number, number]): string {
-		return `${String.fromCharCode(coordinate[0] + this.characterToNumberOffset)}${coordinate[1]}`;
+		return `${String.fromCharCode(coordinate[0] + this.characterToNumberOffset)}${8 - coordinate[1]}`;
 	}
 
 	public convertMoveToNotation(move: Move): string {

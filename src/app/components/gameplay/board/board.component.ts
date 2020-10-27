@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Inject, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Inject, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { PieceComponent } from '../piece/piece.component';
 import { BoardStateService } from '../../../services/board-state.service';
 import { Piece } from 'src/app/classes/piece';
@@ -14,6 +14,8 @@ import { PlayerColor } from 'src/app/enums/player-color.enum';
 })
 export class BoardComponent implements OnInit, AfterViewInit {
 	@Input() public settings: BoardSettings;
+	@Output() public moveEmitter: EventEmitter<Move> = new EventEmitter<Move>();
+
 	public flipBoard: boolean = false;
 	public legalMoveHighlightedSquares: Coordinate[] = [];
 
@@ -48,7 +50,10 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	}
 
 	public isHighlighted(x: number, y: number): boolean {
-		return this.legalMoveHighlightedSquares.some(position => position.x == x && position.y == y);
+		let displayX = this.flipBoard ? 7 - x : x;
+		let displayY = this.flipBoard ? 7 - y : y;
+
+		return this.legalMoveHighlightedSquares.some(position => position.x == displayX && position.y == displayY);
 	}
 
 	public onPieceSelected(piece: Piece): void {
@@ -75,6 +80,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
 	private onMove(move: Move): void {
 		this.legalMoveHighlightedSquares = [];
+		this.moveEmitter.emit(move);
 	}
 
 	private updateBoardDimensions(): void {

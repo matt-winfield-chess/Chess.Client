@@ -2,6 +2,7 @@
 	"HOST_API": "https://chess-api.matt-winfield.com",
 	"API_ENDPOINTS": {
 		"CHALLENGE_HUB": "/ChallengeHub",
+		"GAME_HUB": "/GameHub",
 		"USERS": "/api/users",
 		"AUTHENTICATE": "/api/authentication/authenticate",
 		"RECEIVED_CHALLENGES": "/api/challenge/receivedChallenges",

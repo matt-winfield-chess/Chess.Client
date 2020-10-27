@@ -1,1 +1,1 @@
-<app-board *ngIf="boardSettings.game" [settings]="boardSettings"></app-board>
+<app-board *ngIf="boardSettings.game" [settings]="boardSettings" (moveEmitter)="onPieceMoved($event)"></app-board>

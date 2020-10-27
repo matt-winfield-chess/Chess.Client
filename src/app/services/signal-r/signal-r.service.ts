@@ -11,7 +11,7 @@ import { SignalRMethod } from './signal-r-method';
 export class SignalRService {
 	protected hubConnection: HubConnection;
 	private hasStarted: boolean = false;
-	private hubStartPromise: Promise<boolean | void>;
+	protected hubStartPromise: Promise<boolean | void>;
 	private onConnectFailBehaviours: (() => void)[] = [];
 	private onDisconnectBehaviours: (() => void)[] = [];
 	private onReconnectingBehaviours: (() => void)[] = [];
@@ -61,6 +61,11 @@ export class SignalRService {
 		this.connectionAttemptCount = 1;
 		this.hubConnection.stop();
 		this.startConnection();
+	}
+
+	protected async sendWhenConnected(methodName: SignalRMethod, ...args: any[]): Promise<void> {
+		await this.hubStartPromise;
+		await this.hubConnection.send(methodName, ...args);
 	}
 
 	private buildConnection(): HubConnection {
