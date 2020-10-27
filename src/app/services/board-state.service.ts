@@ -58,18 +58,21 @@ export class BoardStateService {
 			let movementValidationResult = this.ValidateMove(piece, newX, newY);
 			if (!movementValidationResult.isValid) return;
 
-			this.handleEnPassant(piece, movementValidationResult);
+			this.applyMoveAndSideEffects(piece, movementValidationResult);
 
-			this.applyMove(movementValidationResult.move);
+			this.notifyMoveSubscribersOfMove(movementValidationResult.move);
+		}
+	}
 
-			if (movementValidationResult.isCastleMove) {
-				this.applyMove(movementValidationResult.castleRookMove);
-			}
+	public forceMove(oldX: number, oldY: number, newX: number, newY: number): void {
+		let piece = this.piecePositions[oldY][oldX];
 
-			this.handlePromotion(movementValidationResult);
+		if (piece) {
+			let movementValidationResult = this.ValidateMove(piece, newX, newY, true);
 
-			this.updateBoardStateCounters();
-			this.updateCastlingRights(piece, oldX, oldY);
+			this.applyMoveAndSideEffects(piece, movementValidationResult);
+
+			this.notifyMoveSubscribersOfMove(movementValidationResult.move);
 		}
 	}
 
@@ -151,13 +154,26 @@ export class BoardStateService {
 
 				if (this.isKingInCheck(piece.color, testBoard)) {
 					movementValidationResult.isValid = false;
-				} else {
-					this.notifyMoveSubscribersOfMove(movementValidationResult.move);
 				}
 				return movementValidationResult;
 			}
 		}
 		return new MoveValidationResult({ isValid: false });
+	}
+
+	private applyMoveAndSideEffects(piece: Piece, movementValidationResult: MoveValidationResult): void {
+		this.handleEnPassant(piece, movementValidationResult);
+
+		this.applyMove(movementValidationResult.move);
+
+		if (movementValidationResult.isCastleMove) {
+			this.applyMove(movementValidationResult.castleRookMove);
+		}
+
+		this.handlePromotion(movementValidationResult);
+
+		this.updateBoardStateCounters();
+		this.updateCastlingRights(piece, movementValidationResult.move.oldX, movementValidationResult.move.oldY);
 	}
 
 	private applyMove(move: Move): void {
