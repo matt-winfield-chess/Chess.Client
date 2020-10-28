@@ -66,7 +66,7 @@ export class PawnMovementStrategy extends MovementStrategy {
 	}
 
 	private isForwardMovementBlocked(oldX: number, oldY: number, distance: number, correctDirection: number): boolean {
-		for (let i = 1; i <= distance; i++) {
+		for (let i = 1; i <= Math.abs(distance); i++) {
 			let piece = this.boardStateService.getPieceOnSquare(oldX, oldY + i * correctDirection);
 			if (piece != null) return true;
 		}
