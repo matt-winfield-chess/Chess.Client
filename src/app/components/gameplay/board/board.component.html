@@ -3,14 +3,15 @@
 		<ng-container *ngFor="let y of range(8)">
 			<chess-tile *ngFor="let x of range(8)" [attr.data-x]="x" [attr.data-y]="y" [class.dark]="isDarkSquare(x, y)"
 				[class.highlighted]="isHighlighted(x, y)" [style.left]="getTilePositioning(x)"
-				[style.top]="getTilePositioning(y)" draggable="false">
+				[style.top]="getTilePositioning(y)" draggable="false" (click)="onTileClicked(x, y)">
 			</chess-tile>
 		</ng-container>
 	</chess-tiles>
 
 	<chess-pieces>
 		<app-piece #dynamicPiece *ngFor="let piece of boardStateService.getBoardState().pieces" [piece]="piece"
-			[flipBoard]="flipBoard" [board]="board" (onPieceSelected)="onPieceSelected($event)">
+			[flipBoard]="flipBoard" [board]="board" (onPieceSelected)="onPieceSelected($event)"
+			(pieceClicked)="onPieceClicked($event)" (pieceDragged)="onPieceDragged($event)">
 		</app-piece>
 	</chess-pieces>
 </chess-board>
