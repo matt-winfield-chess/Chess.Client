@@ -17,7 +17,7 @@ describe('GamePageComponent', () => {
 				return of();
 			}
 		}
-	}
+	};
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({

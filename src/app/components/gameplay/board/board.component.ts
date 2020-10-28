@@ -22,6 +22,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	@ViewChild('board') private board: ElementRef<HTMLElement>;
 	@ViewChildren('dynamicPiece') private dynamicPieces: QueryList<PieceComponent>;
 
+	private clickToMoveTarget: Piece = null;
+
 	constructor(@Inject(BoardStateService) public boardStateService: BoardStateService) { }
 
 	public ngOnInit(): void {
@@ -57,6 +59,51 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	}
 
 	public onPieceSelected(piece: Piece): void {
+		this.showLegalMoves(piece);
+	}
+
+	public onPieceClicked(piece: Piece): void {
+		if (this.clickToMoveTarget == null) {
+			this.clickToMoveTarget = piece;
+			return;
+		}
+
+		if (piece.color != this.clickToMoveTarget.color) {
+			this.boardStateService.notifyMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, piece.x, piece.y);
+			this.clickToMoveTarget = null;
+		} else {
+			this.toggleLegalMoveVisibility(piece);
+		}
+	}
+
+	public onPieceDragged(piece: Piece): void {
+		this.hideLegalMoves();
+	}
+
+	public onTileClicked(x: number, y: number): void {
+		if (this.clickToMoveTarget == null) return;
+
+		this.boardStateService.notifyMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, x, y);
+		this.toggleLegalMoveVisibility(this.clickToMoveTarget);
+	}
+
+	// Fired when viewport is resized
+	@HostListener('window:resize', ['$event'])
+	public onResize(event: Event): void {
+		this.updateBoardDimensions();
+	}
+
+	private toggleLegalMoveVisibility(piece: Piece): void {
+		if (piece != this.clickToMoveTarget) {
+			this.clickToMoveTarget = piece;
+			this.showLegalMoves(piece);
+		} else {
+			this.clickToMoveTarget = null;
+			this.hideLegalMoves();
+		}
+	}
+
+	private showLegalMoves(piece: Piece): void {
 		this.legalMoveHighlightedSquares = [];
 
 		if (this.settings != null && piece.color !== this.settings.playerColor) {
@@ -72,10 +119,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-	// Fired when viewport is resized
-	@HostListener('window:resize', ['$event'])
-	public onResize(event: Event): void {
-		this.updateBoardDimensions();
+	private hideLegalMoves(): void {
+		this.legalMoveHighlightedSquares = [];
+		this.clickToMoveTarget = null;
 	}
 
 	private onMove(move: Move): void {

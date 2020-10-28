@@ -16,6 +16,8 @@ export class PieceComponent implements AfterViewInit {
 	@Input() board: HTMLElement;
 
 	@Output() onPieceSelected = new EventEmitter<Piece>();
+	@Output() pieceClicked = new EventEmitter<Piece>();
+	@Output() pieceDragged = new EventEmitter<Piece>();
 
 	@ViewChild('piece') pieceElement: ElementRef<HTMLElement>;
 
@@ -120,8 +122,15 @@ export class PieceComponent implements AfterViewInit {
 		let newXCoord = Math.round((newXPosition / this.boundingRect.width) - 0.5);
 		let newYCoord = Math.round((newYPosition / this.boundingRect.height) - 0.5);
 
+		let realNewPosition = this.convertDisplayPosition(newXCoord, newYCoord);
+
+		if (this.hasMoved(realNewPosition[0], realNewPosition[1])) {
+			this.pieceDragged.emit(this.piece);
+		} else {
+			this.pieceClicked.emit(this.piece);
+		}
+
 		if (this.isValidCoordinate(newXCoord, newYCoord)) {
-			let realNewPosition = this.convertDisplayPosition(newXCoord, newYCoord);
 			this.boardStateService.notifyMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1]);
 		}
 	}
@@ -153,5 +162,9 @@ export class PieceComponent implements AfterViewInit {
 		let yPosition = this.draggingYPosition - this.boardBoundingRect.top;
 
 		return `translate(calc(${xPosition}px - 50%), calc(${yPosition}px - 50%))`;
+	}
+
+	private hasMoved(newX: number, newY: number): boolean {
+		return this.piece.x != newX || this.piece.y != newY;
 	}
 }
