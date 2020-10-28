@@ -41,6 +41,8 @@ export class PieceComponent implements AfterViewInit {
 		[PieceType.Knight, 'knight']
 	]);
 
+	private isUsingTouchEvents = false;
+
 	constructor(@Inject(BoardStateService) private boardStateService: BoardStateService,
 		@Inject(MovementStrategyFactoryService) private movementStrategyFactory: MovementStrategyFactoryService) { }
 
@@ -76,6 +78,8 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	public onPieceMouseDown(event: MouseEvent): void {
+		if (this.isUsingTouchEvents) return;
+
 		this.draggingXPosition = event.clientX;
 		this.draggingYPosition = event.clientY;
 
@@ -87,6 +91,8 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	public onPieceTouchStart(event: TouchEvent): void {
+		this.isUsingTouchEvents = true;
+
 		let touch = event.touches[0];
 
 		this.draggingXPosition = touch.clientX;
@@ -97,6 +103,8 @@ export class PieceComponent implements AfterViewInit {
 
 		document.ontouchend = (evt) => this.stopDragging(evt.changedTouches[0]);
 		document.ontouchmove = (evt) => this.dragPiece(evt.changedTouches[0]);
+		document.onmouseup = null;
+		document.onmousemove = null;
 	}
 
 	private stopDragging(event: MouseEvent | Touch): void {
