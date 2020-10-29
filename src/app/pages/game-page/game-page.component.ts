@@ -50,6 +50,7 @@ export class GamePageComponent implements OnInit {
 
 				this.boardSettings.game = gameResponse.data;
 				this.boardSettings.playerColor = this.getPlayerColorFromGame(gameResponse.data);
+				this.boardStateService.loadFromFen(this.boardSettings.game.fen);
 			} else if (gameResponse?.errors) {
 				this.toastr.error(gameResponse.errors.join(', '), 'Unable to load game');
 			} else {
@@ -58,16 +59,20 @@ export class GamePageComponent implements OnInit {
 		});
 	}
 
-	public onPieceMoved(move: Move): void {
+	public onPlayerPieceMoved(move: Move): void {
 		let moveString: string = this.coordinateNotationParserService.convertMoveToNotation(move);
 
 		this.gameHubSignalRService.sendMove(moveString, this.gameId);
 	}
 
+	public isWhiteActiveColor(): boolean {
+		return this.boardStateService.getBoardState().activeColor == PlayerColor.White;
+	}
+
 	private onOpponentMove(moveString: string): void {
 		let move = this.coordinateNotationParserService.toMove(moveString);
 
-		this.boardStateService.forceMove(move.oldX, move.oldY, move.newX, move.newY);
+		this.boardStateService.applyOnlineOpponentMove(move.oldX, move.oldY, move.newX, move.newY);
 	}
 
 	private getPlayerColorFromGame(game: Game): PlayerColor {

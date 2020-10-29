@@ -1,9 +1,13 @@
-@import './styles/themes/themes.scss';
-@import './styles/themes/themify.scss';
+@import "./styles/themes/themes.scss";
+@import "./styles/themes/themify.scss";
 
 #background {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+
 	@include themify($themes) {
-		background-color: themed('pageBackgroundColor');
-		color: themed('primaryFontColor');
+		background-color: themed("pageBackgroundColor");
+		color: themed("primaryFontColor");
 	}
 }

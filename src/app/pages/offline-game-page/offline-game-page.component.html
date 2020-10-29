@@ -1,1 +1,10 @@
-<app-board></app-board>
+<div class="content">
+	<div class="game">
+		<app-board></app-board>
+
+		<div class="sidebar">
+			<div *ngIf="isWhiteActiveColor()">White to play</div>
+			<div *ngIf="!isWhiteActiveColor()">Black to play</div>
+		</div>
+	</div>
+</div>

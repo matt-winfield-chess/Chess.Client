@@ -14,7 +14,8 @@ import { PlayerColor } from 'src/app/enums/player-color.enum';
 })
 export class BoardComponent implements OnInit, AfterViewInit {
 	@Input() public settings: BoardSettings;
-	@Output() public moveEmitter: EventEmitter<Move> = new EventEmitter<Move>();
+	@Output() public playerMoveEmitter: EventEmitter<Move> = new EventEmitter<Move>();
+	@Output() public onlineMoveEmitter: EventEmitter<Move> = new EventEmitter<Move>();
 
 	public flipBoard: boolean = false;
 	public legalMoveHighlightedSquares: Coordinate[] = [];
@@ -36,7 +37,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	public ngAfterViewInit(): void {
 		this.updateBoardDimensions();
 		this.configureContextMenu();
-		this.boardStateService.subscribeToMoves((move: Move) => this.onMove(move));
+		this.boardStateService.subscribeToPlayerMoves((move: Move) => this.onPlayerMove(move));
+		this.boardStateService.subscribeToOnlineMoves((move: Move) => this.onOnlineMove(move));
 	}
 
 	public range(count: number): Array<number> {
@@ -124,9 +126,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		this.clickToMoveTarget = null;
 	}
 
-	private onMove(move: Move): void {
+	private onPlayerMove(move: Move): void {
 		this.legalMoveHighlightedSquares = [];
-		this.moveEmitter.emit(move);
+		this.playerMoveEmitter.emit(move);
+	}
+
+	private onOnlineMove(move: Move): void {
+		this.legalMoveHighlightedSquares = [];
+		this.onlineMoveEmitter.emit(move);
 	}
 
 	private updateBoardDimensions(): void {

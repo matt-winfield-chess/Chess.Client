@@ -1,1 +1,12 @@
-<app-board *ngIf="boardSettings.game" [settings]="boardSettings" (moveEmitter)="onPieceMoved($event)"></app-board>
+<div class="content">
+	<div class="game">
+		<app-board *ngIf="boardSettings.game" [settings]="boardSettings"
+			(playerMoveEmitter)="onPlayerPieceMoved($event)">
+		</app-board>
+
+		<div class="sidebar">
+			<div *ngIf="isWhiteActiveColor()">White to play</div>
+			<div *ngIf="!isWhiteActiveColor()">Black to play</div>
+		</div>
+	</div>
+</div>

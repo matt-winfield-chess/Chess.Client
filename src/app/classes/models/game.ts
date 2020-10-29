@@ -6,4 +6,6 @@ export class Game {
 	public whitePlayer: User;
 	public blackPlayer: User;
 	public moves: Move[];
+	public active: boolean;
+	public fen: string;
 }

@@ -2,19 +2,12 @@
 
 chess-board {
 	display: block;
-	position: absolute;
-	width: 600px;
+	position: relative;
+	width: 100%;
+
 	background-color: grey;
 	border: 1px solid black;
 	margin: auto auto;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-
-	@include phone-only {
-		box-sizing: border-box;
-		width: calc(100% - 20px);
-	}
 }
 
 chess-tile {
