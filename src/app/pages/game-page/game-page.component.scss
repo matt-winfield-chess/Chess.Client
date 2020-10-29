@@ -1,0 +1,33 @@
+@import "mixins/responsive-sizes.scss";
+
+:host {
+	flex-grow: 1;
+}
+
+app-board {
+	display: block;
+	width: 600px;
+
+	@include phone-only {
+		width: calc(100% - 20px);
+	}
+}
+
+.content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+
+.game {
+	position: relative;
+}
+
+.sidebar {
+	position: absolute;
+	top: 50%;
+	right: 0;
+	transform: translate(100%, -50%);
+	padding: 20px;
+}

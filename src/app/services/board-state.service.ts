@@ -17,7 +17,8 @@ export class BoardStateService {
 	private piecePositions: Piece[][]; // stores piece at it's current position for more efficient retrieval by x/y coordinate
 	private playerColor: PlayerColor = null;
 
-	private moveSubscribers: ((move: Move) => void)[] = [];
+	private onlineMoveSubscribers: ((move: Move) => void)[] = [];
+	private playerMoveSubscribers: ((move: Move) => void)[] = [];
 
 	constructor(@Inject(FenParserService) private fenParserService: FenParserService, @Inject(Router) private router: Router) {
 		this.setBoardToStandardStartingPosition();
@@ -27,7 +28,11 @@ export class BoardStateService {
 	}
 
 	public setBoardToStandardStartingPosition(): void {
-		this.initialiseBoardState(this.fenParserService.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'));
+		this.loadFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+	}
+
+	public loadFromFen(fen: string): void {
+		this.initialiseBoardState(this.fenParserService.parseFen(fen));
 	}
 
 	public initialiseBoardState(boardState: BoardState): void {
@@ -47,8 +52,12 @@ export class BoardStateService {
 		return this.boardState;
 	}
 
-	public subscribeToMoves(onMove: (move: Move) => void): void {
-		this.moveSubscribers.push(onMove);
+	public subscribeToOnlineMoves(onMove: (move: Move) => void): void {
+		this.onlineMoveSubscribers.push(onMove);
+	}
+
+	public subscribeToPlayerMoves(onMove: (move: Move) => void): void {
+		this.playerMoveSubscribers.push(onMove);
 	}
 
 	public notifyMove(oldX: number, oldY: number, newX: number, newY: number): void {
@@ -60,11 +69,11 @@ export class BoardStateService {
 
 			this.applyMoveAndSideEffects(piece, movementValidationResult);
 
-			this.notifyMoveSubscribersOfMove(movementValidationResult.move);
+			this.notifyPlayerMoveSubscribersOfMove(movementValidationResult.move);
 		}
 	}
 
-	public forceMove(oldX: number, oldY: number, newX: number, newY: number): void {
+	public applyOnlineOpponentMove(oldX: number, oldY: number, newX: number, newY: number): void {
 		let piece = this.piecePositions[oldY][oldX];
 
 		if (piece) {
@@ -72,7 +81,7 @@ export class BoardStateService {
 
 			this.applyMoveAndSideEffects(piece, movementValidationResult);
 
-			this.notifyMoveSubscribersOfMove(movementValidationResult.move);
+			this.notifyOpponentMoveSubscribersOfMove(movementValidationResult.move);
 		}
 	}
 
@@ -238,8 +247,14 @@ export class BoardStateService {
 		this.boardState.pieces.push(piece);
 	}
 
-	private notifyMoveSubscribersOfMove(move: Move): void {
-		for (let moveSubscriber of this.moveSubscribers) {
+	private notifyOpponentMoveSubscribersOfMove(move: Move): void {
+		for (let moveSubscriber of this.onlineMoveSubscribers) {
+			moveSubscriber(move);
+		}
+	}
+
+	private notifyPlayerMoveSubscribersOfMove(move: Move): void {
+		for (let moveSubscriber of this.playerMoveSubscribers) {
 			moveSubscriber(move);
 		}
 	}
