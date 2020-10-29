@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { ToastrModule } from 'ngx-toastr';
+import { ConfigService } from 'src/app/services/config/config.service';
 
 import { SendChallengeModalComponent } from './send-challenge-modal.component';
 
@@ -15,6 +16,9 @@ describe('SendChallengeModalComponent', () => {
 		TestBed.configureTestingModule({
 			declarations: [SendChallengeModalComponent],
 			imports: [HttpClientModule, ToastrModule.forRoot(), NgxSpinnerModule, RouterTestingModule, BrowserAnimationsModule],
+			providers: [
+				{ provide: ConfigService, useValue: jasmine.createSpyObj('ConfigService', ['getHost', 'getApiEndpoint', 'load']) }
+			]
 		})
 			.compileComponents();
 	}));
