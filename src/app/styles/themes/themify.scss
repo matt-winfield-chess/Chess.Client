@@ -2,6 +2,7 @@
 
 @mixin themify-body($theme, $map) {
 	$theme-map: () !global; // Theme map used in themed function
+
 	@each $key, $value in $map {
 		$theme-map: map-merge(
 			$theme-map,

@@ -8,6 +8,7 @@ button {
 
 	@include themify($themes) {
 		background-color: themed("buttonBackgroundColor");
+
 		&:hover,
 		&.active {
 			background-color: themed("buttonHoverColor");
