@@ -1,4 +1,6 @@
-# ChessClient
+# Chess.Client
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3e445ad28354473ca82908b711add795)](https://www.codacy.com/gh/matt-winfield-chess/Chess.Client/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=matt-winfield-chess/Chess.Client&amp;utm_campaign=Badge_Grade)
+[Build Badge](https://github.com/matt-winfield-chess/Chess.Client/workflows/Angular/badge.svg)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.2.
 
