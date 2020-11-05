@@ -3,6 +3,9 @@ export enum SignalRMethod {
 	NewChallenge = 'NewChallenge',
 	ChallengeAccepted = 'ChallengeAccepted',
 	MovePlayed = 'MovePlayed',
+	IllegalMove = 'IllegalMove',
+	Checkmate = 'Checkmate',
+	Stalemate = 'Stalemate',
 
 	// Outgoing
 	JoinGame = 'JoinGame',

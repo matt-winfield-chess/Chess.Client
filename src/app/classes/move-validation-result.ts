@@ -12,4 +12,5 @@ export class MoveValidationResult {
 	public isEnPassantTarget: boolean;
 	public isEnPassantCapture: boolean;
 	public isPromotion: boolean;
+	public shouldResetFiftyMoveRuleCounter: boolean;
 }

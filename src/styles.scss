@@ -77,5 +77,9 @@ app-root {
 			top: 7px;
 			right: 10px;
 		}
+
+		@include themify($themes) {
+			background-color: themed("modalBackgroundColor");
+		}
 	}
 }

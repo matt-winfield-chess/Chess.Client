@@ -1,6 +1,6 @@
-<div class="page-container">
+<div #container class="page-container">
 	<h2 class="title">Home</h2>
 	<button (click)="openGameSettingsModal()" class="play button">Play</button>
+	<app-game-settings-modal [hidden]="!shouldShowGameSettingsModal" (onClose)="closeGameSettingsModal()">
+	</app-game-settings-modal>
 </div>
-<app-game-settings-modal [hidden]="!shouldShowGameSettingsModal" (onClose)="closeGameSettingsModal()">
-</app-game-settings-modal>

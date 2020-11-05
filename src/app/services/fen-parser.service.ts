@@ -10,7 +10,7 @@ import { CoordinateNotationParserService } from './coordinate-notation-parser.se
 	providedIn: 'root'
 })
 export class FenParserService {
-	private pieceTypeCharacterMap: Map<string, PieceType> = new Map<string, PieceType>([
+	private readonly characterToPieceTypeMap: Map<string, PieceType> = new Map<string, PieceType>([
 		['p', PieceType.Pawn],
 		['n', PieceType.Knight],
 		['b', PieceType.Bishop],
@@ -19,10 +19,15 @@ export class FenParserService {
 		['k', PieceType.King]
 	]);
 
-	constructor(@Inject(CoordinateNotationParserService) private coordinateNotationParser: CoordinateNotationParserService) { }
+	private readonly pieceTypeToCharacterMap: Map<PieceType, string>;
+
+	constructor(@Inject(CoordinateNotationParserService) private coordinateNotationParser: CoordinateNotationParserService) {
+		let reversedMapArray: [PieceType, string][] = Array.from(this.characterToPieceTypeMap, a => a.reverse()) as [PieceType, string][];
+		this.pieceTypeToCharacterMap = new Map(reversedMapArray);
+	}
 
 	public parseFen(fen: string): BoardState {
-		let result = new BoardState();
+		let result = new BoardState(this);
 
 		let fenComponents: string[] = fen.split(' ');
 		if (fenComponents.length != 6) {
@@ -39,6 +44,17 @@ export class FenParserService {
 		result.fullmoveNumber = this.parseNumberComponent(fenComponents[5]);
 
 		return result;
+	}
+
+	public convertBoardStateToFen(state: BoardState): string {
+		let pieces = this.getPiecesFen(state.pieces);
+		let activeColor = state.activeColor == PlayerColor.White ? 'w' : 'b';
+		let castlingState = this.getCastlingStateFen(state.castlingState);
+		let enPassantTargetSquare = state.enPassantTargetSquare != null
+			? `${this.coordinateNotationParser.convertCoordinateToNotation(state.enPassantTargetSquare)}`
+			: '-';
+
+		return `${pieces} ${activeColor} ${castlingState} ${enPassantTargetSquare} ${state.halfmoveClock} ${state.fullmoveNumber}`;
 	}
 
 	private parsePieces(position: string): Piece[] {
@@ -86,7 +102,7 @@ export class FenParserService {
 		piece.color = this.isUpperCase(character) ? PlayerColor.White : PlayerColor.Black;
 		piece.x = file;
 		piece.y = rank;
-		piece.pieceType = this.pieceTypeCharacterMap.get(character.toLowerCase());
+		piece.pieceType = this.characterToPieceTypeMap.get(character.toLowerCase());
 
 		return piece;
 	}
@@ -97,5 +113,72 @@ export class FenParserService {
 
 	private isNumber(value: string): boolean {
 		return !isNaN(parseInt(value));
+	}
+
+	private getPiecesFen(pieces: Piece[]): string {
+		let output = '';
+		let spaceCount = 0;
+		for (let y = 0; y < 8; y++) {
+			for (let x = 0; x < 8; x++) {
+				let piece = this.getPiece(x, y, pieces);
+				if (piece == null) {
+					spaceCount += 1;
+				}
+				else {
+					if (spaceCount > 0) {
+						output += spaceCount.toString();
+						spaceCount = 0;
+					}
+
+					let character = this.pieceTypeToCharacterMap.get(piece.pieceType);
+
+					if (piece.color == PlayerColor.White) {
+						character = character.toUpperCase();
+					}
+
+					output += character;
+				}
+			}
+
+			if (spaceCount > 0) {
+				output += spaceCount.toString();
+				spaceCount = 0;
+			}
+
+			if (y != 0) {
+				output += '/';
+			}
+		}
+
+		return output;
+	}
+
+	private getCastlingStateFen(state: CastlingState): string {
+		if (!state.whiteKingside && !state.whiteQueenside && !state.blackKingside && !state.blackQueenside) {
+			return '-';
+		}
+
+		let output = '';
+		if (state.whiteKingside) {
+			output += 'K';
+		}
+
+		if (state.whiteQueenside) {
+			output += 'Q';
+		}
+
+		if (state.blackKingside) {
+			output += 'k';
+		}
+
+		if (state.blackQueenside) {
+			output += 'q';
+		}
+
+		return output;
+	}
+
+	private getPiece(x: number, y: number, pieces: Piece[]): Piece {
+		return pieces.find(piece => piece.x == x && piece.y == y) ?? null;
 	}
 }

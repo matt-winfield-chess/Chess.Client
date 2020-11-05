@@ -10,3 +10,6 @@
 		</div>
 	</div>
 </div>
+
+<app-game-over-modal [gameResult]="gameResult" [hidden]="!shouldShowGameOverModal" (onClose)="onCloseGameOverModal()">
+</app-game-over-modal>

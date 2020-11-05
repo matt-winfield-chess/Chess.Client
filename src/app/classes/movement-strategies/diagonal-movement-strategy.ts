@@ -7,7 +7,11 @@ export class DiagonalMovementStrategy extends MovementStrategy {
 	isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
 		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move });
 		if (!this.isDiagonal(move)) return new MoveValidationResult({ isValid: false, move });
-		return new MoveValidationResult({ isValid: !this.isBlocked(move), move });
+		return new MoveValidationResult({
+			isValid: !this.isBlocked(move),
+			move,
+			shouldResetFiftyMoveRuleCounter: this.isSquareOccupied(move.newX, move.newY)
+		});
 	}
 
 	private isDiagonal(move: Move): boolean {

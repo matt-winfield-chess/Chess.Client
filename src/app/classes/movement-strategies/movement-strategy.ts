@@ -12,4 +12,9 @@ export abstract class MovementStrategy {
 		let piece = this.boardStateService.getPieceOnSquare(x, y);
 		return piece == null || piece?.color != playerColor;
 	}
+
+	protected isSquareOccupied(x: number, y: number): boolean {
+		let piece = this.boardStateService.getPieceOnSquare(x, y);
+		return piece != null;
+	}
 }
