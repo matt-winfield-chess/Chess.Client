@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { EAGAIN } from 'constants';
 import { BoardState } from '../classes/board-state';
+import { GameResult } from '../classes/game-result';
 import { Move } from '../classes/move';
 import { MoveValidationResult } from '../classes/move-validation-result';
 import { Piece } from '../classes/piece';
@@ -13,12 +15,14 @@ import { FenParserService } from './fen-parser.service';
 })
 export class BoardStateService {
 
+	private positionsSinceLastIrreversableMove: string[] = [];
 	private boardState: BoardState;
 	private piecePositions: Piece[][]; // stores piece at it's current position for more efficient retrieval by x/y coordinate
 	private playerColor: PlayerColor = null;
 
 	private onlineMoveSubscribers: ((move: Move) => void)[] = [];
 	private playerMoveSubscribers: ((move: Move) => void)[] = [];
+	private gameEndSubscribers: ((gameResult: GameResult) => void)[] = [];
 
 	constructor(@Inject(FenParserService) private fenParserService: FenParserService, @Inject(Router) private router: Router) {
 		this.setBoardToStandardStartingPosition();
@@ -37,6 +41,7 @@ export class BoardStateService {
 
 	public initialiseBoardState(boardState: BoardState): void {
 		this.boardState = boardState;
+		this.positionsSinceLastIrreversableMove = [boardState.getFen()];
 		this.synchronizeInternalPiecePositionsToBoardState();
 	}
 
@@ -60,16 +65,23 @@ export class BoardStateService {
 		this.playerMoveSubscribers.push(onMove);
 	}
 
+	public subscribeToGameEnd(onGameEnd: (gameResult: GameResult) => void): void {
+		this.gameEndSubscribers.push(onGameEnd);
+	}
+
 	public notifyMove(oldX: number, oldY: number, newX: number, newY: number): void {
 		let piece = this.piecePositions[oldY][oldX];
 
 		if (piece) {
-			let movementValidationResult = this.ValidateMove(piece, newX, newY);
+			let movementValidationResult = this.validateMove(piece, newX, newY);
 			if (!movementValidationResult.isValid) return;
 
 			this.applyMoveAndSideEffects(piece, movementValidationResult);
 
 			this.notifyPlayerMoveSubscribersOfMove(movementValidationResult.move);
+			this.validateCheckmate();
+			this.validateStalemate();
+			this.validateThreefoldRepetition();
 		}
 	}
 
@@ -77,21 +89,24 @@ export class BoardStateService {
 		let piece = this.piecePositions[oldY][oldX];
 
 		if (piece) {
-			let movementValidationResult = this.ValidateMove(piece, newX, newY, true);
+			let movementValidationResult = this.validateMove(piece, newX, newY, true);
 
 			this.applyMoveAndSideEffects(piece, movementValidationResult);
 
 			this.notifyOpponentMoveSubscribersOfMove(movementValidationResult.move);
+			this.validateCheckmate();
+			this.validateStalemate();
+			this.validateThreefoldRepetition();
 		}
 	}
 
-	public getLegalMoves(piece: Piece): Move[] {
+	public getLegalMovesForPiece(piece: Piece): Move[] {
 		let legalMoves: Move[] = [];
 		if (piece.color != this.boardState.activeColor) return legalMoves;
 
 		for (let x: number = 0; x < 8; x++) {
 			for (let y: number = 0; y < 8; y++) {
-				let validationResult = this.ValidateMove(piece, x, y, true);
+				let validationResult = this.validateMove(piece, x, y, true);
 				if (validationResult.isValid) {
 					legalMoves.push({
 						oldX: piece.x,
@@ -99,6 +114,32 @@ export class BoardStateService {
 						newX: x,
 						newY: y
 					});
+				}
+			}
+		}
+
+		return legalMoves;
+	}
+
+	public getAllLegalMoves(color: PlayerColor): Move[] {
+		let legalMoves: Move[] = [];
+
+		for (let x: number = 0; x < 8; x++) {
+			for (let y: number = 0; y < 8; y++) {
+				for (let piece of this.boardState.pieces) {
+					if (piece.color != color) {
+						continue;
+					}
+
+					let validationResult = this.validateMove(piece, x, y, true);
+					if (validationResult.isValid) {
+						legalMoves.push({
+							oldX: piece.x,
+							oldY: piece.y,
+							newX: x,
+							newY: y
+						});
+					}
 				}
 			}
 		}
@@ -144,7 +185,7 @@ export class BoardStateService {
 		board[move.newY][move.newX] = piece;
 	}
 
-	private ValidateMove(piece: Piece, newX: number, newY: number, ignoreColor: boolean = false): MoveValidationResult {
+	private validateMove(piece: Piece, newX: number, newY: number, ignoreColor: boolean = false): MoveValidationResult {
 		if (piece.x == newX && piece.y == newY) return new MoveValidationResult({ isValid: false });
 		if (piece.color != this.boardState.activeColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
 		if (this.playerColor !== null && piece.color != this.playerColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
@@ -170,6 +211,66 @@ export class BoardStateService {
 		return new MoveValidationResult({ isValid: false });
 	}
 
+	private isCheckmate(activeColor: PlayerColor): boolean {
+		let legalMoves = this.getAllLegalMoves(activeColor);
+		return this.isKingInCheck(activeColor) && legalMoves.length == 0;
+	}
+
+	private isStalemate(activeColor: PlayerColor): boolean {
+		let legalMoves = this.getAllLegalMoves(activeColor);
+		return !this.isKingInCheck(activeColor) && legalMoves.length == 0;
+	}
+
+	private isThreefoldRepetition(): boolean {
+		console.log('previous positions: ', ...this.positionsSinceLastIrreversableMove);
+		console.log('current position: ', this.boardState.getFen());
+		let repetitionCount = 0;
+		for (let position of this.positionsSinceLastIrreversableMove) {
+			if (this.doesCurrentPositionMatchFen(position)) {
+				repetitionCount += 1;
+			}
+		}
+		return repetitionCount >= 3;
+	}
+
+	private doesCurrentPositionMatchFen(fen: string): boolean {
+		let currentFen = this.boardState.getFen().split(' ');
+		let splitFen = fen.split(' ');
+
+		return currentFen[0] == splitFen[0]
+			&& currentFen[1] == splitFen[1]
+			&& currentFen[2] == splitFen[2]
+			&& currentFen[3] == splitFen[3];
+	}
+
+	private validateCheckmate(): void {
+		if (this.isCheckmate(this.boardState.activeColor)) {
+			let winner = this.boardState.activeColor == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
+			this.notifyGameEndSubscribers(winner, 'checkmate');
+		}
+	}
+
+	private validateStalemate(): void {
+		if (this.isStalemate(this.boardState.activeColor)) {
+			this.notifyGameEndSubscribers(null, 'stalemate');
+		}
+	}
+
+	private validateThreefoldRepetition(): void {
+		if (this.isThreefoldRepetition()) {
+			this.notifyGameEndSubscribers(null, 'threefold repetition');
+		}
+	}
+
+	private notifyGameEndSubscribers(winnerColor: PlayerColor, termination: string): void {
+		for (let gameEndSubscriber of this.gameEndSubscribers) {
+			gameEndSubscriber({
+				winnerColor,
+				termination
+			});
+		}
+	}
+
 	private applyMoveAndSideEffects(piece: Piece, movementValidationResult: MoveValidationResult): void {
 		this.handleEnPassant(piece, movementValidationResult);
 
@@ -181,7 +282,7 @@ export class BoardStateService {
 
 		this.handlePromotion(movementValidationResult);
 
-		this.updateBoardStateCounters();
+		this.updateBoardStateCounters(movementValidationResult);
 		this.updateCastlingRights(piece, movementValidationResult.move.oldX, movementValidationResult.move.oldY);
 	}
 
@@ -398,11 +499,28 @@ export class BoardStateService {
 		}
 	}
 
-	private updateBoardStateCounters(): void {
+	private updateBoardStateCounters(moveValidationResult: MoveValidationResult): void {
 		if (this.boardState.activeColor == PlayerColor.Black) {
 			this.boardState.fullmoveNumber += 1;
 		}
+
+		if (moveValidationResult.shouldResetFiftyMoveRuleCounter) {
+			this.boardState.halfmoveClock = 0;
+		} else {
+			this.boardState.halfmoveClock += 1;
+		}
+
+		// 50 move rule = 100 half-moves
+		if (this.boardState.halfmoveClock >= 100) {
+			this.notifyGameEndSubscribers(null, '50 move rule');
+		}
+
 		this.boardState.activeColor = this.boardState.activeColor == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
+
+		if (moveValidationResult.shouldResetFiftyMoveRuleCounter) {
+			this.positionsSinceLastIrreversableMove = [];
+		}
+		this.positionsSinceLastIrreversableMove.push(this.boardState.getFen());
 	}
 
 	private resetInternalPiecePositions(): void {

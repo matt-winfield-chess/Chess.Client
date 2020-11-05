@@ -93,7 +93,6 @@ export class ChallengesComponent implements OnInit {
 	}
 
 	private onChallengeAccepted(game: Game): void {
-		console.log(game);
 		this.router.navigate(['/game', game.id]);
 	}
 

@@ -8,15 +8,27 @@ export class PawnMovementStrategy extends MovementStrategy {
 		if (!this.isSquareUsable(move.newX, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move });
 		if (!this.isMovingInCorrectDirection(move.oldY, move.newY, playerColor)) return new MoveValidationResult({ isValid: false, move });
 		if (this.isEnPassantCapture(move))
-			return new MoveValidationResult({ isValid: true, move, isEnPassantCapture: true, isPromotion: this.isPromotion(move) });
+			return new MoveValidationResult({
+				isValid: true,
+				move,
+				isEnPassantCapture: true,
+				isPromotion: this.isPromotion(move),
+				shouldResetFiftyMoveRuleCounter: true
+			});
 		if (this.isCapture(move, playerColor))
-			return new MoveValidationResult({ isValid: true, move, isPromotion: this.isPromotion(move) });
+			return new MoveValidationResult({
+				isValid: true,
+				move,
+				isPromotion: this.isPromotion(move),
+				shouldResetFiftyMoveRuleCounter: true
+			});
 
 		return new MoveValidationResult({
 			isValid: this.isValidMoveForward(move, playerColor),
 			move,
 			isEnPassantTarget: this.isEnPassantTarget(move),
-			isPromotion: this.isPromotion(move)
+			isPromotion: this.isPromotion(move),
+			shouldResetFiftyMoveRuleCounter: true
 		});
 	}
 

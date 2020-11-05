@@ -1,4 +1,7 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Inject, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+	AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Inject,
+	Input, OnInit, Output, QueryList, ViewChild, ViewChildren
+} from '@angular/core';
 import { PieceComponent } from '../piece/piece.component';
 import { BoardStateService } from '../../../services/board-state.service';
 import { Piece } from 'src/app/classes/piece';
@@ -85,7 +88,10 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	public onTileClicked(x: number, y: number): void {
 		if (this.clickToMoveTarget == null) return;
 
-		this.boardStateService.notifyMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, x, y);
+		let endX = this.flipBoard ? 7 - x : x;
+		let endY = this.flipBoard ? 7 - y : y;
+
+		this.boardStateService.notifyMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, endX, endY);
 		this.toggleLegalMoveVisibility(this.clickToMoveTarget);
 	}
 
@@ -112,7 +118,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 			return;
 		}
 
-		let legalMoves = this.boardStateService.getLegalMoves(piece);
+		let legalMoves = this.boardStateService.getLegalMovesForPiece(piece);
 		for (let move of legalMoves) {
 			this.legalMoveHighlightedSquares.push({
 				x: move.newX,

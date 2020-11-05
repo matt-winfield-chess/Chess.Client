@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LoginStateService } from 'src/app/services/login-state.service';
 
@@ -14,7 +15,7 @@ export class GameSettingsModalComponent {
 	public shouldShowSendChallengeModal: boolean = false;
 
 	constructor(@Inject(LoginStateService) private loginStateService: LoginStateService,
-		@Inject(ToastrService) private toastr: ToastrService) { }
+		@Inject(ToastrService) private toastr: ToastrService, private router: Router) { }
 
 	public close(): void {
 		this.onClose.emit();
@@ -31,5 +32,4 @@ export class GameSettingsModalComponent {
 	public hideSendChallengeModal(): void {
 		this.shouldShowSendChallengeModal = false;
 	}
-
 }
