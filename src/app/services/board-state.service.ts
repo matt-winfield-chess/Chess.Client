@@ -222,8 +222,6 @@ export class BoardStateService {
 	}
 
 	private isThreefoldRepetition(): boolean {
-		console.log('previous positions: ', ...this.positionsSinceLastIrreversableMove);
-		console.log('current position: ', this.boardState.getFen());
 		let repetitionCount = 0;
 		for (let position of this.positionsSinceLastIrreversableMove) {
 			if (this.doesCurrentPositionMatchFen(position)) {
