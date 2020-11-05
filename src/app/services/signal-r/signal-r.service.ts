@@ -57,6 +57,40 @@ export class SignalRService {
 		}
 	}
 
+	public async waitForResponseWithRetry(methodName: SignalRMethod, retry: () => void, maxRetries: number = 3): Promise<boolean> {
+		let count = 1;
+		while (count <= maxRetries) {
+			let result = await this.waitForResponse(methodName);
+			if (result) {
+				return true;
+			}
+			count++;
+			retry();
+		}
+		return false;
+	}
+
+	public async waitForResponse(methodName: SignalRMethod, maxTime: number = 2000): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			let hasResponseBeenReceived = false;
+			this.hubConnection.on(methodName, () => {
+				this.hubConnection.off(methodName);
+				hasResponseBeenReceived = true;
+			});
+
+			let startTime = new Date();
+			let wait = setInterval(() => {
+				if (hasResponseBeenReceived) {
+					clearInterval(wait);
+					resolve(true);
+				} else if (new Date().getTime() - startTime.getTime() > maxTime) {
+					clearInterval(wait);
+					resolve(false);
+				}
+			}, 20);
+		});
+	}
+
 	public reconnect(): void {
 		this.connectionAttemptCount = 1;
 		this.hubConnection.stop();
