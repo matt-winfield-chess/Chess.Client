@@ -69,10 +69,18 @@ export class GamePageComponent implements OnInit {
 		});
 	}
 
-	public onPlayerPieceMoved(move: Move): void {
+	public async onPlayerPieceMoved(move: Move): Promise<void> {
 		let moveString: string = this.coordinateNotationParserService.convertMoveToNotation(move);
 
 		this.gameHubSignalRService.sendMove(moveString, this.gameId);
+		let didMoveSendSuccessfully = await this.gameHubSignalRService.waitForResponseWithRetry(SignalRMethod.MoveReceived, () => {
+			this.toastr.warning('move failed to send, trying again...');
+			this.gameHubSignalRService.sendMove(moveString, this.gameId);
+		});
+
+		if (!didMoveSendSuccessfully) {
+			this.toastr.error('Unable to send move!');
+		}
 	}
 
 	public isWhiteActiveColor(): boolean {
@@ -100,7 +108,9 @@ export class GamePageComponent implements OnInit {
 	}
 
 	private onGameOver(gameResult: GameResult): void {
-
+		this.isGameOver = true;
+		this.shouldShowGameOverModal = true;
+		this.gameResult = gameResult;
 	}
 
 	private getPlayerColorFromGame(game: Game): PlayerColor {
