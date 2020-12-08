@@ -25,6 +25,7 @@ import { OfflineGamePageComponent } from './pages/offline-game-page/offline-game
 import { NavbarButtonComponent } from './components/navigation/navbar-button/navbar-button.component';
 import { NotificationsComponent } from './components/navigation/notifications/notifications.component';
 import { GameOverModalComponent } from './components/navigation/game-over-modal/game-over-modal.component';
+import { GameControlsComponent } from './components/gameplay/game-controls/game-controls.component';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -47,7 +48,8 @@ export function load(config: ConfigService): () => Promise<void> {
 		OfflineGamePageComponent,
 		NavbarButtonComponent,
 		NotificationsComponent,
-		GameOverModalComponent
+		GameOverModalComponent,
+		GameControlsComponent
 	],
 	imports: [
 		CommonModule,

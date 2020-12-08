@@ -7,6 +7,7 @@
 		<div class="sidebar">
 			<div *ngIf="isWhiteActiveColor()">White to play</div>
 			<div *ngIf="!isWhiteActiveColor()">Black to play</div>
+			<app-game-controls [gameId]="gameId"></app-game-controls>
 		</div>
 	</div>
 </div>

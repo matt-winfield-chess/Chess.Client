@@ -29,8 +29,7 @@ export class GamePageComponent implements OnInit {
 	public isGameOver: boolean = false;
 	public shouldShowGameOverModal: boolean = false;
 	public gameResult: GameResult;
-
-	private gameId: string;
+	public gameId: string;
 
 	constructor(@Inject(GamesService) private gamesService: GamesService,
 		@Inject(GameHubSignalRService) private gameHubSignalRService: GameHubSignalRService,
@@ -40,10 +39,12 @@ export class GamePageComponent implements OnInit {
 		@Inject(ActivatedRoute) private route: ActivatedRoute,
 		@Inject(NgxSpinnerService) private spinner: NgxSpinnerService,
 		@Inject(ToastrService) private toastr: ToastrService) {
+
 		this.gameHubSignalRService.onMethod(SignalRMethod.MovePlayed, (move: string) => this.onOpponentMove(move));
 		this.gameHubSignalRService.onMethod(SignalRMethod.IllegalMove, (fen: string) => this.onIllegalMove(fen));
 		this.gameHubSignalRService.onMethod(SignalRMethod.Checkmate, (gameResult: GameResult) => this.onGameOver(gameResult));
 		this.gameHubSignalRService.onMethod(SignalRMethod.Stalemate, (gameResult: GameResult) => this.onGameOver(gameResult));
+		this.gameHubSignalRService.onMethod(SignalRMethod.Resignation, (gameResult: GameResult) => this.onGameOver(gameResult));
 		this.boardStateService.subscribeToGameEnd((gameResult: GameResult) => this.onGameEnd(gameResult));
 	}
 
