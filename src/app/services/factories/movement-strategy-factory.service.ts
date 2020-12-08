@@ -14,7 +14,7 @@ import { BoardStateService } from '../board-state.service';
 })
 export class MovementStrategyFactoryService {
 
-	constructor(@Inject(BoardStateService) private boardStateService: BoardStateService) { }
+	constructor(private boardStateService: BoardStateService) { }
 
 	public createStrategies(pieceType: PieceType): MovementStrategy[] {
 		switch (pieceType) {

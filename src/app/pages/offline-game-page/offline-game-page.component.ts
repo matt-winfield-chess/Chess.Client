@@ -14,7 +14,7 @@ export class OfflineGamePageComponent {
 	public shouldShowGameOverModal: boolean = false;
 	public gameResult: GameResult;
 
-	constructor(@Inject(BoardStateService) private boardStateService: BoardStateService) {
+	constructor(private boardStateService: BoardStateService) {
 		this.boardStateService.subscribeToGameEnd((gameResult: GameResult) => this.onGameEnd(gameResult));
 	}
 

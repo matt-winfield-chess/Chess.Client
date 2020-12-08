@@ -18,8 +18,8 @@ export class CreateAccountPageComponent {
 	public displayInvalidPasswordMessage: boolean = false;
 	public displayNonMatchingPasswords: boolean = false;
 
-	constructor(@Inject(UsersService) private usersService: UsersService, @Inject(ToastrService) private toastr: ToastrService,
-		@Inject(NgxSpinnerService) private spinner: NgxSpinnerService, @Inject(Router) private router: Router) { }
+	constructor(private usersService: UsersService, private toastr: ToastrService,
+		private spinner: NgxSpinnerService, private router: Router) { }
 
 	public async signUp(): Promise<void> {
 		this.resetErrorMessages();

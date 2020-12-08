@@ -15,11 +15,8 @@ export class LogInComponent {
 	public username: string;
 	public password: string;
 
-	constructor(@Inject(AuthenticateService) private authenticateService: AuthenticateService,
-		@Inject(LoginStateService) private loginStateService: LoginStateService,
-		@Inject(NgxSpinnerService) private spinner: NgxSpinnerService,
-		@Inject(ToastrService) private toastr: ToastrService,
-		@Inject(Router) private router: Router) { }
+	constructor(private authenticateService: AuthenticateService, private loginStateService: LoginStateService,
+		private spinner: NgxSpinnerService, private toastr: ToastrService, private router: Router) { }
 
 	public async logIn(): Promise<void> {
 		this.spinner.show();

@@ -8,7 +8,7 @@ import { LoginStateService } from 'src/app/services/login-state.service';
 })
 export class NavbarComponent {
 
-	constructor(@Inject(LoginStateService) private loginStateService: LoginStateService) { }
+	constructor(private loginStateService: LoginStateService) { }
 
 	public shouldShowLoggedInButtons(): boolean {
 		return this.loginStateService.isLoggedIn();

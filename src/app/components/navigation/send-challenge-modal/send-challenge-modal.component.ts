@@ -14,8 +14,7 @@ export class SendChallengeModalComponent {
 	public username: string;
 	public challengerColor: ChallengerColor = ChallengerColor.Random;
 
-	constructor(@Inject(ChallengesService) private challengesService: ChallengesService,
-		@Inject(ToastrService) private toastr: ToastrService) { }
+	constructor(private challengesService: ChallengesService, private toastr: ToastrService) { }
 
 	public async sendChallenge(): Promise<void> {
 		let result = await this.challengesService.sendChallenge(this.username, parseInt(this.challengerColor.toString()));

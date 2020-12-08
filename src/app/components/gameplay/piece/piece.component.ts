@@ -43,8 +43,8 @@ export class PieceComponent implements AfterViewInit {
 
 	private isUsingTouchEvents = false;
 
-	constructor(@Inject(BoardStateService) private boardStateService: BoardStateService,
-		@Inject(MovementStrategyFactoryService) private movementStrategyFactory: MovementStrategyFactoryService) { }
+	constructor(private boardStateService: BoardStateService,
+		private movementStrategyFactory: MovementStrategyFactoryService) { }
 
 	public ngAfterViewInit(): void {
 		this.updateDimensions();

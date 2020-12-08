@@ -31,14 +31,10 @@ export class GamePageComponent implements OnInit {
 	public gameResult: GameResult;
 	public gameId: string;
 
-	constructor(@Inject(GamesService) private gamesService: GamesService,
-		@Inject(GameHubSignalRService) private gameHubSignalRService: GameHubSignalRService,
-		@Inject(LoginStateService) private loginStateService: LoginStateService,
-		@Inject(CoordinateNotationParserService) private coordinateNotationParserService: CoordinateNotationParserService,
-		@Inject(BoardStateService) private boardStateService: BoardStateService,
-		@Inject(ActivatedRoute) private route: ActivatedRoute,
-		@Inject(NgxSpinnerService) private spinner: NgxSpinnerService,
-		@Inject(ToastrService) private toastr: ToastrService) {
+	constructor(private gamesService: GamesService, private gameHubSignalRService: GameHubSignalRService,
+		private loginStateService: LoginStateService, private coordinateNotationParserService: CoordinateNotationParserService,
+		private boardStateService: BoardStateService, private route: ActivatedRoute,
+		private spinner: NgxSpinnerService, private toastr: ToastrService) {
 
 		this.gameHubSignalRService.onMethod(SignalRMethod.MovePlayed, (move: string) => this.onOpponentMove(move));
 		this.gameHubSignalRService.onMethod(SignalRMethod.IllegalMove, (fen: string) => this.onIllegalMove(fen));
