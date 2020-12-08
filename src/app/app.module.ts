@@ -26,6 +26,8 @@ import { NavbarButtonComponent } from './components/navigation/navbar-button/nav
 import { NotificationsComponent } from './components/navigation/notifications/notifications.component';
 import { GameOverModalComponent } from './components/navigation/game-over-modal/game-over-modal.component';
 import { GameControlsComponent } from './components/gameplay/game-controls/game-controls.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -63,7 +65,8 @@ export function load(config: ConfigService): () => Promise<void> {
 			closeButton: true,
 			positionClass: 'toast-top-center'
 		}),
-		NgxSpinnerModule
+		NgxSpinnerModule,
+		ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
 	],
 	providers: [
 		{

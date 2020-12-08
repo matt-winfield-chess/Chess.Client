@@ -9,61 +9,61 @@ chess-piece {
 
 .pawn {
 	&.white {
-		background-image: url('/assets/images/pawn-white.png');
+		background-image: url("/assets/images/pieces/pawn-white.png");
 	}
 
 	&.black {
-		background-image: url('/assets/images/pawn-black.png');
+		background-image: url("/assets/images/pieces/pawn-black.png");
 	}
 }
 
 .king {
 	&.white {
-		background-image: url('/assets/images/king-white.png');
+		background-image: url("/assets/images/pieces/king-white.png");
 	}
 
 	&.black {
-		background-image: url('/assets/images/king-black.png');
+		background-image: url("/assets/images/pieces/king-black.png");
 	}
 }
 
 .queen {
 	&.white {
-		background-image: url('/assets/images/queen-white.png');
+		background-image: url("/assets/images/pieces/queen-white.png");
 	}
 
 	&.black {
-		background-image: url('/assets/images/queen-black.png');
+		background-image: url("/assets/images/pieces/queen-black.png");
 	}
 }
 
 .rook {
 	&.white {
-		background-image: url('/assets/images/rook-white.png');
+		background-image: url("/assets/images/pieces/rook-white.png");
 	}
 
 	&.black {
-		background-image: url('/assets/images/rook-black.png');
+		background-image: url("/assets/images/pieces/rook-black.png");
 	}
 }
 
 .bishop {
 	&.white {
-		background-image: url('/assets/images/bishop-white.png');
+		background-image: url("/assets/images/pieces/bishop-white.png");
 	}
 
 	&.black {
-		background-image: url('/assets/images/bishop-black.png');
+		background-image: url("/assets/images/pieces/bishop-black.png");
 	}
 }
 
 .knight {
 	&.white {
-		background-image: url('/assets/images/knight-white.png');
+		background-image: url("/assets/images/pieces/knight-white.png");
 	}
 
 	&.black {
-		background-image: url('/assets/images/knight-black.png');
+		background-image: url("/assets/images/pieces/knight-black.png");
 	}
 }
 
