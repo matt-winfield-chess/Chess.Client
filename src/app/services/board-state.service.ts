@@ -24,7 +24,7 @@ export class BoardStateService {
 	private playerMoveSubscribers: ((move: Move) => void)[] = [];
 	private gameEndSubscribers: ((gameResult: GameResult) => void)[] = [];
 
-	constructor(@Inject(FenParserService) private fenParserService: FenParserService, @Inject(Router) private router: Router) {
+	constructor(private fenParserService: FenParserService, private router: Router) {
 		this.setBoardToStandardStartingPosition();
 		this.router.events.subscribe((event) => {
 			this.setBoardToStandardStartingPosition();

@@ -14,8 +14,8 @@ export class GameSettingsModalComponent {
 
 	public shouldShowSendChallengeModal: boolean = false;
 
-	constructor(@Inject(LoginStateService) private loginStateService: LoginStateService,
-		@Inject(ToastrService) private toastr: ToastrService, private router: Router) { }
+	constructor(private loginStateService: LoginStateService,
+		private toastr: ToastrService, private router: Router) { }
 
 	public close(): void {
 		this.onClose.emit();

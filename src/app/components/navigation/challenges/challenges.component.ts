@@ -21,11 +21,12 @@ export class ChallengesComponent implements OnInit {
 	public activeChallenges: Challenge[] = [];
 	public displayChallenges: boolean = false;
 
-	constructor(@Inject(ChallengeHubSignalRService) private challengeHubService: ChallengeHubSignalRService,
-		@Inject(ChallengesService) private challengeService: ChallengesService,
-		@Inject(LoginStateService) private loginStateService: LoginStateService,
-		@Inject(ToastrService) private toastr: ToastrService,
-		@Inject(Router) private router: Router) {
+	constructor(private challengeHubService: ChallengeHubSignalRService,
+		private challengeService: ChallengesService,
+		private loginStateService: LoginStateService,
+		private toastr: ToastrService,
+		private router: Router) {
+
 		this.challengeHubService.onMethod(SignalRMethod.NewChallenge, (challenge) => this.onChallengeRecieved(challenge));
 		this.challengeHubService.onMethod(SignalRMethod.ChallengeAccepted, (game) => this.onChallengeAccepted(game));
 		this.loginStateService.subscribeToLogIn(() => this.onLogIn());

@@ -15,9 +15,10 @@ export class NotificationsComponent implements OnInit {
 
 	@ViewChild('notificationsNavbarButton') notificationsNavbarButton: NavbarButtonComponent;
 
-	constructor(@Inject(LoginStateService) private loginStateService: LoginStateService,
-		@Inject(GamesService) private gamesService: GamesService,
-		@Inject(Router) private router: Router) {
+	constructor(private loginStateService: LoginStateService,
+		private gamesService: GamesService,
+		private router: Router) {
+
 		this.loginStateService.subscribeToLogIn(() => this.onLogIn());
 		this.loginStateService.subscribeToLogOut(() => this.onLogOut());
 	}

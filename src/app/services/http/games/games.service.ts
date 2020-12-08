@@ -32,4 +32,16 @@ export class GamesService {
 			.toPromise()
 			.catch(reason => reason.error);
 	}
+
+	public async resign(gameId: string): Promise<ApiResponse<boolean>> {
+		let url = this.configService.getApiEndpoint('RESIGN');
+
+		let headers = new HttpHeaders({ Authorization: `Bearer ${this.loginStateService.getToken()}` });
+
+		return this.http.patch<ApiResponse<boolean>>(url,
+			{ gameId },
+			{ headers })
+			.toPromise()
+			.catch(reason => reason.error);
+	}
 }

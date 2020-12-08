@@ -29,21 +29,18 @@ export class GamePageComponent implements OnInit {
 	public isGameOver: boolean = false;
 	public shouldShowGameOverModal: boolean = false;
 	public gameResult: GameResult;
+	public gameId: string;
 
-	private gameId: string;
+	constructor(private gamesService: GamesService, private gameHubSignalRService: GameHubSignalRService,
+		private loginStateService: LoginStateService, private coordinateNotationParserService: CoordinateNotationParserService,
+		private boardStateService: BoardStateService, private route: ActivatedRoute,
+		private spinner: NgxSpinnerService, private toastr: ToastrService) {
 
-	constructor(@Inject(GamesService) private gamesService: GamesService,
-		@Inject(GameHubSignalRService) private gameHubSignalRService: GameHubSignalRService,
-		@Inject(LoginStateService) private loginStateService: LoginStateService,
-		@Inject(CoordinateNotationParserService) private coordinateNotationParserService: CoordinateNotationParserService,
-		@Inject(BoardStateService) private boardStateService: BoardStateService,
-		@Inject(ActivatedRoute) private route: ActivatedRoute,
-		@Inject(NgxSpinnerService) private spinner: NgxSpinnerService,
-		@Inject(ToastrService) private toastr: ToastrService) {
 		this.gameHubSignalRService.onMethod(SignalRMethod.MovePlayed, (move: string) => this.onOpponentMove(move));
 		this.gameHubSignalRService.onMethod(SignalRMethod.IllegalMove, (fen: string) => this.onIllegalMove(fen));
 		this.gameHubSignalRService.onMethod(SignalRMethod.Checkmate, (gameResult: GameResult) => this.onGameOver(gameResult));
 		this.gameHubSignalRService.onMethod(SignalRMethod.Stalemate, (gameResult: GameResult) => this.onGameOver(gameResult));
+		this.gameHubSignalRService.onMethod(SignalRMethod.Resignation, (gameResult: GameResult) => this.onGameOver(gameResult));
 		this.boardStateService.subscribeToGameEnd((gameResult: GameResult) => this.onGameEnd(gameResult));
 	}
 

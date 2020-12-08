@@ -21,7 +21,7 @@ export class FenParserService {
 
 	private readonly pieceTypeToCharacterMap: Map<PieceType, string>;
 
-	constructor(@Inject(CoordinateNotationParserService) private coordinateNotationParser: CoordinateNotationParserService) {
+	constructor(private coordinateNotationParser: CoordinateNotationParserService) {
 		let reversedMapArray: [PieceType, string][] = Array.from(this.characterToPieceTypeMap, a => a.reverse()) as [PieceType, string][];
 		this.pieceTypeToCharacterMap = new Map(reversedMapArray);
 	}

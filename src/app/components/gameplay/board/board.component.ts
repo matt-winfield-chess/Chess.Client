@@ -28,7 +28,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
 	private clickToMoveTarget: Piece = null;
 
-	constructor(@Inject(BoardStateService) public boardStateService: BoardStateService) { }
+	constructor(public boardStateService: BoardStateService) { }
 
 	public ngOnInit(): void {
 		if (this.settings != null) {
