@@ -5,9 +5,13 @@
 		</app-board>
 
 		<div class="sidebar">
-			<div *ngIf="isWhiteActiveColor()">White to play</div>
-			<div *ngIf="!isWhiteActiveColor()">Black to play</div>
-			<app-game-controls [gameId]="gameId"></app-game-controls>
+			<div class="sidebar-title">
+				<div *ngIf="isWhiteActiveColor()">White to play</div>
+				<div *ngIf="!isWhiteActiveColor()">Black to play</div>
+			</div>
+			<div class="sidebar-content">
+				<app-game-controls [gameId]="gameId"></app-game-controls>
+			</div>
 		</div>
 	</div>
 </div>
