@@ -20,6 +20,7 @@ button {
 	border-radius: 5px;
 	box-shadow: none;
 	cursor: pointer;
+	margin: 5px;
 
 	@include themify($themes) {
 		background-color: themed("buttonBackgroundColor");
@@ -28,6 +29,10 @@ button {
 
 		&:hover {
 			background-color: themed("buttonHoverColor");
+		}
+
+		svg path {
+			fill: themed("primaryFontColor");
 		}
 	}
 }

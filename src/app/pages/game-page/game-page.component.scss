@@ -1,4 +1,5 @@
 @import "mixins/responsive-sizes.scss";
+@import "sidebar.scss";
 
 :host {
 	flex-grow: 1;
@@ -22,20 +23,4 @@ app-board {
 
 .game {
 	position: relative;
-}
-
-.sidebar {
-	position: absolute;
-	top: 50%;
-	right: 0;
-	transform: translate(100%, -50%);
-	padding: 20px;
-
-	@include phone-only {
-		top: auto;
-		right: auto;
-		bottom: 0;
-		left: 50%;
-		transform: translate(-50%, 100%);
-	}
 }

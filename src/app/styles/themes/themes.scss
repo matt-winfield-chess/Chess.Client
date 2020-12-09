@@ -17,6 +17,8 @@ $themes: (
 		buttonSvgFill: black,
 		navbarBadgeFontColor: white,
 		navbarBadgeBackgroundColor: red,
+		sectionBackgroundColor: rgb(204, 204, 204),
+		areaBackgroundColor: white,
 	),
 	dark: (
 		pageBackgroundColor: #181a1b,
@@ -34,5 +36,7 @@ $themes: (
 		buttonSvgFill: white,
 		navbarBadgeFontColor: white,
 		navbarBadgeBackgroundColor: red,
+		sectionBackgroundColor: #474d4e,
+		areaBackgroundColor: #2f3131,
 	),
 );

@@ -1,0 +1,45 @@
+@import "themes/themify.scss";
+@import "themes/themes.scss";
+
+.sidebar {
+	position: absolute;
+	top: 50%;
+	right: -10px;
+	transform: translate(100%, -50%);
+	height: 100%;
+	box-sizing: border-box;
+	border: 1px solid grey;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: column;
+
+	@include phone-only {
+		top: auto;
+		right: auto;
+		bottom: 0;
+		left: 50%;
+		transform: translate(-50%, 100%);
+		border: none;
+	}
+
+	.sidebar-title {
+		padding: 10px;
+		text-align: center;
+
+		@include themify($themes) {
+			background-color: themed("sectionBackgroundColor");
+		}
+	}
+
+	.sidebar-content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		flex-grow: 1;
+		padding: 20px;
+
+		@include themify($themes) {
+			background-color: themed("areaBackgroundColor");
+		}
+	}
+}
