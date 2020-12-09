@@ -11,10 +11,10 @@
 					"/index.html",
 					"/manifest.webmanifest",
 					"/*.css",
-					"/*.js"
+					"/*.js",
+					"/assets/fontawesome/**"
 				],
 				"urls": [
-					"**.fontawesome.com**",
 					"**.typekit.net**"
 				]
 			}
