@@ -12,6 +12,7 @@
 	border-radius: 5px;
 	display: flex;
 	flex-direction: column;
+	overflow: hidden;
 
 	@include phone-only {
 		top: auto;
