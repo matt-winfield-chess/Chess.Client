@@ -28,7 +28,7 @@ export class UpdateService {
 	}
 
 	public checkForUpdates(): void {
-		this.updates.available.subscribe(event => {
+		this.updates.available?.subscribe(event => {
 			this.toastr.warning('Reload page to get latest version', 'Update available', {
 				toastComponent: UpdateToastComponent,
 				closeButton: true,
