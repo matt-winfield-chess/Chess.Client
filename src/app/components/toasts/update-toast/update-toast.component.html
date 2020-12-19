@@ -1,0 +1,17 @@
+<div [style.display]="state.value === 'inactive' ? 'none' : ''">
+	<div class="text-container">
+		<div *ngIf="title" [class]="options.titleClass" [attr.aria-label]="title">
+			{{ title }}
+		</div>
+		<div *ngIf="message && options.enableHtml" role="alert" aria-live="polite" [class]="options.messageClass"
+			[innerHTML]="message">
+		</div>
+		<div *ngIf="message && !options.enableHtml" role="alert" aria-live="polite" [class]="options.messageClass"
+			[attr.aria-label]="message">
+			{{ message }}
+		</div>
+	</div>
+	<div class="button-container">
+		<button class="button" (click)="reload($event)">Reload</button>
+	</div>
+</div>
