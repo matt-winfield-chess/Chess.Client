@@ -29,6 +29,7 @@ import { GameControlsComponent } from './components/gameplay/game-controls/game-
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { DrawOfferStatusComponent } from './components/gameplay/draw-offer-status/draw-offer-status.component';
+import { UpdateToastComponent } from './components/toasts/update-toast/update-toast.component';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -53,7 +54,8 @@ export function load(config: ConfigService): () => Promise<void> {
 		NotificationsComponent,
 		GameOverModalComponent,
 		GameControlsComponent,
-		DrawOfferStatusComponent
+		DrawOfferStatusComponent,
+		UpdateToastComponent
 	],
 	imports: [
 		CommonModule,
