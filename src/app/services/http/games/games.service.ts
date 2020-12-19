@@ -44,4 +44,40 @@ export class GamesService {
 			.toPromise()
 			.catch(reason => reason.error);
 	}
+
+	public async offerDraw(gameId: string): Promise<ApiResponse<boolean>> {
+		let url = this.configService.getApiEndpoint('OFFER_DRAW');
+
+		let headers = new HttpHeaders({ Authorization: `Bearer ${this.loginStateService.getToken()}` });
+
+		return this.http.patch<ApiResponse<boolean>>(url,
+			{ gameId },
+			{ headers })
+			.toPromise()
+			.catch(reason => reason.error);
+	}
+
+	public async acceptDraw(gameId: string): Promise<ApiResponse<boolean>> {
+		let url = this.configService.getApiEndpoint('ACCEPT_DRAW');
+
+		let headers = new HttpHeaders({ Authorization: `Bearer ${this.loginStateService.getToken()}` });
+
+		return this.http.patch<ApiResponse<boolean>>(url,
+			{ gameId },
+			{ headers })
+			.toPromise()
+			.catch(reason => reason.error);
+	}
+
+	public async declineDraw(gameId: string): Promise<ApiResponse<boolean>> {
+		let url = this.configService.getApiEndpoint('DECLINE_DRAW');
+
+		let headers = new HttpHeaders({ Authorization: `Bearer ${this.loginStateService.getToken()}` });
+
+		return this.http.patch<ApiResponse<boolean>>(url,
+			{ gameId },
+			{ headers })
+			.toPromise()
+			.catch(reason => reason.error);
+	}
 }

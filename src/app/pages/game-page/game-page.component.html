@@ -11,7 +11,7 @@
 				<div *ngIf="isGameOver">Game Over</div>
 			</div>
 			<div class="sidebar-content">
-				<app-game-controls [gameId]="gameId"></app-game-controls>
+				<app-game-controls [game]="game" [playerColor]="boardSettings.playerColor"></app-game-controls>
 			</div>
 		</div>
 	</div>

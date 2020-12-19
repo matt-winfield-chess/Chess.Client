@@ -1,0 +1,11 @@
+@import "../../../styles/themes/themes.scss";
+@import "../../../styles/themes/themify.scss";
+
+.draw-offer-status {
+	border: 1px solid grey;
+	border-radius: 5px;
+
+	@include themify($themes) {
+		background-color: themed("sectionBackgroundColor");
+	}
+}

@@ -1,0 +1,9 @@
+<div *ngIf="showDrawOffer" class="draw-offer-status">
+	<div class="draw-offer-text">
+		{{drawOfferColor}} offers a draw
+	</div>
+	<div *ngIf="showDrawOfferButtons" class="draw-offer-buttons">
+		<button (click)="acceptDraw()">Accept</button>
+		<button (click)="declineDraw()">Decline</button>
+	</div>
+</div>
