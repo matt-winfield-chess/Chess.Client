@@ -1,3 +1,5 @@
 <div class="game-controls">
 	<button class="button" (click)="resign()">Resign</button>
+	<button class="button" (click)="offerDraw()">Offer Draw</button>
+	<app-draw-offer-status [game]="game" [playerColor]="playerColor"></app-draw-offer-status>
 </div>

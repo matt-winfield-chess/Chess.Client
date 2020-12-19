@@ -8,4 +8,5 @@ export class Game {
 	public moves: Move[];
 	public active: boolean;
 	public fen: string;
+	public drawOffer: string;
 }

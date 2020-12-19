@@ -12,6 +12,9 @@
 		"ACCEPT_CHALLENGE": "/api/challenge/acceptChallenge",
 		"GET_GAME": "/api/game",
 		"ACTIVE_GAMES": "/api/game/activeGames",
-		"RESIGN": "/api/game/resign"
+		"RESIGN": "/api/game/resign",
+		"OFFER_DRAW": "/api/game/offerDraw",
+		"ACCEPT_DRAW": "/api/game/acceptDraw",
+		"DECLINE_DRAW": "/api/game/declineDraw"
 	}
 }

@@ -30,6 +30,7 @@ export class GamePageComponent implements OnInit {
 	public shouldShowGameOverModal: boolean = false;
 	public gameResult: GameResult;
 	public gameId: string;
+	public game: Game;
 
 	constructor(private gamesService: GamesService, private gameHubSignalRService: GameHubSignalRService,
 		private loginStateService: LoginStateService, private coordinateNotationParserService: CoordinateNotationParserService,
@@ -41,6 +42,7 @@ export class GamePageComponent implements OnInit {
 		this.gameHubSignalRService.onMethod(SignalRMethod.Checkmate, (gameResult: GameResult) => this.onGameOver(gameResult));
 		this.gameHubSignalRService.onMethod(SignalRMethod.Stalemate, (gameResult: GameResult) => this.onGameOver(gameResult));
 		this.gameHubSignalRService.onMethod(SignalRMethod.Resignation, (gameResult: GameResult) => this.onGameOver(gameResult));
+		this.gameHubSignalRService.onMethod(SignalRMethod.DrawOfferAccepted, (gameResult: GameResult) => this.onGameOver(gameResult));
 		this.boardStateService.subscribeToGameEnd((gameResult: GameResult) => this.onGameEnd(gameResult));
 	}
 
@@ -55,6 +57,7 @@ export class GamePageComponent implements OnInit {
 			if (gameResponse.isSuccess) {
 				await this.gameHubSignalRService.joinGame(this.gameId);
 
+				this.game = gameResponse.data;
 				this.boardSettings.game = gameResponse.data;
 				this.boardSettings.playerColor = this.getPlayerColorFromGame(gameResponse.data);
 				this.boardStateService.loadFromFen(this.boardSettings.game.fen);

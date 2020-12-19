@@ -28,6 +28,7 @@ import { GameOverModalComponent } from './components/navigation/game-over-modal/
 import { GameControlsComponent } from './components/gameplay/game-controls/game-controls.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { DrawOfferStatusComponent } from './components/gameplay/draw-offer-status/draw-offer-status.component';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -51,7 +52,8 @@ export function load(config: ConfigService): () => Promise<void> {
 		NavbarButtonComponent,
 		NotificationsComponent,
 		GameOverModalComponent,
-		GameControlsComponent
+		GameControlsComponent,
+		DrawOfferStatusComponent
 	],
 	imports: [
 		CommonModule,

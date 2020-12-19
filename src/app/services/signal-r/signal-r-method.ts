@@ -8,6 +8,9 @@ export enum SignalRMethod {
 	Stalemate = 'Stalemate',
 	Resignation = 'Resignation',
 	MoveReceived = 'MoveReceived',
+	DrawOffer = 'DrawOffer',
+	DrawOfferAccepted = 'DrawOfferAccepted',
+	DrawOfferDeclined = 'DrawOfferDeclined',
 
 	// Outgoing
 	JoinGame = 'JoinGame',
