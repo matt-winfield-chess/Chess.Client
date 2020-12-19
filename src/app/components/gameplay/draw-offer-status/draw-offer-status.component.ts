@@ -25,14 +25,14 @@ export class DrawOfferStatusComponent implements OnInit, OnChanges {
 	}
 
 	public ngOnInit(): void {
-		if (this.game.drawOffer) {
+		if (this.game?.drawOffer) {
 			this.onDrawOffer(this.game.drawOffer);
 		}
 	}
 
 	public ngOnChanges(changes: SimpleChanges): void {
 		if (changes.game && changes.game.currentValue) {
-			if (this.game.drawOffer) {
+			if (this.game?.drawOffer) {
 				this.onDrawOffer(this.game.drawOffer);
 			}
 		}
