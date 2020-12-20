@@ -15,8 +15,7 @@ export class UpdateService {
 
 	constructor(applicationRef: ApplicationRef, private updates: SwUpdate, private toastr: ToastrService) {
 		if (updates.isEnabled) {
-			console.log('Service worker enabled')
-			console.log(`Update check interval: ${this.checkForUpdateInterval / 1000} seconds`);
+			console.log('Service worker enabled');
 
 			// Wait for application to be stable then check for app updates regularly
 			applicationRef.isStable.pipe(first(isStable => isStable === true)).subscribe(() => {

@@ -15,6 +15,7 @@ export class OfflineGamePageComponent {
 	public gameResult: GameResult;
 
 	constructor(private boardStateService: BoardStateService) {
+		this.boardStateService.setPlayerColor(null);
 		this.boardStateService.subscribeToGameEnd((gameResult: GameResult) => this.onGameEnd(gameResult));
 	}
 
