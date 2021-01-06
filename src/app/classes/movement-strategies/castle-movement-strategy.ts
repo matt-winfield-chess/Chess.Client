@@ -1,5 +1,6 @@
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
+import { BoardStateService } from 'src/app/services/board-state.service';
 import { CastlingState } from '../castling-state';
 import { Move } from '../move';
 import { MoveValidationResult } from '../move-validation-result';
@@ -10,6 +11,7 @@ export class CastleMovementStrategy extends MovementStrategy {
 	public isValidMove(move: Move, playerColor: PlayerColor): MoveValidationResult {
 		if (!this.isCastlingAvailable(move, playerColor)) return new MoveValidationResult({ isValid: false, move });
 		if (this.isBlocked(move)) return new MoveValidationResult({ isValid: false, move });
+		if (this.isThroughCheck(move, playerColor)) return new MoveValidationResult({ isValid: false, move });
 
 		let rookMove = this.getRookMove(move);
 		return new MoveValidationResult({ isValid: true, move, isCastleMove: true, castleRookMove: rookMove });
@@ -46,6 +48,22 @@ export class CastleMovementStrategy extends MovementStrategy {
 				if (piece != null) return true;
 			}
 		}
+		return false;
+	}
+
+	private isThroughCheck(move: Move, color: PlayerColor): boolean {
+		let piecePositions = this.boardStateService.getPiecePositions();
+
+		if (BoardStateService.isSquareAttacked(move.oldX, move.oldY, color, piecePositions)) {
+			return true;
+		}
+
+		for (let x: number = move.oldX; x != move.newX; x += Math.sign(move.newX - move.oldX)) {
+			if (BoardStateService.isSquareAttacked(x, move.newY, color, piecePositions)) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 

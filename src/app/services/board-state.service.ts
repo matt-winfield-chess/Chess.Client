@@ -57,6 +57,10 @@ export class BoardStateService {
 		return this.boardState;
 	}
 
+	public getPiecePositions(): Piece[][] {
+		return this.piecePositions;
+	}
+
 	public subscribeToOnlineMoves(onMove: (move: Move) => void): void {
 		this.onlineMoveSubscribers.push(onMove);
 	}
@@ -73,6 +77,7 @@ export class BoardStateService {
 		let piece = this.piecePositions[oldY][oldX];
 
 		if (piece) {
+			console.log('test');
 			let movementValidationResult = this.validateMove(piece, newX, newY);
 			if (!movementValidationResult.isValid) return;
 
@@ -158,13 +163,17 @@ export class BoardStateService {
 		let kingX = board[kingY].findIndex(isKingPredicate);
 		if (kingX === undefined) return false;
 
-		if (this.isKingAttackedInStraightLine(kingX, kingY, opponentColor, board)) return true;
-		if (this.isKingAttackedDiagonally(kingX, kingY, opponentColor, board)) return true;
-		if (this.isKingAttackedByPawn(kingX, kingY, opponentColor, board)) return true;
-		if (this.isKingAttackedByKnight(kingX, kingY, opponentColor, board)) return true;
-		if (this.isKingAttackedByKing(kingX, kingY, opponentColor, board)) return true;
+		return BoardStateService.isSquareAttacked(kingX, kingY, kingColor, board);
+	}
 
-		return false;
+	public static isSquareAttacked(x: number, y: number, color: PlayerColor, board: Piece[][]): boolean {
+		let opponentColor: PlayerColor = color == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
+
+		return this.isSquareAttackedInStraightLine(x, y, opponentColor, board) ||
+			this.isSquareAttackedDiagonally(x, y, opponentColor, board) ||
+			this.isSquareAttackedByPawn(x, y, opponentColor, board) ||
+			this.isSquareAttackedByKnight(x, y, opponentColor, board) ||
+			this.isSquareAttackedByKing(x, y, opponentColor, board);
 	}
 
 	public getDuplicateBoard(): Piece[][] {
@@ -358,27 +367,27 @@ export class BoardStateService {
 		}
 	}
 
-	private isKingAttackedInStraightLine(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+	private static isSquareAttackedInStraightLine(x: number, y: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
 		let validPieces = [PieceType.Queen, PieceType.Rook];
-		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 1, 0, validPieces)) return true;
-		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, -1, 0, validPieces)) return true;
-		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 0, 1, validPieces)) return true;
-		return this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 0, -1, validPieces);
+		if (this.isSquareAttackedByLineOfSightPiece(x, y, opponentColor, board, 1, 0, validPieces)) return true;
+		if (this.isSquareAttackedByLineOfSightPiece(x, y, opponentColor, board, -1, 0, validPieces)) return true;
+		if (this.isSquareAttackedByLineOfSightPiece(x, y, opponentColor, board, 0, 1, validPieces)) return true;
+		return this.isSquareAttackedByLineOfSightPiece(x, y, opponentColor, board, 0, -1, validPieces);
 	}
 
-	private isKingAttackedDiagonally(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+	private static isSquareAttackedDiagonally(x: number, y: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
 		let validPieces = [PieceType.Queen, PieceType.Bishop];
 
-		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 1, 1, validPieces)) return true;
-		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, 1, -1, validPieces)) return true;
-		if (this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, -1, 1, validPieces)) return true;
-		return this.isKingAttackedByLineOfSightPiece(kingX, kingY, opponentColor, board, -1, -1, validPieces);
+		if (this.isSquareAttackedByLineOfSightPiece(x, y, opponentColor, board, 1, 1, validPieces)) return true;
+		if (this.isSquareAttackedByLineOfSightPiece(x, y, opponentColor, board, 1, -1, validPieces)) return true;
+		if (this.isSquareAttackedByLineOfSightPiece(x, y, opponentColor, board, -1, 1, validPieces)) return true;
+		return this.isSquareAttackedByLineOfSightPiece(x, y, opponentColor, board, -1, -1, validPieces);
 	}
 
-	private isKingAttackedByLineOfSightPiece(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][],
+	private static isSquareAttackedByLineOfSightPiece(x: number, y: number, opponentColor: PlayerColor, board: Piece[][],
 		xIncrement: number, yIncrement: number, validPieces: PieceType[]): boolean {
-		let x = kingX + xIncrement;
-		let y = kingY + yIncrement;
+		x += xIncrement;
+		y += yIncrement;
 
 		while (x >= 0 && x < 8 && y >= 0 && y < 8) {
 			let piece = board[y][x];
@@ -398,20 +407,20 @@ export class BoardStateService {
 		return false;
 	}
 
-	private isKingAttackedByPawn(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+	private static isSquareAttackedByPawn(x: number, y: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
 		let opponentMovementDirection = opponentColor == PlayerColor.White ? -1 : 1;
 
-		if (kingY - opponentMovementDirection < 0) return false;
+		if (y - opponentMovementDirection < 0) return false;
 
-		if (kingX - 1 >= 0) {
-			let candidateAttacker1 = board[kingY - opponentMovementDirection][kingX - 1];
+		if (x - 1 >= 0) {
+			let candidateAttacker1 = board[y - opponentMovementDirection][x - 1];
 			if (candidateAttacker1 != null && candidateAttacker1.pieceType == PieceType.Pawn && candidateAttacker1.color == opponentColor) {
 				return true;
 			}
 		}
 
-		if (kingX + 1 < 8) {
-			let candidateAttacker2 = board[kingY - opponentMovementDirection][kingX + 1];
+		if (x + 1 < 8) {
+			let candidateAttacker2 = board[y - opponentMovementDirection][x + 1];
 			if (candidateAttacker2 != null && candidateAttacker2.pieceType == PieceType.Pawn && candidateAttacker2.color == opponentColor) {
 				return true;
 			}
@@ -420,29 +429,29 @@ export class BoardStateService {
 		return false;
 	}
 
-	private isKingAttackedByKnight(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
-		if (this.doesSquareHaveOpponentKnight(kingX + 2, kingY + 1, opponentColor, board)) return true;
-		if (this.doesSquareHaveOpponentKnight(kingX + 2, kingY - 1, opponentColor, board)) return true;
-		if (this.doesSquareHaveOpponentKnight(kingX - 2, kingY + 1, opponentColor, board)) return true;
-		if (this.doesSquareHaveOpponentKnight(kingX - 2, kingY - 1, opponentColor, board)) return true;
-		if (this.doesSquareHaveOpponentKnight(kingX + 1, kingY + 2, opponentColor, board)) return true;
-		if (this.doesSquareHaveOpponentKnight(kingX + 1, kingY - 2, opponentColor, board)) return true;
-		if (this.doesSquareHaveOpponentKnight(kingX - 1, kingY + 2, opponentColor, board)) return true;
-		return this.doesSquareHaveOpponentKnight(kingX - 1, kingY - 2, opponentColor, board);
+	private static isSquareAttackedByKnight(x: number, y: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+		if (this.doesSquareHaveOpponentKnight(x + 2, y + 1, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(x + 2, y - 1, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(x - 2, y + 1, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(x - 2, y - 1, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(x + 1, y + 2, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(x + 1, y - 2, opponentColor, board)) return true;
+		if (this.doesSquareHaveOpponentKnight(x - 1, y + 2, opponentColor, board)) return true;
+		return this.doesSquareHaveOpponentKnight(x - 1, y - 2, opponentColor, board);
 	}
 
-	private doesSquareHaveOpponentKnight(x: number, y: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+	private static doesSquareHaveOpponentKnight(x: number, y: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
 		if (x < 0 || x >= 8 || y < 0 || y >= 8) return false;
 		let piece = board[y][x];
 		if (piece == null) return false;
 		return piece.pieceType == PieceType.Knight && piece.color == opponentColor;
 	}
 
-	private isKingAttackedByKing(kingX: number, kingY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
-		for (let x = kingX - 1; x <= kingX + 1; x++) {
-			for (let y = kingY - 1; y <= kingY + 1; y++) {
+	private static isSquareAttackedByKing(squareX: number, squareY: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
+		for (let x = squareX - 1; x <= squareX + 1; x++) {
+			for (let y = squareY - 1; y <= squareY + 1; y++) {
 				if (x < 0 || x >= 8 || y < 0 || y >= 8) continue;
-				if (x == kingX && y == kingY) continue;
+				if (x == squareX && y == squareY) continue;
 				let piece = board[y][x];
 				if (piece != null) {
 					if (piece.pieceType == PieceType.King && piece.color == opponentColor) {
