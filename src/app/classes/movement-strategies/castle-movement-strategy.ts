@@ -69,7 +69,7 @@ export class CastleMovementStrategy extends MovementStrategy {
 
 	private getRookMove(move: Move): Move {
 		if (move.newX == 2) { // Queenside castle
-			return {
+			return <Move>{
 				oldX: 0,
 				oldY: move.oldY,
 				newX: 3,
@@ -77,7 +77,7 @@ export class CastleMovementStrategy extends MovementStrategy {
 			};
 		}
 
-		return {
+		return <Move>{
 			oldX: 7,
 			oldY: move.oldY,
 			newX: 5,

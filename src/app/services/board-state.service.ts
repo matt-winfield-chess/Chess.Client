@@ -61,7 +61,7 @@ export class BoardStateService {
 		return this.piecePositions;
 	}
 
-	public subscribeToOnlineMoves(onMove: (move: Move) => void): void {
+	public subscribeToNonPlayerMoves(onMove: (move: Move) => void): void {
 		this.onlineMoveSubscribers.push(onMove);
 	}
 
@@ -77,7 +77,6 @@ export class BoardStateService {
 		let piece = this.piecePositions[oldY][oldX];
 
 		if (piece) {
-			console.log('test');
 			let movementValidationResult = this.validateMove(piece, newX, newY);
 			if (!movementValidationResult.isValid) return;
 
@@ -90,7 +89,7 @@ export class BoardStateService {
 		}
 	}
 
-	public applyOnlineOpponentMove(oldX: number, oldY: number, newX: number, newY: number): void {
+	public applyNonPlayerMove(oldX: number, oldY: number, newX: number, newY: number): void {
 		let piece = this.piecePositions[oldY][oldX];
 
 		if (piece) {
@@ -113,7 +112,7 @@ export class BoardStateService {
 			for (let y: number = 0; y < 8; y++) {
 				let validationResult = this.validateMove(piece, x, y, true);
 				if (validationResult.isValid) {
-					legalMoves.push({
+					legalMoves.push(<Move>{
 						oldX: piece.x,
 						oldY: piece.y,
 						newX: x,
@@ -138,7 +137,7 @@ export class BoardStateService {
 
 					let validationResult = this.validateMove(piece, x, y, true);
 					if (validationResult.isValid) {
-						legalMoves.push({
+						legalMoves.push(<Move>{
 							oldX: piece.x,
 							oldY: piece.y,
 							newX: x,
@@ -200,7 +199,7 @@ export class BoardStateService {
 		if (this.playerColor !== null && piece.color != this.playerColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
 
 		for (let movementStrategy of piece.movementStrategies) {
-			let movementValidationResult = movementStrategy.isValidMove({
+			let movementValidationResult = movementStrategy.isValidMove(<Move>{
 				oldX: piece.x,
 				oldY: piece.y,
 				newX,

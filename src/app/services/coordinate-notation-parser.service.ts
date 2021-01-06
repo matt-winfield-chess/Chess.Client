@@ -23,7 +23,7 @@ export class CoordinateNotationParserService {
 
 		if (lowercaseNotation.length != 4) return null;
 
-		return {
+		return <Move>{
 			oldX: this.toCoordinate(lowercaseNotation.substring(0, 2))[0],
 			oldY: this.toCoordinate(lowercaseNotation.substring(0, 2))[1],
 			newX: this.toCoordinate(lowercaseNotation.substring(2))[0],
