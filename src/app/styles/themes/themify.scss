@@ -31,6 +31,7 @@
 		// so would invalidate the other style
 		:host-context(.theme-#{$theme}) & {
 			--do-not-merge-selectors: 1; // Prevent Angular SASS compiler merging this with above styling
+
 			@include themify-body($theme, $map) {
 				@content;
 			}

@@ -100,7 +100,7 @@ export class GamePageComponent implements OnInit {
 	private onOpponentMove(moveString: string): void {
 		let move = this.coordinateNotationParserService.toMove(moveString);
 
-		this.boardStateService.applyOnlineOpponentMove(move.oldX, move.oldY, move.newX, move.newY);
+		this.boardStateService.applyNonPlayerMove(move.oldX, move.oldY, move.newX, move.newY);
 	}
 
 	private onIllegalMove(fen: string): void {

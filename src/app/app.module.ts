@@ -30,6 +30,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { DrawOfferStatusComponent } from './components/gameplay/draw-offer-status/draw-offer-status.component';
 import { UpdateToastComponent } from './components/toasts/update-toast/update-toast.component';
+import { ComputerGamePageComponent } from './pages/computer-game-page/computer-game-page.component';
+import { MatSliderModule } from '@angular/material/slider';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -55,7 +57,8 @@ export function load(config: ConfigService): () => Promise<void> {
 		GameOverModalComponent,
 		GameControlsComponent,
 		DrawOfferStatusComponent,
-		UpdateToastComponent
+		UpdateToastComponent,
+		ComputerGamePageComponent
 	],
 	imports: [
 		CommonModule,
@@ -70,6 +73,7 @@ export function load(config: ConfigService): () => Promise<void> {
 			positionClass: 'toast-top-center'
 		}),
 		NgxSpinnerModule,
+		MatSliderModule,
 		ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
 	],
 	providers: [

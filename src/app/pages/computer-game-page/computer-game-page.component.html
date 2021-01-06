@@ -1,0 +1,26 @@
+<div class="content">
+	<div class="game">
+		<app-board></app-board>
+
+		<div class="sidebar">
+			<div class="sidebar-title">
+				<div *ngIf="isWhiteActiveColor() && !isGameOver">White to play</div>
+				<div *ngIf="!isWhiteActiveColor() && !isGameOver">Black to play</div>
+				<div *ngIf="isGameOver">Game Over</div>
+				<div>Stockfish {{getEngineState()}}</div>
+			</div>
+			<div class="sidebar-content">
+				<div>Computer Difficulty:</div>
+				<div class="difficulty-controls">
+					<mat-slider min="1" max="10" value="{{getDisplayedDifficulty()}}"
+						(input)="setDisplayedDifficulty($event.value)" (change)="setDifficulty($event.value)">
+					</mat-slider>
+					{{getDisplayedDifficulty()}}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<app-game-over-modal [gameResult]="gameResult" [hidden]="!shouldShowGameOverModal" (onClose)="onCloseGameOverModal()">
+</app-game-over-modal>

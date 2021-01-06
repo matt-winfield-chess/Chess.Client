@@ -5,12 +5,14 @@ import { GamePageComponent } from './pages/game-page/game-page.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LogInComponent } from './pages/log-in/log-in.component';
 import { OfflineGamePageComponent } from './pages/offline-game-page/offline-game-page.component';
+import { ComputerGamePageComponent } from './pages/computer-game-page/computer-game-page.component';
 
 
 const routes: Routes = [
 	{ path: '', component: HomePageComponent },
 	{ path: 'game/:id', component: GamePageComponent },
 	{ path: 'offline-game', component: OfflineGamePageComponent },
+	{ path: 'computer-game', component: ComputerGamePageComponent },
 	{ path: 'create-account', component: CreateAccountPageComponent },
 	{ path: 'log-in', component: LogInComponent },
 ];

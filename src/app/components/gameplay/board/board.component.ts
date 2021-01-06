@@ -41,7 +41,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		this.updateBoardDimensions();
 		this.configureContextMenu();
 		this.boardStateService.subscribeToPlayerMoves((move: Move) => this.onPlayerMove(move));
-		this.boardStateService.subscribeToOnlineMoves((move: Move) => this.onOnlineMove(move));
+		this.boardStateService.subscribeToNonPlayerMoves((move: Move) => this.onOnlineMove(move));
 	}
 
 	public range(count: number): Array<number> {
