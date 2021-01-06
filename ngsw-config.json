@@ -12,7 +12,8 @@
 					"/manifest.webmanifest",
 					"/*.css",
 					"/*.js",
-					"/assets/fontawesome/**"
+					"/assets/fontawesome/**",
+					"/assets/stockfish.js/**"
 				],
 				"urls": [
 					"**.typekit.net**"

@@ -16,6 +16,7 @@ export class ComputerGamePageComponent {
 	public isGameOver: boolean = false;
 	public shouldShowGameOverModal: boolean = false;
 	public gameResult: GameResult;
+	private displayedDifficulty: number = 10;
 	private gameMoves: Move[] = [];
 
 	constructor(private stockfishService: StockfishService, private boardStateService: BoardStateService,
@@ -25,6 +26,7 @@ export class ComputerGamePageComponent {
 		this.boardStateService.subscribeToNonPlayerMoves(move => this.onOpponentMove(move));
 		this.boardStateService.subscribeToGameEnd((gameResult: GameResult) => this.onGameEnd(gameResult));
 		this.stockfishService.start();
+		this.displayedDifficulty = this.stockfishService.getDifficulty();
 	}
 
 	public isWhiteActiveColor(): boolean {
@@ -43,8 +45,12 @@ export class ComputerGamePageComponent {
 		this.stockfishService.setDifficulty(difficulty);
 	}
 
-	public getDifficulty(): number {
-		return this.stockfishService.getDifficulty();
+	public getDisplayedDifficulty(): number {
+		return this.displayedDifficulty;
+	}
+
+	public setDisplayedDifficulty(difficulty: number): void {
+		this.displayedDifficulty = difficulty;
 	}
 
 	private onOpponentMove(move: Move): void {

@@ -7,9 +7,10 @@ import { CoordinateNotationParserService } from '../coordinate-notation-parser.s
 })
 export class StockfishService {
 
+	private debugOutput: boolean = false;
+
 	private hasInitialisationStarted: boolean = false;
 	private hasLoaded: boolean = false;
-	private debugOutput: boolean = true;
 	private stockfish: Worker;
 	private state: string = "Loading";
 	private difficulty: number = 10;
@@ -96,11 +97,11 @@ export class StockfishService {
 
 	private getCalculationDepth(): number {
 		if (this.difficulty <= 4) {
-			return 5;
+			return 10;
 		}
 
-		if (this.difficulty <= 7) {
-			return 10;
+		if (this.difficulty <= 8) {
+			return 15;
 		}
 
 		return 20;
