@@ -1,6 +1,6 @@
-<div class="content">
+<div class="play-page-content">
 	<div class="game">
-		<app-board></app-board>
+		<app-board #board [settings]="boardSettings"></app-board>
 
 		<div class="sidebar">
 			<div class="sidebar-title">
@@ -10,12 +10,17 @@
 				<div>Stockfish {{getEngineState()}}</div>
 			</div>
 			<div class="sidebar-content">
-				<div>Computer Difficulty:</div>
-				<div class="difficulty-controls">
-					<mat-slider min="1" max="10" value="{{getDisplayedDifficulty()}}"
-						(input)="setDisplayedDifficulty($event.value)" (change)="setDifficulty($event.value)">
-					</mat-slider>
-					{{getDisplayedDifficulty()}}
+				<div>
+					<div>Computer Difficulty:</div>
+					<div class="difficulty-controls">
+						<mat-slider min="1" max="10" value="{{getDisplayedDifficulty()}}"
+							(input)="setDisplayedDifficulty($event.value)" (change)="setDifficulty($event.value)">
+						</mat-slider>
+						{{getDisplayedDifficulty()}}
+					</div>
+				</div>
+				<div>
+					<button class="button" (click)="switchSides()">Switch Sides</button>
 				</div>
 			</div>
 		</div>
