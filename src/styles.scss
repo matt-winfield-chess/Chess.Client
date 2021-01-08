@@ -1,6 +1,7 @@
 @import "app/styles/themes/themes.scss";
 @import "app/styles/themes/themify.scss";
 @import "app/styles/angular-material/material-theme.scss";
+@import "app/styles/mixins/responsive-sizes.scss";
 @import url("https://use.typekit.net/ofr3zca.css");
 
 html,
@@ -46,6 +47,31 @@ app-root {
 #background {
 	width: 100%;
 	height: 100%;
+}
+
+app-board {
+	display: block;
+	width: 600px;
+
+	@include phone-only {
+		width: calc(100vw - 20px);
+	}
+}
+
+.play-page-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+
+	@include phone-only {
+		align-items: flex-start;
+	}
+}
+
+.game {
+	position: relative;
+	margin: 10px;
 }
 
 .modal-background {

@@ -122,6 +122,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		this.updateBoardDimensions();
 	}
 
+	public hideLegalMoves(): void {
+		this.legalMoveHighlightedSquares = [];
+		this.clickToMoveTarget = null;
+	}
+
 	private toggleLegalMoveVisibility(piece: Piece): void {
 		if (piece != this.clickToMoveTarget) {
 			this.clickToMoveTarget = piece;
@@ -146,11 +151,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
 				y: move.newY
 			});
 		}
-	}
-
-	private hideLegalMoves(): void {
-		this.legalMoveHighlightedSquares = [];
-		this.clickToMoveTarget = null;
 	}
 
 	private onPlayerMove(move: Move): void {
