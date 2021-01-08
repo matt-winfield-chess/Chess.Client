@@ -15,6 +15,7 @@
 		"RESIGN": "/api/game/resign",
 		"OFFER_DRAW": "/api/game/offerDraw",
 		"ACCEPT_DRAW": "/api/game/acceptDraw",
-		"DECLINE_DRAW": "/api/game/declineDraw"
+		"DECLINE_DRAW": "/api/game/declineDraw",
+		"PIECE_MOVEMENT_METHOD": "/api/Users/PieceMovementMethod"
 	}
 }

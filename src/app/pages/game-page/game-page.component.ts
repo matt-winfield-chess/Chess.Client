@@ -14,13 +14,14 @@ import { LoginStateService } from 'src/app/services/login-state.service';
 import { GameHubSignalRService } from 'src/app/services/signal-r/game-hub-signal-r.service';
 import { SignalRMethod } from 'src/app/services/signal-r/signal-r-method';
 import { GameResult } from 'src/app/classes/game-result';
+import { BaseComponent } from 'src/app/components/base-component';
 
 @Component({
 	selector: 'app-game-page',
 	templateUrl: './game-page.component.html',
 	styleUrls: ['./game-page.component.scss']
 })
-export class GamePageComponent implements OnInit {
+export class GamePageComponent extends BaseComponent implements OnInit {
 
 	public boardSettings: BoardSettings = new BoardSettings({
 		type: BoardType.Game
@@ -32,11 +33,12 @@ export class GamePageComponent implements OnInit {
 	public gameId: string;
 	public game: Game;
 
-	constructor(private gamesService: GamesService, private gameHubSignalRService: GameHubSignalRService,
+	constructor(protected toastr: ToastrService, private gamesService: GamesService, private gameHubSignalRService: GameHubSignalRService,
 		private loginStateService: LoginStateService, private coordinateNotationParserService: CoordinateNotationParserService,
 		private boardStateService: BoardStateService, private route: ActivatedRoute,
-		private spinner: NgxSpinnerService, private toastr: ToastrService) {
+		private spinner: NgxSpinnerService) {
 
+		super(toastr);
 		this.gameHubSignalRService.onMethod(SignalRMethod.MovePlayed, (move: string) => this.onOpponentMove(move));
 		this.gameHubSignalRService.onMethod(SignalRMethod.IllegalMove, (fen: string) => this.onIllegalMove(fen));
 		this.gameHubSignalRService.onMethod(SignalRMethod.Checkmate, (gameResult: GameResult) => this.onGameOver(gameResult));
@@ -46,25 +48,22 @@ export class GamePageComponent implements OnInit {
 		this.boardStateService.subscribeToGameEnd((gameResult: GameResult) => this.onGameEnd(gameResult));
 	}
 
-	public ngOnInit(): void {
+	public async ngOnInit(): Promise<void> {
 		this.route.params.subscribe(async params => {
 			this.gameId = params['id'];
 
 			this.spinner.show();
-			let gameResponse = await this.gamesService.getGame(this.gameId);
+			let game = await this.requestWithToastr(() => this.gamesService.getGame(this.gameId),
+				'Unable to load game');
 			this.spinner.hide();
 
-			if (gameResponse.isSuccess) {
+			if (game) {
 				await this.gameHubSignalRService.joinGame(this.gameId);
 
-				this.game = gameResponse.data;
-				this.boardSettings.game = gameResponse.data;
-				this.boardSettings.playerColor = this.getPlayerColorFromGame(gameResponse.data);
+				this.game = game;
+				this.boardSettings.game = game;
+				this.boardSettings.playerColor = this.getPlayerColorFromGame(game);
 				this.boardStateService.loadFromFen(this.boardSettings.game.fen);
-			} else if (gameResponse?.errors) {
-				this.toastr.error(gameResponse.errors.join(', '), 'Unable to load game');
-			} else {
-				this.toastr.error('Unable to load game');
 			}
 		});
 	}

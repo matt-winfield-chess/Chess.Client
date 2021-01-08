@@ -6,7 +6,10 @@
 			<button routerLink="/log-in" class="log-in button">Log in</button>
 		</ng-container>
 		<ng-container *ngIf="shouldShowLoggedInButtons()">
-			<div class="username">{{getUsername()}}</div>
+			<div class="username" [matMenuTriggerFor]="userMenu">{{getUsername()}}</div>
+			<mat-menu #userMenu="matMenu">
+				<div class="menu-item" mat-menu-item routerLink="settings">Settings</div>
+			</mat-menu>
 			<app-notifications></app-notifications>
 			<app-challenges></app-challenges>
 			<button (click)="logOut()" class="log-out button">Log out</button>

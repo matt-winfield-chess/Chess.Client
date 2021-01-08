@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/config/config.service';
 
 import { NavbarComponent } from './navbar.component';
+import { MatMenuModule } from '@angular/material/menu';
 
 describe('NavbarComponent', () => {
 	let component: NavbarComponent;
@@ -9,6 +10,7 @@ describe('NavbarComponent', () => {
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
+			imports: [MatMenuModule],
 			declarations: [NavbarComponent],
 			providers: [
 				{ provide: ConfigService, useValue: jasmine.createSpyObj('ConfigService', ['getHost', 'getApiEndpoint', 'load']) }

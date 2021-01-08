@@ -3,13 +3,14 @@ import { UsersService } from '../../services/http/users/users.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { BaseComponent } from 'src/app/components/base-component';
 
 @Component({
 	selector: 'app-create-account-page',
 	templateUrl: './create-account-page.component.html',
 	styleUrls: ['./create-account-page.component.scss']
 })
-export class CreateAccountPageComponent {
+export class CreateAccountPageComponent extends BaseComponent {
 	public username: string;
 	public password: string;
 	public passwordConfirm: string;
@@ -18,8 +19,10 @@ export class CreateAccountPageComponent {
 	public displayInvalidPasswordMessage: boolean = false;
 	public displayNonMatchingPasswords: boolean = false;
 
-	constructor(private usersService: UsersService, private toastr: ToastrService,
-		private spinner: NgxSpinnerService, private router: Router) { }
+	constructor(protected toastr: ToastrService, private usersService: UsersService,
+		private spinner: NgxSpinnerService, private router: Router) {
+		super(toastr);
+	}
 
 	public async signUp(): Promise<void> {
 		this.resetErrorMessages();
@@ -28,22 +31,14 @@ export class CreateAccountPageComponent {
 
 		if (hasErrors) return;
 
-		try {
-			this.spinner.show();
-			let accountCreationResult = await this.usersService.createAccount(this.username, this.password);
-			this.spinner.hide();
+		this.spinner.show();
 
-			if (accountCreationResult.isSuccess) {
-				this.router.navigate(['/']);
-				this.toastr.success('Account created successfully!');
-			} else if (accountCreationResult.errors) {
-				this.toastr.error(accountCreationResult.errors.join(', '), 'Account creation failed!');
-			} else {
-				this.toastr.error('Failed to connect', 'Account creation failed!');
-			}
-		} catch (e) {
-			this.toastr.error(e.message, 'Account creation failed!');
-		}
+		await this.requestWithToastr(() => this.usersService.createAccount(this.username, this.password),
+			'Account creation failed!',
+			'Account creaeted successfully!',
+			(data: number) => this.router.navigate(['/']));
+
+		this.spinner.hide();
 	}
 
 	private areErrorsPresent(): boolean {

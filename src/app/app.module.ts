@@ -32,6 +32,10 @@ import { DrawOfferStatusComponent } from './components/gameplay/draw-offer-statu
 import { UpdateToastComponent } from './components/toasts/update-toast/update-toast.component';
 import { ComputerGamePageComponent } from './pages/computer-game-page/computer-game-page.component';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { UserSettingsComponent } from './pages/user-settings/user-settings.component';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -58,7 +62,8 @@ export function load(config: ConfigService): () => Promise<void> {
 		GameControlsComponent,
 		DrawOfferStatusComponent,
 		UpdateToastComponent,
-		ComputerGamePageComponent
+		ComputerGamePageComponent,
+		UserSettingsComponent
 	],
 	imports: [
 		CommonModule,
@@ -74,6 +79,9 @@ export function load(config: ConfigService): () => Promise<void> {
 		}),
 		NgxSpinnerModule,
 		MatSliderModule,
+		MatMenuModule,
+		MatSelectModule,
+		MatFormFieldModule,
 		ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
 	],
 	providers: [
