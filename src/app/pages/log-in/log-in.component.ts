@@ -1,39 +1,36 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { AuthenticateService } from '../../services/http/authentication/authenticate.service';
 import { LoginStateService } from '../../services/login-state.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { BaseComponent } from 'src/app/components/base-component';
 
 @Component({
 	selector: 'app-log-in',
 	templateUrl: './log-in.component.html',
 	styleUrls: ['./log-in.component.scss']
 })
-export class LogInComponent {
+export class LogInComponent extends BaseComponent {
 
 	public username: string;
 	public password: string;
 
-	constructor(private authenticateService: AuthenticateService, private loginStateService: LoginStateService,
-		private spinner: NgxSpinnerService, private toastr: ToastrService, private router: Router) { }
+	constructor(protected toastr: ToastrService, private authenticateService: AuthenticateService, private loginStateService: LoginStateService,
+		private spinner: NgxSpinnerService, private router: Router) {
+		super(toastr);
+	}
 
 	public async logIn(): Promise<void> {
 		this.spinner.show();
-		let loginResult = await this.authenticateService.logIn(this.username, this.password);
+		let loginResponse = await this.requestWithToastr(() => this.authenticateService.logIn(this.username, this.password),
+			'Login failed!');
 		this.spinner.hide();
 
-		if (loginResult.isSuccess) {
-			this.loginStateService.logIn(loginResult.data.token, loginResult.data.username);
+		if (loginResponse) {
+			this.loginStateService.logIn(loginResponse.token, loginResponse.username);
 			this.router.navigate(['/']);
 			this.toastr.success('Logged in!');
-			return;
-		}
-
-		if (loginResult.errors) {
-			this.toastr.error(loginResult.errors.join(', '), 'Login failed!');
-		} else {
-			this.toastr.error('Failed to connect', 'Login failed!');
 		}
 	}
 }

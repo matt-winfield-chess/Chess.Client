@@ -1,0 +1,9 @@
+<h4>Piece movement method</h4>
+<mat-form-field appearance="fill">
+	<mat-label>Movement method</mat-label>
+	<mat-select [(value)]="pieceMovementMethod" (selectionChange)="onPieceMovementMethodChange($event.value)">
+		<mat-option [value]="0">Hybrid</mat-option>
+		<mat-option [value]="1">Click two squares</mat-option>
+		<mat-option [value]="2">Drag</mat-option>
+	</mat-select>
+</mat-form-field>

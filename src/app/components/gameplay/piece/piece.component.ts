@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Piece } from 'src/app/classes/piece';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
 import { BoardStateService } from 'src/app/services/board-state.service';
 import { MovementStrategyFactoryService } from '../../../services/factories/movement-strategy-factory.service';
+import { PieceMovedEvent } from 'src/app/classes/piece-moved-event';
 
 @Component({
 	selector: 'app-piece',
@@ -17,7 +18,7 @@ export class PieceComponent implements AfterViewInit {
 
 	@Output() onPieceSelected = new EventEmitter<Piece>();
 	@Output() pieceClicked = new EventEmitter<Piece>();
-	@Output() pieceDragged = new EventEmitter<Piece>();
+	@Output() pieceDragged = new EventEmitter<PieceMovedEvent>();
 
 	@ViewChild('piece') pieceElement: ElementRef<HTMLElement>;
 
@@ -133,13 +134,15 @@ export class PieceComponent implements AfterViewInit {
 		let realNewPosition = this.convertDisplayPosition(newXCoord, newYCoord);
 
 		if (this.hasMoved(realNewPosition[0], realNewPosition[1])) {
-			this.pieceDragged.emit(this.piece);
+			this.pieceDragged.emit({
+				piece: this.piece,
+				oldX: this.piece.x,
+				oldY: this.piece.y,
+				newX: realNewPosition[0],
+				newY: realNewPosition[1]
+			});
 		} else {
 			this.pieceClicked.emit(this.piece);
-		}
-
-		if (this.isValidCoordinate(newXCoord, newYCoord)) {
-			this.boardStateService.notifyMove(this.piece.x, this.piece.y, realNewPosition[0], realNewPosition[1]);
 		}
 	}
 
@@ -149,11 +152,6 @@ export class PieceComponent implements AfterViewInit {
 			return [7 - x, 7 - y];
 		}
 		return [x, y];
-	}
-
-	private isValidCoordinate(x: number, y: number): boolean {
-		return x >= 0 && y >= 0
-			&& x < 8 && y < 8;
 	}
 
 	private updateDimensions(): void {

@@ -9,6 +9,8 @@ import { Coordinate } from '../../../classes/coordinate';
 import { Move } from 'src/app/classes/move';
 import { BoardSettings } from 'src/app/classes/board-settings';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
+import { UsersService } from 'src/app/services/http/users/users.service';
+import { PieceMovedEvent } from 'src/app/classes/piece-moved-event';
 
 @Component({
 	selector: 'app-board',
@@ -27,13 +29,23 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	@ViewChildren('dynamicPiece') private dynamicPieces: QueryList<PieceComponent>;
 
 	private clickToMoveTarget: Piece = null;
+	private pieceMovementMethod: number = 0;
 
-	constructor(public boardStateService: BoardStateService) { }
+	constructor(public boardStateService: BoardStateService, private usersService: UsersService) { }
 
-	public ngOnInit(): void {
+	public async ngOnInit(): Promise<void> {
 		if (this.settings != null) {
 			this.flipBoard = this.settings.playerColor != PlayerColor.White;
 			this.boardStateService.setPlayerColor(this.settings.playerColor);
+		}
+
+		try {
+			var pieceMovementMethodResponse = await this.usersService.getPieceMovementMethod();
+			if (pieceMovementMethodResponse.isSuccess) {
+				this.pieceMovementMethod = pieceMovementMethodResponse.data;
+			}
+		} catch {
+			console.error('Unable to retrieve user movement method prefference');
 		}
 	}
 
@@ -68,6 +80,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	}
 
 	public onPieceClicked(piece: Piece): void {
+		if (!this.isClickToMoveEnabled()) {
+			this.hideLegalMoves();
+			return;
+		}
+
 		if (this.clickToMoveTarget == null) {
 			this.clickToMoveTarget = piece;
 			return;
@@ -81,8 +98,12 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-	public onPieceDragged(piece: Piece): void {
+	public onPieceDragged(event: PieceMovedEvent): void {
 		this.hideLegalMoves();
+
+		if (this.isValidCoordinate(event.newX, event.newY) && this.isDragToMoveEnabled()) {
+			this.boardStateService.notifyMove(event.oldX, event.oldY, event.newX, event.newY);
+		}
 	}
 
 	public onTileClicked(x: number, y: number): void {
@@ -149,6 +170,19 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
 	private notifyPiecesOfBoardSizeChange(): void {
 		this.dynamicPieces.forEach(piece => piece.onBoardSizeChange());
+	}
+
+	private isClickToMoveEnabled(): boolean {
+		return this.pieceMovementMethod == 0 || this.pieceMovementMethod == 1;
+	}
+
+	private isDragToMoveEnabled(): boolean {
+		return this.pieceMovementMethod == 0 || this.pieceMovementMethod == 2;
+	}
+
+	private isValidCoordinate(x: number, y: number): boolean {
+		return x >= 0 && y >= 0
+			&& x < 8 && y < 8;
 	}
 
 	private configureContextMenu(): void {

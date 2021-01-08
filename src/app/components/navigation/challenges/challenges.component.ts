@@ -8,25 +8,27 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Game } from 'src/app/classes/models/game';
 import { NavbarButtonComponent } from '../navbar-button/navbar-button.component';
+import { BaseComponent } from '../../base-component';
 
 @Component({
 	selector: 'app-challenges',
 	templateUrl: './challenges.component.html',
 	styleUrls: ['./challenges.component.scss']
 })
-export class ChallengesComponent implements OnInit {
+export class ChallengesComponent extends BaseComponent implements OnInit {
 
 	@ViewChild('challengesNavbarButton') challengesNavbarButton: NavbarButtonComponent;
 
 	public activeChallenges: Challenge[] = [];
 	public displayChallenges: boolean = false;
 
-	constructor(private challengeHubService: ChallengeHubSignalRService,
+	constructor(
+		protected toastr: ToastrService,
+		private challengeHubService: ChallengeHubSignalRService,
 		private challengeService: ChallengesService,
 		private loginStateService: LoginStateService,
-		private toastr: ToastrService,
 		private router: Router) {
-
+		super(toastr);
 		this.challengeHubService.onMethod(SignalRMethod.NewChallenge, (challenge) => this.onChallengeRecieved(challenge));
 		this.challengeHubService.onMethod(SignalRMethod.ChallengeAccepted, (game) => this.onChallengeAccepted(game));
 		this.loginStateService.subscribeToLogIn(() => this.onLogIn());
@@ -38,18 +40,11 @@ export class ChallengesComponent implements OnInit {
 	}
 
 	public async accept(challenge: Challenge): Promise<void> {
-		let result = await this.challengeService.acceptChallenge(challenge);
+		let game = await this.requestWithToastr(() => this.challengeService.acceptChallenge(challenge), 'Failed to accept challenge');
 
-		if (result?.isSuccess) {
-			let game = result.data;
+		if (game) {
 			this.router.navigate(['/game', game.id]);
 			this.syncChallenges();
-		} else {
-			if (result?.errors) {
-				this.toastr.error(result.errors.join(', '), 'Failed to accept challenge');
-			} else {
-				this.toastr.error('Failed to accept challenge');
-			}
 		}
 	}
 

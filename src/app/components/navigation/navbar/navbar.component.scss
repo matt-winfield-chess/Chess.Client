@@ -58,4 +58,11 @@ button {
 .username {
 	display: inline-block;
 	margin: 0 10px;
+	cursor: pointer;
+
+	&:hover {
+		@include themify($themes) {
+			color: themed("primaryFontColorHover");
+		}
+	}
 }

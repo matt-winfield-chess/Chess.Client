@@ -3,7 +3,8 @@ $accent: #73b428;
 $themes: (
 	light: (
 		pageBackgroundColor: white,
-		primaryFontColor: black,
+		primaryFontColor: rgb(66, 66, 66),
+		primaryFontColorHover: rgb(10, 10, 10),
 		navbarColor: rgb(216, 216, 216),
 		navbarBorders: 1px solid black,
 		navbarButtonBackgroundColor: rgb(175, 175, 175),
@@ -21,9 +22,10 @@ $themes: (
 		areaBackgroundColor: white,
 	),
 	dark: (
-		pageBackgroundColor: #181a1b,
-		primaryFontColor: white,
-		navbarColor: #323638,
+		pageBackgroundColor: #1f2224,
+		primaryFontColor: rgb(190, 190, 190),
+		primaryFontColorHover: rgb(255, 255, 255),
+		navbarColor: #181a1b,
 		navbarBorders: 1px solid white,
 		navbarButtonBackgroundColor: #2a2c2e,
 		navbarButtonHoverColor: #36393b,
