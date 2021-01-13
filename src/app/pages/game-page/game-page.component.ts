@@ -64,6 +64,12 @@ export class GamePageComponent extends BaseComponent implements OnInit {
 				this.boardSettings.game = game;
 				this.boardSettings.playerColor = this.getPlayerColorFromGame(game);
 				this.boardStateService.loadFromFen(this.boardSettings.game.fen);
+
+				if (!this.loginStateService.isLoggedIn()
+					|| (this.loginStateService.getUserId() != this.game.whitePlayer.id
+						&& this.loginStateService.getUserId() != this.game.blackPlayer.id)) {
+					this.boardSettings.disabled = true;
+				}
 			}
 		});
 	}

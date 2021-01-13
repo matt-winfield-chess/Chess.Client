@@ -91,7 +91,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		}
 
 		if (piece.color != this.clickToMoveTarget.color) {
-			this.boardStateService.notifyMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, piece.x, piece.y);
+			this.makeMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, piece.x, piece.y);
 			this.clickToMoveTarget = null;
 		} else {
 			this.toggleLegalMoveVisibility(piece);
@@ -102,7 +102,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		this.hideLegalMoves();
 
 		if (this.isValidCoordinate(event.newX, event.newY) && this.isDragToMoveEnabled()) {
-			this.boardStateService.notifyMove(event.oldX, event.oldY, event.newX, event.newY);
+			this.makeMove(event.oldX, event.oldY, event.newX, event.newY);
 		}
 	}
 
@@ -112,7 +112,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		let endX = this.flipBoard ? 7 - x : x;
 		let endY = this.flipBoard ? 7 - y : y;
 
-		this.boardStateService.notifyMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, endX, endY);
+		this.makeMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, endX, endY);
 		this.toggleLegalMoveVisibility(this.clickToMoveTarget);
 	}
 
@@ -125,6 +125,12 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	public hideLegalMoves(): void {
 		this.legalMoveHighlightedSquares = [];
 		this.clickToMoveTarget = null;
+	}
+
+	private makeMove(oldX: number, oldY: number, newX: number, newY: number): void {
+		if (!this.settings?.disabled) {
+			this.boardStateService.notifyMove(oldX, oldY, newX, newY);
+		}
 	}
 
 	private toggleLegalMoveVisibility(piece: Piece): void {

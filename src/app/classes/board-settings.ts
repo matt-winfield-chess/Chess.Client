@@ -6,6 +6,7 @@ export class BoardSettings {
 	public game: Game;
 	public type: BoardType;
 	public playerColor: PlayerColor;
+	public disabled: boolean = false;
 
 	public constructor(init?: Partial<BoardSettings>) {
 		Object.assign(this, init);
