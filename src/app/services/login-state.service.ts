@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { parse } from 'path';
 import { JwtTokenBody } from 'src/app/classes/jwt-token-body';
 
 @Injectable({
@@ -15,8 +16,13 @@ export class LoginStateService {
 	private logOutSubscribers: (() => void)[] = [];
 
 	constructor() {
-		if (localStorage.getItem('Chess:LoginToken')) {
-			this.loggedIn = true;
+		let token = localStorage.getItem(this.localStorageTokenKey);
+		if (token != null && token != "") {
+			if (this.hasTokenExpired(token)) {
+				this.clearToken();
+			} else {
+				this.loggedIn = true;
+			}
 		}
 	}
 
@@ -41,7 +47,12 @@ export class LoginStateService {
 	}
 
 	public getToken(): string {
-		return localStorage.getItem(this.localStorageTokenKey);
+		let token = localStorage.getItem(this.localStorageTokenKey);
+		if (this.hasTokenExpired(token)) {
+			this.clearToken();
+			return null;
+		}
+		return token;
 	}
 
 	public isLoggedIn(): boolean {
@@ -65,9 +76,22 @@ export class LoginStateService {
 		this.logOutSubscribers.push(onLogOut);
 	}
 
+	private hasTokenExpired(token: string): boolean {
+		let parsedToken = this.parseJwt(token);
+
+		if (parsedToken) {
+			return Date.now() >= parsedToken.exp * 1000;
+		}
+		return true;
+	}
+
 	private parseJwt(token: string): JwtTokenBody {
-		let base64Payload = token.split('.')[1];
-		let jsonPayload = atob(base64Payload);
-		return JSON.parse(jsonPayload);
+		try {
+			let base64Payload = token.split('.')[1];
+			let jsonPayload = atob(base64Payload);
+			return JSON.parse(jsonPayload);
+		} catch {
+			return null;
+		}
 	}
 }
