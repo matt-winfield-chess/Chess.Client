@@ -32,4 +32,16 @@ chess-tile {
 		left: 0;
 		right: 0;
 	}
+
+	&.last-move::after {
+		background-color: rgb(207, 223, 65);
+		opacity: 0.6;
+		content: " ";
+		display: block;
+		position: absolute;
+		height: 100%;
+		top: 0;
+		left: 0;
+		right: 0;
+	}
 }
