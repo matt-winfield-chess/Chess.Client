@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { parse } from 'path';
 import { JwtTokenBody } from 'src/app/classes/jwt-token-body';
 
 @Injectable({
@@ -15,8 +16,13 @@ export class LoginStateService {
 	private logOutSubscribers: (() => void)[] = [];
 
 	constructor() {
-		if (localStorage.getItem('Chess:LoginToken')) {
-			this.loggedIn = true;
+		let token = localStorage.getItem(this.localStorageTokenKey);
+		if (token) {
+			if (this.hasTokenExpired(token)) {
+				this.clearToken();
+			} else {
+				this.loggedIn = true;
+			}
 		}
 	}
 
@@ -41,7 +47,12 @@ export class LoginStateService {
 	}
 
 	public getToken(): string {
-		return localStorage.getItem(this.localStorageTokenKey);
+		let token = localStorage.getItem(this.localStorageTokenKey);
+		if (this.hasTokenExpired(token)) {
+			this.clearToken();
+			return null;
+		}
+		return token;
 	}
 
 	public isLoggedIn(): boolean {
@@ -63,6 +74,12 @@ export class LoginStateService {
 
 	public subscribeToLogOut(onLogOut: () => void): void {
 		this.logOutSubscribers.push(onLogOut);
+	}
+
+	private hasTokenExpired(token: string): boolean {
+		let parsedToken = this.parseJwt(token);
+
+		return Date.now() >= parsedToken.exp * 1000;
 	}
 
 	private parseJwt(token: string): JwtTokenBody {
