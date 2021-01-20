@@ -2,8 +2,9 @@
 	<chess-tiles>
 		<ng-container *ngFor="let y of range(8)">
 			<chess-tile *ngFor="let x of range(8)" [attr.data-x]="x" [attr.data-y]="y" [class.dark]="isDarkSquare(x, y)"
-				[class.highlighted]="isHighlighted(x, y)" [style.left]="getTilePositioning(x)"
-				[style.top]="getTilePositioning(y)" draggable="false" (click)="onTileClicked(x, y)">
+				[class.highlighted]="isHighlighted(x, y)" [class.last-move]="isLastMove(x, y)"
+				[style.left]="getTilePositioning(x)" [style.top]="getTilePositioning(y)" draggable="false"
+				(click)="onTileClicked(x, y)">
 			</chess-tile>
 		</ng-container>
 	</chess-tiles>

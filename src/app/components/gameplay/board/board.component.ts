@@ -31,7 +31,12 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	private clickToMoveTarget: Piece = null;
 	private pieceMovementMethod: number = 0;
 
-	constructor(public boardStateService: BoardStateService, private usersService: UsersService) { }
+	private lastMove: Move;
+
+	constructor(public boardStateService: BoardStateService, private usersService: UsersService) {
+		boardStateService.subscribeToPlayerMoves(move => this.onMove(move));
+		boardStateService.subscribeToNonPlayerMoves(move => this.onMove(move));
+	}
 
 	public async ngOnInit(): Promise<void> {
 		if (this.settings != null) {
@@ -73,6 +78,16 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		let displayY = this.flipBoard ? 7 - y : y;
 
 		return this.legalMoveHighlightedSquares.some(position => position.x == displayX && position.y == displayY);
+	}
+
+	public isLastMove(x: number, y: number): boolean {
+		let displayX = this.flipBoard ? 7 - x : x;
+		let displayY = this.flipBoard ? 7 - y : y;
+
+		if (this.lastMove) {
+			return (this.lastMove.oldX == displayX && this.lastMove.oldY == displayY) ||
+				(this.lastMove.newX == displayX && this.lastMove.newY == displayY)
+		}
 	}
 
 	public onPieceSelected(piece: Piece): void {
@@ -131,6 +146,10 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		if (!this.settings?.disabled) {
 			this.boardStateService.notifyMove(oldX, oldY, newX, newY);
 		}
+	}
+
+	private onMove(move: Move): void {
+		this.lastMove = move;
 	}
 
 	private toggleLegalMoveVisibility(piece: Piece): void {
