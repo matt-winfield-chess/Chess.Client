@@ -17,7 +17,7 @@ export class LoginStateService {
 
 	constructor() {
 		let token = localStorage.getItem(this.localStorageTokenKey);
-		if (token) {
+		if (token != null && token != "") {
 			if (this.hasTokenExpired(token)) {
 				this.clearToken();
 			} else {
@@ -79,12 +79,19 @@ export class LoginStateService {
 	private hasTokenExpired(token: string): boolean {
 		let parsedToken = this.parseJwt(token);
 
-		return Date.now() >= parsedToken.exp * 1000;
+		if (parsedToken) {
+			return Date.now() >= parsedToken.exp * 1000;
+		}
+		return true;
 	}
 
 	private parseJwt(token: string): JwtTokenBody {
-		let base64Payload = token.split('.')[1];
-		let jsonPayload = atob(base64Payload);
-		return JSON.parse(jsonPayload);
+		try {
+			let base64Payload = token.split('.')[1];
+			let jsonPayload = atob(base64Payload);
+			return JSON.parse(jsonPayload);
+		} catch {
+			return null;
+		}
 	}
 }
