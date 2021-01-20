@@ -108,6 +108,10 @@ export class PieceComponent implements AfterViewInit {
 		document.onmousemove = null;
 	}
 
+	public isOnBoard(): boolean {
+		return this.board != null;
+	}
+
 	private stopDragging(event: MouseEvent | Touch): void {
 		this.isDragging = false;
 
@@ -125,6 +129,11 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	private placePiece(event: MouseEvent | Touch): void {
+		if (!this.isOnBoard()) {
+			this.pieceClicked.emit(this.piece);
+			return;
+		}
+
 		let newXPosition = event.clientX - this.boardBoundingRect.left;
 		let newYPosition = event.clientY - this.boardBoundingRect.top;
 
@@ -155,8 +164,10 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	private updateDimensions(): void {
-		this.boundingRect = this.pieceElement.nativeElement.getBoundingClientRect();
-		this.boardBoundingRect = this.board.getBoundingClientRect();
+		if (this.board) {
+			this.boundingRect = this.pieceElement.nativeElement.getBoundingClientRect();
+			this.boardBoundingRect = this.board.getBoundingClientRect();
+		}
 	}
 
 	private configureContextMenu(): void {
@@ -164,6 +175,10 @@ export class PieceComponent implements AfterViewInit {
 	}
 
 	private getDraggingTransform(): string {
+		if (!this.isOnBoard()) {
+			return '';
+		}
+
 		let xPosition = this.draggingXPosition - this.boardBoundingRect.left;
 		let yPosition = this.draggingYPosition - this.boardBoundingRect.top;
 

@@ -11,6 +11,7 @@ import { BoardSettings } from 'src/app/classes/board-settings';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
 import { UsersService } from 'src/app/services/http/users/users.service';
 import { PieceMovedEvent } from 'src/app/classes/piece-moved-event';
+import { PieceType } from 'src/app/enums/piece-type.enum';
 
 @Component({
 	selector: 'app-board',
@@ -19,6 +20,7 @@ import { PieceMovedEvent } from 'src/app/classes/piece-moved-event';
 })
 export class BoardComponent implements OnInit, AfterViewInit {
 	@Input() public settings: BoardSettings;
+	@Output() public displayPawnPromotionPanel: EventEmitter<Move> = new EventEmitter<Move>();
 	@Output() public playerMoveEmitter: EventEmitter<Move> = new EventEmitter<Move>();
 	@Output() public onlineMoveEmitter: EventEmitter<Move> = new EventEmitter<Move>();
 
@@ -106,7 +108,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		}
 
 		if (piece.color != this.clickToMoveTarget.color) {
-			this.makeMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, piece.x, piece.y);
+			this.makeMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, piece.x, piece.y, piece);
 			this.clickToMoveTarget = null;
 		} else {
 			this.toggleLegalMoveVisibility(piece);
@@ -117,7 +119,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		this.hideLegalMoves();
 
 		if (this.isValidCoordinate(event.newX, event.newY) && this.isDragToMoveEnabled()) {
-			this.makeMove(event.oldX, event.oldY, event.newX, event.newY);
+			this.makeMove(event.oldX, event.oldY, event.newX, event.newY, event.piece);
 		}
 	}
 
@@ -127,7 +129,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		let endX = this.flipBoard ? 7 - x : x;
 		let endY = this.flipBoard ? 7 - y : y;
 
-		this.makeMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, endX, endY);
+		this.makeMove(this.clickToMoveTarget.x, this.clickToMoveTarget.y, endX, endY, this.clickToMoveTarget);
 		this.toggleLegalMoveVisibility(this.clickToMoveTarget);
 	}
 
@@ -142,9 +144,24 @@ export class BoardComponent implements OnInit, AfterViewInit {
 		this.clickToMoveTarget = null;
 	}
 
-	private makeMove(oldX: number, oldY: number, newX: number, newY: number): void {
+	public completePromotion(move: Move) {
+		this.boardStateService.notifyMove(move);
+	}
+
+	private makeMove(oldX: number, oldY: number, newX: number, newY: number, piece: Piece): void {
 		if (!this.settings?.disabled) {
-			this.boardStateService.notifyMove(oldX, oldY, newX, newY);
+			let move: Move = {
+				oldX,
+				oldY,
+				newX,
+				newY
+			};
+
+			if (piece.pieceType == PieceType.Pawn && (newY == 0 || newY == 7)) {
+				this.displayPawnPromotionPanel.emit(move)
+			} else {
+				this.boardStateService.notifyMove(move);
+			}
 		}
 	}
 

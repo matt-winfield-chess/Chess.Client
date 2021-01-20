@@ -4,6 +4,7 @@ import { GameResult } from 'src/app/classes/game-result';
 import { Move } from 'src/app/classes/move';
 import { BoardComponent } from 'src/app/components/gameplay/board/board.component';
 import { BoardType } from 'src/app/enums/board-type.enum';
+import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
 import { BoardStateService } from 'src/app/services/board-state.service';
 import { CoordinateNotationParserService } from 'src/app/services/coordinate-notation-parser.service';
@@ -20,6 +21,7 @@ export class ComputerGamePageComponent {
 
 	public isGameOver: boolean = false;
 	public shouldShowGameOverModal: boolean = false;
+	public showPromotionPanel: boolean = false;
 	public gameResult: GameResult;
 	public boardSettings: BoardSettings = new BoardSettings({
 		type: BoardType.Game,
@@ -28,6 +30,7 @@ export class ComputerGamePageComponent {
 
 	private displayedDifficulty: number = 10;
 	private gameMoves: Move[] = [];
+	private activePromotionMove: Move;
 
 	constructor(private stockfishService: StockfishService, private boardStateService: BoardStateService,
 		private coordinateNotationParser: CoordinateNotationParserService) {
@@ -78,6 +81,18 @@ export class ComputerGamePageComponent {
 		}
 	}
 
+	public startPromotionPrompt(move: Move): void {
+		this.activePromotionMove = move;
+		this.showPromotionPanel = true;
+	}
+
+	public onPromotionSelected(pieceType: PieceType): void {
+		this.activePromotionMove.promotion = pieceType;
+		this.board.completePromotion(this.activePromotionMove);
+		this.activePromotionMove = null;
+		this.showPromotionPanel = false;
+	}
+
 	private onOpponentMove(move: Move): void {
 		this.gameMoves.push(move);
 	}
@@ -92,7 +107,7 @@ export class ComputerGamePageComponent {
 		var bestMoveString = await this.stockfishService.calculateMove(this.gameMoves);
 		var bestMove = this.coordinateNotationParser.toMove(bestMoveString);
 
-		this.boardStateService.applyNonPlayerMove(bestMove.oldX, bestMove.oldY, bestMove.newX, bestMove.newY);
+		this.boardStateService.applyNonPlayerMove(bestMove);
 	}
 
 	private onGameEnd(gameResult: GameResult): void {

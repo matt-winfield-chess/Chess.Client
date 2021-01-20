@@ -1,6 +1,7 @@
 <div class="play-page-content">
 	<div class="game">
-		<app-board #board [settings]="boardSettings"></app-board>
+		<app-board #board (displayPawnPromotionPanel)="startPromotionPrompt($event)" [settings]="boardSettings">
+		</app-board>
 
 		<div class="sidebar">
 			<div class="sidebar-title">
@@ -24,6 +25,9 @@
 				</div>
 			</div>
 		</div>
+
+		<app-pawn-promotion (pieceSelected)="onPromotionSelected($event)" [hidden]="!showPromotionPanel">
+		</app-pawn-promotion>
 	</div>
 </div>
 

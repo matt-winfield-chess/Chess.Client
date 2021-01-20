@@ -1,5 +1,8 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { GameResult } from 'src/app/classes/game-result';
+import { Move } from 'src/app/classes/move';
+import { BoardComponent } from 'src/app/components/gameplay/board/board.component';
+import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
 import { BoardStateService } from 'src/app/services/board-state.service';
 
@@ -12,7 +15,11 @@ export class OfflineGamePageComponent {
 
 	public isGameOver: boolean = false;
 	public shouldShowGameOverModal: boolean = false;
+	public showPromotionPanel: boolean = false;
 	public gameResult: GameResult;
+
+	@ViewChild('board') private board: BoardComponent;
+	private activePromotionMove: Move;
 
 	constructor(private boardStateService: BoardStateService) {
 		this.boardStateService.setPlayerColor(null);
@@ -25,6 +32,18 @@ export class OfflineGamePageComponent {
 
 	public onCloseGameOverModal(): void {
 		this.shouldShowGameOverModal = false;
+	}
+
+	public startPromotionPrompt(move: Move): void {
+		this.activePromotionMove = move;
+		this.showPromotionPanel = true;
+	}
+
+	public onPromotionSelected(pieceType: PieceType): void {
+		this.activePromotionMove.promotion = pieceType;
+		this.board.completePromotion(this.activePromotionMove);
+		this.activePromotionMove = null;
+		this.showPromotionPanel = false;
 	}
 
 	private onGameEnd(gameResult: GameResult): void {

@@ -73,12 +73,14 @@ export class BoardStateService {
 		this.gameEndSubscribers.push(onGameEnd);
 	}
 
-	public notifyMove(oldX: number, oldY: number, newX: number, newY: number): void {
-		let piece = this.piecePositions[oldY][oldX];
+	public notifyMove(move: Move): void {
+		let piece = this.piecePositions[move.oldY][move.oldX];
 
 		if (piece) {
-			let movementValidationResult = this.validateMove(piece, newX, newY);
+			let movementValidationResult = this.validateMove(piece, move.newX, move.newY);
 			if (!movementValidationResult.isValid) return;
+
+			movementValidationResult.move = move;
 
 			this.applyMoveAndSideEffects(piece, movementValidationResult);
 
@@ -89,11 +91,12 @@ export class BoardStateService {
 		}
 	}
 
-	public applyNonPlayerMove(oldX: number, oldY: number, newX: number, newY: number): void {
-		let piece = this.piecePositions[oldY][oldX];
+	public applyNonPlayerMove(move: Move): void {
+		let piece = this.piecePositions[move.oldY][move.oldX];
 
 		if (piece) {
-			let movementValidationResult = this.validateMove(piece, newX, newY, true);
+			let movementValidationResult = this.validateMove(piece, move.newX, move.newY, true);
+			movementValidationResult.move = move;
 
 			this.applyMoveAndSideEffects(piece, movementValidationResult);
 
@@ -152,8 +155,6 @@ export class BoardStateService {
 	}
 
 	public isKingInCheck(kingColor: PlayerColor, board: Piece[][] = this.piecePositions): boolean {
-		let opponentColor: PlayerColor = kingColor == PlayerColor.White ? PlayerColor.Black : PlayerColor.White;
-
 		let isKingPredicate = (piece: Piece) => piece?.pieceType == PieceType.King && piece?.color == kingColor;
 
 		let kingY = board.findIndex(rank => rank.some(isKingPredicate));
@@ -334,7 +335,7 @@ export class BoardStateService {
 		let pawn = this.getPieceOnSquare(move.newX, move.newY);
 
 		this.removeIndirectlyCapturedPiece(pawn);
-		this.addPiece(move.newX, move.newY, PieceType.Queen, pawn.color);
+		this.addPiece(move.newX, move.newY, move.promotion, pawn.color);
 	}
 
 	private removeIndirectlyCapturedPiece(piece: Piece): void {
