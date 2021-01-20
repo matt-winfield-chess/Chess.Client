@@ -1,7 +1,7 @@
 <div class="play-page-content">
 	<div class="game">
-		<app-board *ngIf="boardSettings.game" [settings]="boardSettings"
-			(playerMoveEmitter)="onPlayerPieceMoved($event)">
+		<app-board #board *ngIf="boardSettings.game" [settings]="boardSettings"
+			(playerMoveEmitter)="onPlayerPieceMoved($event)" (displayPawnPromotionPanel)="startPromotionPrompt($event)">
 		</app-board>
 
 		<div class="sidebar">
@@ -14,6 +14,9 @@
 				<app-game-controls [game]="game" [playerColor]="boardSettings.playerColor"></app-game-controls>
 			</div>
 		</div>
+
+		<app-pawn-promotion (pieceSelected)="onPromotionSelected($event)" [hidden]="!showPromotionPanel">
+		</app-pawn-promotion>
 	</div>
 </div>
 

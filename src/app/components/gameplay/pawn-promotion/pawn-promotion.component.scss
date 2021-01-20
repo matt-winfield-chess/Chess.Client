@@ -1,0 +1,15 @@
+@import "../../../styles/themes/themify.scss";
+@import "../../../styles/themes/themes.scss";
+
+.promotion-pane {
+	position: absolute;
+	top: 10px;
+	left: 50%;
+	transform: translate(-50%, 0);
+	border: 1px solid grey;
+	padding: 5px;
+
+	@include themify($themes) {
+		background-color: themed("sectionBackgroundColor");
+	}
+}

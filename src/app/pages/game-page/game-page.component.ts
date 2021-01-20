@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -15,6 +15,8 @@ import { GameHubSignalRService } from 'src/app/services/signal-r/game-hub-signal
 import { SignalRMethod } from 'src/app/services/signal-r/signal-r-method';
 import { GameResult } from 'src/app/classes/game-result';
 import { BaseComponent } from 'src/app/components/base-component';
+import { BoardComponent } from 'src/app/components/gameplay/board/board.component';
+import { PieceType } from 'src/app/enums/piece-type.enum';
 
 @Component({
 	selector: 'app-game-page',
@@ -29,9 +31,13 @@ export class GamePageComponent extends BaseComponent implements OnInit {
 
 	public isGameOver: boolean = false;
 	public shouldShowGameOverModal: boolean = false;
+	public showPromotionPanel: boolean = false;
 	public gameResult: GameResult;
 	public gameId: string;
 	public game: Game;
+
+	@ViewChild('board') private board: BoardComponent;
+	private activePromotionMove: Move;
 
 	constructor(protected toastr: ToastrService, private gamesService: GamesService, private gameHubSignalRService: GameHubSignalRService,
 		private loginStateService: LoginStateService, private coordinateNotationParserService: CoordinateNotationParserService,
@@ -96,6 +102,18 @@ export class GamePageComponent extends BaseComponent implements OnInit {
 		this.shouldShowGameOverModal = false;
 	}
 
+	public startPromotionPrompt(move: Move): void {
+		this.activePromotionMove = move;
+		this.showPromotionPanel = true;
+	}
+
+	public onPromotionSelected(pieceType: PieceType): void {
+		this.activePromotionMove.promotion = pieceType;
+		this.board.completePromotion(this.activePromotionMove);
+		this.activePromotionMove = null;
+		this.showPromotionPanel = false;
+	}
+
 	private onGameEnd(gameResult: GameResult): void {
 		this.isGameOver = true;
 		this.shouldShowGameOverModal = true;
@@ -105,7 +123,7 @@ export class GamePageComponent extends BaseComponent implements OnInit {
 	private onOpponentMove(moveString: string): void {
 		let move = this.coordinateNotationParserService.toMove(moveString);
 
-		this.boardStateService.applyNonPlayerMove(move.oldX, move.oldY, move.newX, move.newY);
+		this.boardStateService.applyNonPlayerMove(move);
 	}
 
 	private onIllegalMove(fen: string): void {

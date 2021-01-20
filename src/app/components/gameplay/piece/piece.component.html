@@ -1,4 +1,5 @@
 <chess-piece #piece [style.transform]="getPieceTransform()" [ngClass]="[getColorClass(), getPieceTypeClass()]"
-	[class.dragging]="isDragging" (mousedown)="onPieceMouseDown($event)" (touchstart)="onPieceTouchStart($event)">
+	[class.dragging]="isDragging" [class.off-board]="!isOnBoard()" (mousedown)="onPieceMouseDown($event)"
+	(touchstart)="onPieceTouchStart($event)">
 
 </chess-piece>

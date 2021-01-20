@@ -1,6 +1,6 @@
 <div class="play-page-content">
 	<div class="game">
-		<app-board></app-board>
+		<app-board #board (displayPawnPromotionPanel)="startPromotionPrompt($event)"></app-board>
 
 		<div class="sidebar">
 			<div class="sidebar-title">
@@ -9,6 +9,9 @@
 				<div *ngIf="isGameOver">Game Over</div>
 			</div>
 		</div>
+
+		<app-pawn-promotion (pieceSelected)="onPromotionSelected($event)" [hidden]="!showPromotionPanel">
+		</app-pawn-promotion>
 	</div>
 </div>
 
