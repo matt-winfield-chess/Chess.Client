@@ -104,10 +104,10 @@ export class ChallengesComponent extends BaseComponent implements OnInit {
 
 	private updateBadge(): void {
 		if (this.activeChallenges.length > 0) {
-			this.challengesNavbarButton.setBadgeText(this.activeChallenges.length.toString());
-			this.challengesNavbarButton.setBadgeVisible(true);
+			this.challengesNavbarButton?.setBadgeText(this.activeChallenges.length.toString());
+			this.challengesNavbarButton?.setBadgeVisible(true);
 		} else {
-			this.challengesNavbarButton.setBadgeVisible(false);
+			this.challengesNavbarButton?.setBadgeVisible(false);
 		}
 	}
 }

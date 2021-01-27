@@ -82,10 +82,10 @@ export class NotificationsComponent implements OnInit {
 
 	private updateBadge(): void {
 		if (this.notifications.length > 0) {
-			this.notificationsNavbarButton.setBadgeText(this.notifications.length.toString());
-			this.notificationsNavbarButton.setBadgeVisible(true);
+			this.notificationsNavbarButton?.setBadgeText(this.notifications.length.toString());
+			this.notificationsNavbarButton?.setBadgeVisible(true);
 		} else {
-			this.notificationsNavbarButton.setBadgeVisible(false);
+			this.notificationsNavbarButton?.setBadgeVisible(false);
 		}
 	}
 }
