@@ -10,8 +10,8 @@
 			<mat-menu #userMenu="matMenu">
 				<div class="menu-item" mat-menu-item routerLink="settings">Settings</div>
 			</mat-menu>
-			<app-notifications></app-notifications>
-			<app-challenges></app-challenges>
+			<app-notifications #notifications (onOpened)="onNotificationsOpened()"></app-notifications>
+			<app-challenges #challenges (onOpened)="onChallengesOpened()"></app-challenges>
 			<button (click)="logOut()" class="log-out button">Log out</button>
 		</ng-container>
 	</div>
