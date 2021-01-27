@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { ChallengeHubSignalRService } from '../../../services/signal-r/challenge-hub-signal-r.service';
 import { Challenge } from '../../../classes/models/challenge';
 import { SignalRMethod } from 'src/app/services/signal-r/signal-r-method';
@@ -16,6 +16,8 @@ import { BaseComponent } from '../../base-component';
 	styleUrls: ['./challenges.component.scss']
 })
 export class ChallengesComponent extends BaseComponent implements OnInit {
+
+	@Output() onOpened: EventEmitter<boolean> = new EventEmitter<boolean>();
 
 	@ViewChild('challengesNavbarButton') challengesNavbarButton: NavbarButtonComponent;
 
@@ -59,8 +61,16 @@ export class ChallengesComponent extends BaseComponent implements OnInit {
 		this.updateBadge();
 	}
 
+	public hide(): void {
+		this.challengesNavbarButton.setActive(false);
+		this.displayChallenges = false;
+	}
+
 	public toggleChallengesVisibility(): void {
 		this.displayChallenges = this.displayChallenges ? false : true;
+		if (this.displayChallenges) {
+			this.onOpened.emit(this.displayChallenges);
+		}
 		this.challengesNavbarButton.setActive(this.displayChallenges);
 	}
 
@@ -94,10 +104,10 @@ export class ChallengesComponent extends BaseComponent implements OnInit {
 
 	private updateBadge(): void {
 		if (this.activeChallenges.length > 0) {
-			this.challengesNavbarButton.setBadgeText(this.activeChallenges.length.toString());
-			this.challengesNavbarButton.setBadgeVisible(true);
+			this.challengesNavbarButton?.setBadgeText(this.activeChallenges.length.toString());
+			this.challengesNavbarButton?.setBadgeVisible(true);
 		} else {
-			this.challengesNavbarButton.setBadgeVisible(false);
+			this.challengesNavbarButton?.setBadgeVisible(false);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Game } from 'src/app/classes/models/game';
 import { UserNotification } from 'src/app/classes/models/user-notification';
@@ -12,6 +12,8 @@ import { NavbarButtonComponent } from '../navbar-button/navbar-button.component'
 	styleUrls: ['./notifications.component.scss']
 })
 export class NotificationsComponent implements OnInit {
+
+	@Output() onOpened: EventEmitter<boolean> = new EventEmitter<boolean>();
 
 	@ViewChild('notificationsNavbarButton') notificationsNavbarButton: NavbarButtonComponent;
 
@@ -30,8 +32,16 @@ export class NotificationsComponent implements OnInit {
 		this.updateNotifications();
 	}
 
+	public hide(): void {
+		this.notificationsNavbarButton.setActive(false);
+		this.displayNotifications = false;
+	}
+
 	public toggleNotificationsVisibility(): void {
 		this.displayNotifications = this.displayNotifications ? false : true;
+		if (this.displayNotifications) {
+			this.onOpened.emit(this.displayNotifications);
+		}
 		this.notificationsNavbarButton.setActive(this.displayNotifications);
 	}
 
@@ -72,10 +82,10 @@ export class NotificationsComponent implements OnInit {
 
 	private updateBadge(): void {
 		if (this.notifications.length > 0) {
-			this.notificationsNavbarButton.setBadgeText(this.notifications.length.toString());
-			this.notificationsNavbarButton.setBadgeVisible(true);
+			this.notificationsNavbarButton?.setBadgeText(this.notifications.length.toString());
+			this.notificationsNavbarButton?.setBadgeVisible(true);
 		} else {
-			this.notificationsNavbarButton.setBadgeVisible(false);
+			this.notificationsNavbarButton?.setBadgeVisible(false);
 		}
 	}
 }
