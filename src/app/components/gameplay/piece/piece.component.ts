@@ -1,10 +1,10 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Piece } from 'src/app/classes/piece';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
-import { BoardStateService } from 'src/app/services/board-state.service';
 import { MovementStrategyFactoryService } from '../../../services/factories/movement-strategy-factory.service';
 import { PieceMovedEvent } from 'src/app/classes/piece-moved-event';
+import { ChallengesComponent } from '../../navigation/challenges/challenges.component';
 
 @Component({
 	selector: 'app-piece',
@@ -45,14 +45,15 @@ export class PieceComponent implements AfterViewInit {
 
 	private isUsingTouchEvents = false;
 
-	constructor(private movementStrategyFactory: MovementStrategyFactoryService) { }
+	constructor(private movementStrategyFactory: MovementStrategyFactoryService, private cdr: ChangeDetectorRef) { }
 
 	public ngAfterViewInit(): void {
+		this.animate = true;
 		this.updateDimensions();
 		this.configureContextMenu();
 		this.piece.movementStrategies = this.movementStrategyFactory.createStrategies(this.piece.pieceType);
 		this.animate = true;
-
+		this.cdr.detectChanges();
 	}
 
 	public onBoardSizeChange(): void {
