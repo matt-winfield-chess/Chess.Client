@@ -23,6 +23,7 @@ export class PieceComponent implements AfterViewInit {
 	@ViewChild('piece') pieceElement: ElementRef<HTMLElement>;
 
 	public isDragging: boolean = false;
+	public animate: boolean = false;
 	private draggingXPosition: number = 0;
 	private draggingYPosition: number = 0;
 	private boundingRect: DOMRect;
@@ -44,13 +45,14 @@ export class PieceComponent implements AfterViewInit {
 
 	private isUsingTouchEvents = false;
 
-	constructor(private boardStateService: BoardStateService,
-		private movementStrategyFactory: MovementStrategyFactoryService) { }
+	constructor(private movementStrategyFactory: MovementStrategyFactoryService) { }
 
 	public ngAfterViewInit(): void {
 		this.updateDimensions();
 		this.configureContextMenu();
 		this.piece.movementStrategies = this.movementStrategyFactory.createStrategies(this.piece.pieceType);
+		this.animate = true;
+
 	}
 
 	public onBoardSizeChange(): void {
