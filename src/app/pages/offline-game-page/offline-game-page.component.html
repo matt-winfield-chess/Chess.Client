@@ -3,18 +3,18 @@
 		<app-board #board (displayPawnPromotionPanel)="startPromotionPrompt($event)" [disabled]="isBoardDisabled">
 		</app-board>
 
-		<div class="sidebar">
-			<div class="sidebar-title">
-				<div *ngIf="isWhiteActiveColor() && !isGameOver">White to play</div>
-				<div *ngIf="!isWhiteActiveColor() && !isGameOver">Black to play</div>
-				<div *ngIf="isGameOver">Game Over</div>
-			</div>
-
-			<app-move-history (isInPastChanged)="onMoveIntoPast($event)" [moves]="game.moves"></app-move-history>
-		</div>
-
 		<app-pawn-promotion (pieceSelected)="onPromotionSelected($event)" [hidden]="!showPromotionPanel">
 		</app-pawn-promotion>
+	</div>
+	<div class="sidebar">
+		<div class="sidebar-title">
+			<div *ngIf="isWhiteActiveColor() && !isGameOver">White to play</div>
+			<div *ngIf="!isWhiteActiveColor() && !isGameOver">Black to play</div>
+			<div *ngIf="isGameOver">Game Over</div>
+		</div>
+		<div class="sidebar-content">
+			<app-move-history (isInPastChanged)="onMoveIntoPast($event)" [moves]="game.moves"></app-move-history>
+		</div>
 	</div>
 </div>
 

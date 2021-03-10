@@ -61,17 +61,22 @@ app-board {
 .play-page-content {
 	display: flex;
 	justify-content: center;
-	align-items: center;
-	height: 100%;
+	align-items: stretch;
+	margin: 10px 0;
 
 	@include phone-only {
-		align-items: flex-start;
+		flex-direction: column;
+		height: 100%;
 	}
 }
 
 .game {
 	position: relative;
-	margin: 10px;
+	margin: 0 10px;
+
+	@include phone-only {
+		margin: 10px 0;
+	}
 }
 
 .modal-background {

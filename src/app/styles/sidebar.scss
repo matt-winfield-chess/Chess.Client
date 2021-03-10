@@ -3,11 +3,6 @@
 @import "mixins/responsive-sizes.scss";
 
 .sidebar {
-	position: absolute;
-	top: 50%;
-	right: -10px;
-	transform: translate(100%, -50%);
-	height: 100%;
 	box-sizing: border-box;
 	border: 1px solid grey;
 	border-radius: 5px;
@@ -16,13 +11,12 @@
 	overflow: hidden;
 
 	@include phone-only {
-		top: auto;
-		right: auto;
-		bottom: -5px;
-		left: 50%;
-		transform: translate(-50%, 100%);
-		height: auto;
-		width: 100%;
+		transform: initial;
+		width: calc(100% - 10px);
+		min-height: 0;
+		position: static;
+		margin: 5px;
+		flex-grow: 1;
 	}
 
 	.sidebar-title {

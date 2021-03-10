@@ -5,21 +5,20 @@
 			[disabled]="isInPast">
 		</app-board>
 
-		<div class="sidebar">
-			<div class="sidebar-title">
-				<div *ngIf="isWhiteActiveColor() && !isGameOver">White to play</div>
-				<div *ngIf="!isWhiteActiveColor() && !isGameOver">Black to play</div>
-				<div *ngIf="isGameOver">Game Over</div>
-			</div>
-			<div class="sidebar-content">
-				<app-move-history #history (isInPastChanged)="onMoveIntoPast($event)" [moves]="game?.moves">
-				</app-move-history>
-				<app-game-controls [game]="game" [playerColor]="boardSettings.playerColor"></app-game-controls>
-			</div>
-		</div>
-
 		<app-pawn-promotion (pieceSelected)="onPromotionSelected($event)" [hidden]="!showPromotionPanel">
 		</app-pawn-promotion>
+	</div>
+	<div class="sidebar">
+		<div class="sidebar-title">
+			<div *ngIf="isWhiteActiveColor() && !isGameOver">White to play</div>
+			<div *ngIf="!isWhiteActiveColor() && !isGameOver">Black to play</div>
+			<div *ngIf="isGameOver">Game Over</div>
+		</div>
+		<div class="sidebar-content">
+			<app-move-history #history (isInPastChanged)="onMoveIntoPast($event)" [moves]="game?.moves">
+			</app-move-history>
+			<app-game-controls [game]="game" [playerColor]="boardSettings.playerColor"></app-game-controls>
+		</div>
 	</div>
 </div>
 
