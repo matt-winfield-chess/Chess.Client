@@ -9,7 +9,7 @@
 	width: 100%;
 
 	@include themify($themes) {
-		background-color: themed("navbarColor");
+		background-color: themed("secondaryBackgroundColor");
 	}
 }
 

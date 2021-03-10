@@ -12,7 +12,7 @@ import { SignalRMethod } from 'src/app/services/signal-r/signal-r-method';
 })
 export class DrawOfferStatusComponent implements OnInit, OnChanges {
 
-	@Input() public game: Game;
+	@Input() public game: Game<any>;
 	@Input() public playerColor: PlayerColor;
 
 	public showDrawOffer: boolean = false;

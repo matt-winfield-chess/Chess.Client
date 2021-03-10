@@ -1,8 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { NavigationStart, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { BoardSettings } from 'src/app/classes/board-settings';
 import { GameResult } from 'src/app/classes/game-result';
 import { Move } from 'src/app/classes/move';
 import { BoardComponent } from 'src/app/components/gameplay/board/board.component';
+import { MoveHistoryComponent } from 'src/app/components/navigation/move-history/move-history.component';
 import { BoardType } from 'src/app/enums/board-type.enum';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
@@ -15,7 +18,7 @@ import { StockfishService } from 'src/app/services/engines/stockfish.service';
 	templateUrl: './computer-game-page.component.html',
 	styleUrls: ['./computer-game-page.component.scss']
 })
-export class ComputerGamePageComponent {
+export class ComputerGamePageComponent implements OnDestroy {
 
 	@ViewChild('board') board: BoardComponent;
 
@@ -27,19 +30,36 @@ export class ComputerGamePageComponent {
 		type: BoardType.Game,
 		playerColor: PlayerColor.White
 	});
+	public gameMoves: Move[] = [];
+	public isBoardDisabled: boolean = false;
 
 	private displayedDifficulty: number = 10;
-	private gameMoves: Move[] = [];
 	private activePromotionMove: Move;
 
+	private subscriptions: Subscription[] = [];
+
 	constructor(private stockfishService: StockfishService, private boardStateService: BoardStateService,
-		private coordinateNotationParser: CoordinateNotationParserService) {
+		private coordinateNotationParser: CoordinateNotationParserService, private router: Router) {
 		this.boardStateService.setPlayerColor(null);
-		this.boardStateService.subscribeToPlayerMoves(move => this.onPlayerMove(move));
-		this.boardStateService.subscribeToNonPlayerMoves(move => this.onOpponentMove(move));
+		let playerMovesSubscription = this.boardStateService.subscribeToPlayerMoves(move => this.onPlayerMove(move));
+		let nonPlayerMovesSubscription = this.boardStateService.subscribeToNonPlayerMoves(move => this.onOpponentMove(move));
 		this.boardStateService.subscribeToGameEnd((gameResult: GameResult) => this.onGameEnd(gameResult));
 		this.stockfishService.start();
 		this.displayedDifficulty = this.stockfishService.getDifficulty();
+
+		let routerSubscription = this.router.events.subscribe((event) => {
+			if (event instanceof NavigationStart) {
+				this.stockfishService.stop();
+			}
+		});
+
+		this.subscriptions.push(playerMovesSubscription, nonPlayerMovesSubscription, routerSubscription);
+	}
+
+	ngOnDestroy(): void {
+		for (let subscription of this.subscriptions) {
+			subscription.unsubscribe();
+		}
 	}
 
 	public isWhiteActiveColor(): boolean {
@@ -91,6 +111,10 @@ export class ComputerGamePageComponent {
 		this.board.completePromotion(this.activePromotionMove);
 		this.activePromotionMove = null;
 		this.showPromotionPanel = false;
+	}
+
+	public onMoveIntoPast(isInPast: boolean): void {
+		this.isBoardDisabled = isInPast;
 	}
 
 	private onOpponentMove(move: Move): void {

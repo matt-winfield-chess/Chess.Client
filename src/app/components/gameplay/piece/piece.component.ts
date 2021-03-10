@@ -45,14 +45,12 @@ export class PieceComponent implements AfterViewInit {
 
 	private isUsingTouchEvents = false;
 
-	constructor(private movementStrategyFactory: MovementStrategyFactoryService, private cdr: ChangeDetectorRef) { }
+	constructor(private cdr: ChangeDetectorRef) { }
 
 	public ngAfterViewInit(): void {
 		this.animate = true;
 		this.updateDimensions();
 		this.configureContextMenu();
-		this.piece.movementStrategies = this.movementStrategyFactory.createStrategies(this.piece.pieceType);
-		this.animate = true;
 		this.cdr.detectChanges();
 	}
 

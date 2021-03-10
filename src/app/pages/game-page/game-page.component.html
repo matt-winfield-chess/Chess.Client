@@ -1,7 +1,8 @@
 <div class="play-page-content">
 	<div class="game">
 		<app-board #board *ngIf="boardSettings.game" [settings]="boardSettings"
-			(playerMoveEmitter)="onPlayerPieceMoved($event)" (displayPawnPromotionPanel)="startPromotionPrompt($event)">
+			(playerMoveEmitter)="onPlayerPieceMoved($event)" (displayPawnPromotionPanel)="startPromotionPrompt($event)"
+			[disabled]="isInPast">
 		</app-board>
 
 		<div class="sidebar">
@@ -11,6 +12,8 @@
 				<div *ngIf="isGameOver">Game Over</div>
 			</div>
 			<div class="sidebar-content">
+				<app-move-history #history (isInPastChanged)="onMoveIntoPast($event)" [moves]="game?.moves">
+				</app-move-history>
 				<app-game-controls [game]="game" [playerColor]="boardSettings.playerColor"></app-game-controls>
 			</div>
 		</div>

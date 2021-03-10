@@ -14,6 +14,7 @@ export class StockfishService {
 	private stockfish: Worker;
 	private state: string = "Loading";
 	private difficulty: number = 10;
+	private stopped: boolean = false;
 
 	private calculatingPromise: Promise<string> = null;
 	private calculatingPromiseResolutionCallback: (value: string | PromiseLike<string>) => void = null;
@@ -21,6 +22,7 @@ export class StockfishService {
 	constructor(private coordinateNotationParser: CoordinateNotationParserService) { }
 
 	public start(): void {
+		this.stopped = false;
 		if (!this.hasInitialisationStarted) {
 			var wasmSupported = typeof WebAssembly === 'object' && WebAssembly.validate(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
 			console.log(`WASM Supported: ${wasmSupported}`);
@@ -30,6 +32,11 @@ export class StockfishService {
 
 			this.stockfish.postMessage('uci');
 		}
+	}
+
+	public stop(): void {
+		this.stopped = true;
+		this.stockfish.postMessage('stop');
 	}
 
 	public isReady(): boolean {
@@ -89,9 +96,11 @@ export class StockfishService {
 		}
 
 		if (data.startsWith('bestmove')) {
-			var bestMove = data.split(' ')[1];
-			this.calculatingPromiseResolutionCallback(bestMove);
-			this.state = "Ready";
+			if (!this.stopped) {
+				var bestMove = data.split(' ')[1];
+				this.calculatingPromiseResolutionCallback(bestMove);
+				this.state = "Ready";
+			}
 		}
 	}
 

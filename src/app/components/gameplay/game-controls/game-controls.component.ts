@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Game } from 'src/app/classes/models/game';
+import { Move } from 'src/app/classes/move';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
 import { GamesService } from 'src/app/services/http/games/games.service';
 
@@ -10,7 +11,7 @@ import { GamesService } from 'src/app/services/http/games/games.service';
 })
 export class GameControlsComponent {
 
-	@Input() public game: Game;
+	@Input() public game: Game<Move>;
 	@Input() public playerColor: PlayerColor;
 
 	constructor(private gamesService: GamesService) { }

@@ -6,6 +6,7 @@ import { ChallengerColor } from 'src/app/enums/challenger-color.enum';
 import { ConfigService } from '../../config/config.service';
 import { LoginStateService } from '../../login-state.service';
 import { Game } from 'src/app/classes/models/game';
+import { ApiMove } from 'src/app/classes/models/api-move';
 
 @Injectable({
 	providedIn: 'root'
@@ -48,12 +49,12 @@ export class ChallengesService {
 			.catch(reason => reason.error);
 	}
 
-	public async acceptChallenge(challenge: Challenge): Promise<ApiResponse<Game>> {
+	public async acceptChallenge(challenge: Challenge): Promise<ApiResponse<Game<ApiMove>>> {
 		let url = this.configService.getApiEndpoint('ACCEPT_CHALLENGE');
 
 		let headers = new HttpHeaders({ Authorization: `Bearer ${this.loginStateService.getToken()}` });
 
-		return await this.http.post<ApiResponse<Game>>(url, {
+		return await this.http.post<ApiResponse<Game<ApiMove>>>(url, {
 			challengerId: challenge.challenger.id,
 			recipientId: challenge.recipient.id
 		}, { headers })

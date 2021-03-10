@@ -7,5 +7,4 @@ export class Piece {
 	public y: number;
 	public pieceType: PieceType;
 	public color: PlayerColor;
-	public movementStrategies: MovementStrategy[];
 }

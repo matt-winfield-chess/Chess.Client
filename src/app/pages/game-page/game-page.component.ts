@@ -17,6 +17,8 @@ import { GameResult } from 'src/app/classes/game-result';
 import { BaseComponent } from 'src/app/components/base-component';
 import { BoardComponent } from 'src/app/components/gameplay/board/board.component';
 import { PieceType } from 'src/app/enums/piece-type.enum';
+import { ApiMove } from 'src/app/classes/models/api-move';
+import { MoveHistoryComponent } from 'src/app/components/navigation/move-history/move-history.component';
 
 @Component({
 	selector: 'app-game-page',
@@ -34,9 +36,11 @@ export class GamePageComponent extends BaseComponent implements OnInit {
 	public showPromotionPanel: boolean = false;
 	public gameResult: GameResult;
 	public gameId: string;
-	public game: Game;
+	public game: Game<Move>;
+	public isInPast: boolean;
 
 	@ViewChild('board') private board: BoardComponent;
+	@ViewChild('history') private historyComponent: MoveHistoryComponent;
 	private activePromotionMove: Move;
 
 	constructor(protected toastr: ToastrService, private gamesService: GamesService, private gameHubSignalRService: GameHubSignalRService,
@@ -66,10 +70,14 @@ export class GamePageComponent extends BaseComponent implements OnInit {
 			if (game) {
 				await this.gameHubSignalRService.joinGame(this.gameId);
 
-				this.game = game;
-				this.boardSettings.game = game;
+				let parsedGame = this.parseGameMoves(game);
+
+				this.game = parsedGame;
+				this.boardSettings.game = parsedGame;
 				this.boardSettings.playerColor = this.getPlayerColorFromGame(game);
 				this.boardStateService.loadFromFen(this.boardSettings.game.fen);
+
+				this.historyComponent.setActiveMove(Math.ceil(this.game.moves.length / 2), this.game.moves.length % 2 !== 0);
 
 				if (!this.loginStateService.isLoggedIn()
 					|| (this.loginStateService.getUserId() != this.game.whitePlayer.id
@@ -114,6 +122,10 @@ export class GamePageComponent extends BaseComponent implements OnInit {
 		this.showPromotionPanel = false;
 	}
 
+	public onMoveIntoPast(isInPast: boolean): void {
+		this.isInPast = isInPast;
+	}
+
 	private onGameEnd(gameResult: GameResult): void {
 		this.isGameOver = true;
 		this.shouldShowGameOverModal = true;
@@ -122,8 +134,11 @@ export class GamePageComponent extends BaseComponent implements OnInit {
 
 	private onOpponentMove(moveString: string): void {
 		let move = this.coordinateNotationParserService.toMove(moveString);
+		this.game.moves.push(move);
 
-		this.boardStateService.applyNonPlayerMove(move);
+		if (!this.isInPast) {
+			this.boardStateService.applyNonPlayerMove(move);
+		}
 	}
 
 	private onIllegalMove(fen: string): void {
@@ -136,9 +151,27 @@ export class GamePageComponent extends BaseComponent implements OnInit {
 		this.gameResult = gameResult;
 	}
 
-	private getPlayerColorFromGame(game: Game): PlayerColor {
+	private getPlayerColorFromGame(game: Game<ApiMove>): PlayerColor {
 		let playerId = this.loginStateService.getUserId();
 
 		return game.whitePlayer.id == playerId ? PlayerColor.White : PlayerColor.Black;
+	}
+
+	private parseGameMoves(game: Game<ApiMove>): Game<Move> {
+		let result = new Game<Move>();
+		result.id = game.id;
+		result.active = game.active;
+		result.whitePlayer = game.whitePlayer;
+		result.blackPlayer = game.blackPlayer;
+		result.fen = game.fen;
+		result.drawOffer = game.drawOffer;
+
+		let moves: Move[] = []
+		for (let apiMove of game.moves) {
+			let parsedMove = this.coordinateNotationParserService.toMove(apiMove.move);
+			moves.push(parsedMove);
+		}
+		result.moves = moves;
+		return result;
 	}
 }

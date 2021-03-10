@@ -1,6 +1,7 @@
 <div class="play-page-content">
 	<div class="game">
 		<app-board #board (displayPawnPromotionPanel)="startPromotionPrompt($event)" [settings]="boardSettings">
+			[disabled]="isBoardDisabled"
 		</app-board>
 
 		<div class="sidebar">
@@ -11,6 +12,7 @@
 				<div>Stockfish {{getEngineState()}}</div>
 			</div>
 			<div class="sidebar-content">
+				<app-move-history (isInPastChanged)="onMoveIntoPast($event)" [moves]="gameMoves"></app-move-history>
 				<div>
 					<div>Computer Difficulty:</div>
 					<div class="difficulty-controls">
