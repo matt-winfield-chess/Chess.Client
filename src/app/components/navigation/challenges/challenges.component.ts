@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Game } from 'src/app/classes/models/game';
 import { NavbarButtonComponent } from '../navbar-button/navbar-button.component';
 import { BaseComponent } from '../../base-component';
+import { ApiMove } from 'src/app/classes/models/api-move';
 
 @Component({
 	selector: 'app-challenges',
@@ -98,7 +99,7 @@ export class ChallengesComponent extends BaseComponent implements OnInit {
 		this.updateBadge();
 	}
 
-	private onChallengeAccepted(game: Game): void {
+	private onChallengeAccepted(game: Game<ApiMove>): void {
 		this.router.navigate(['/game', game.id]);
 	}
 

@@ -20,6 +20,7 @@ import { PieceType } from 'src/app/enums/piece-type.enum';
 })
 export class BoardComponent implements OnInit, AfterViewInit {
 	@Input() public settings: BoardSettings;
+	@Input() public disabled: boolean;
 	@Output() public displayPawnPromotionPanel: EventEmitter<Move> = new EventEmitter<Move>();
 	@Output() public playerMoveEmitter: EventEmitter<Move> = new EventEmitter<Move>();
 	@Output() public onlineMoveEmitter: EventEmitter<Move> = new EventEmitter<Move>();
@@ -93,10 +94,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	}
 
 	public onPieceSelected(piece: Piece): void {
-		this.showLegalMoves(piece);
+		if (!this.disabled) {
+			this.showLegalMoves(piece);
+		}
 	}
 
 	public onPieceClicked(piece: Piece): void {
+		if (this.disabled) return;
+
 		if (!this.isClickToMoveEnabled()) {
 			this.hideLegalMoves();
 			return;
@@ -116,6 +121,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	}
 
 	public onPieceDragged(event: PieceMovedEvent): void {
+		if (this.disabled) return;
+
 		this.hideLegalMoves();
 
 		if (this.isValidCoordinate(event.newX, event.newY) && this.isDragToMoveEnabled()) {
@@ -124,6 +131,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 	}
 
 	public onTileClicked(x: number, y: number): void {
+		if (this.disabled) return;
 		if (this.clickToMoveTarget == null) return;
 
 		let endX = this.flipBoard ? 7 - x : x;

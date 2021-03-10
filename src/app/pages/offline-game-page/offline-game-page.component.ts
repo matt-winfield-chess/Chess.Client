@@ -1,5 +1,6 @@
 import { Component, Inject, ViewChild } from '@angular/core';
 import { GameResult } from 'src/app/classes/game-result';
+import { Game } from 'src/app/classes/models/game';
 import { Move } from 'src/app/classes/move';
 import { BoardComponent } from 'src/app/components/gameplay/board/board.component';
 import { PieceType } from 'src/app/enums/piece-type.enum';
@@ -17,6 +18,8 @@ export class OfflineGamePageComponent {
 	public shouldShowGameOverModal: boolean = false;
 	public showPromotionPanel: boolean = false;
 	public gameResult: GameResult;
+	public game: Game<Move> = new Game();
+	public isBoardDisabled: boolean = false;
 
 	@ViewChild('board') private board: BoardComponent;
 	private activePromotionMove: Move;
@@ -24,6 +27,11 @@ export class OfflineGamePageComponent {
 	constructor(private boardStateService: BoardStateService) {
 		this.boardStateService.setPlayerColor(null);
 		this.boardStateService.subscribeToGameEnd((gameResult: GameResult) => this.onGameEnd(gameResult));
+		this.boardStateService.subscribeToPlayerMoves((move: Move) => this.onMove(move));
+
+		this.game.moves = [];
+		this.game.active = true;
+		this.game.fen = this.boardStateService.getBoardState().getFen();
 	}
 
 	public isWhiteActiveColor(): boolean {
@@ -46,9 +54,17 @@ export class OfflineGamePageComponent {
 		this.showPromotionPanel = false;
 	}
 
+	public onMoveIntoPast(isInPast: boolean): void {
+		this.isBoardDisabled = isInPast;
+	}
+
 	private onGameEnd(gameResult: GameResult): void {
 		this.isGameOver = true;
 		this.shouldShowGameOverModal = true;
 		this.gameResult = gameResult;
+	}
+
+	private onMove(move: Move): void {
+		this.game.moves.push(move);
 	}
 }

@@ -36,6 +36,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { UserSettingsComponent } from './pages/user-settings/user-settings.component';
+import { MoveHistoryComponent } from './components/navigation/move-history/move-history.component';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -63,7 +64,8 @@ export function load(config: ConfigService): () => Promise<void> {
 		DrawOfferStatusComponent,
 		UpdateToastComponent,
 		ComputerGamePageComponent,
-		UserSettingsComponent
+		UserSettingsComponent,
+		MoveHistoryComponent,
 	],
 	imports: [
 		CommonModule,

@@ -1,0 +1,42 @@
+@import "../../../styles/themes/themify.scss";
+@import "../../../styles/themes/themes.scss";
+@import "../../../styles/mixins/responsive-sizes.scss";
+
+:host {
+	flex-grow: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.move-history {
+	display: grid;
+	grid-template-columns: minmax(50px, auto) 1fr 1fr;
+	width: 200px;
+
+	@include themify($themes) {
+		background-color: themed("areaBackgroundColor");
+	}
+
+	.move-number {
+		padding: 3px 10px;
+
+		@include themify($themes) {
+			background-color: themed("secondaryBackgroundColor");
+		}
+	}
+
+	.move {
+		padding: 3px 10px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+
+		&:hover,
+		&.active {
+			@include themify($themes) {
+				background-color: themed("tertiaryBackgroundColor");
+			}
+		}
+	}
+}

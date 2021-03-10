@@ -1,0 +1,9 @@
+<div class="move-history">
+	<ng-container *ngFor="let move of getFormattedMoves()">
+		<div class="move-number">{{move.moveNumber}}</div>
+		<div class="move" [class.active]="isMoveActive(move.moveNumber, false)"
+			(click)="onMoveClicked(move.moveNumber, false)" #moveElements>{{move.whiteMove}}</div>
+		<div class="move" [class.active]="isMoveActive(move.moveNumber, true)"
+			(click)="onMoveClicked(move.moveNumber, true)" #moveElements>{{move.blackMove}}</div>
+	</ng-container>
+</div>

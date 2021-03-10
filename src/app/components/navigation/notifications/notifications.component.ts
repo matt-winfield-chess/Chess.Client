@@ -63,7 +63,7 @@ export class NotificationsComponent implements OnInit {
 		this.updateBadge();
 	}
 
-	private convertGamesToNotifications(games: Game[]): UserNotification[] {
+	private convertGamesToNotifications(games: Game<any>[]): UserNotification[] {
 		let notifications: UserNotification[] = [];
 		for (let game of games) {
 			let notification = new UserNotification();

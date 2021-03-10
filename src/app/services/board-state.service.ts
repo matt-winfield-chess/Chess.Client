@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { EAGAIN } from 'constants';
+import { Subscription } from 'rxjs';
 import { BoardState } from '../classes/board-state';
 import { GameResult } from '../classes/game-result';
 import { Move } from '../classes/move';
@@ -8,6 +9,7 @@ import { MoveValidationResult } from '../classes/move-validation-result';
 import { Piece } from '../classes/piece';
 import { PieceType } from '../enums/piece-type.enum';
 import { PlayerColor } from '../enums/player-color.enum';
+import { MovementStrategyFactoryService } from './factories/movement-strategy-factory.service';
 import { FenParserService } from './fen-parser.service';
 
 @Injectable({
@@ -19,12 +21,15 @@ export class BoardStateService {
 	private boardState: BoardState;
 	private piecePositions: Piece[][]; // stores piece at it's current position for more efficient retrieval by x/y coordinate
 	private playerColor: PlayerColor = null;
+	private movementStrategyFactory: MovementStrategyFactoryService;
 
-	private onlineMoveSubscribers: ((move: Move) => void)[] = [];
+	private nonPlayerMoveSubscribers: ((move: Move) => void)[] = [];
 	private playerMoveSubscribers: ((move: Move) => void)[] = [];
 	private gameEndSubscribers: ((gameResult: GameResult) => void)[] = [];
 
 	constructor(private fenParserService: FenParserService, private router: Router) {
+		this.movementStrategyFactory = new MovementStrategyFactoryService(this);
+
 		this.setBoardToStandardStartingPosition();
 		this.router.events.subscribe((event) => {
 			this.setBoardToStandardStartingPosition();
@@ -37,6 +42,14 @@ export class BoardStateService {
 
 	public loadFromFen(fen: string): void {
 		this.initialiseBoardState(this.fenParserService.parseFen(fen));
+	}
+
+	public loadFromMoves(moves: Move[]): void {
+		this.setBoardToStandardStartingPosition();
+
+		for (let move of moves) {
+			this.applyNonPlayerMove(move, false);
+		}
 	}
 
 	public initialiseBoardState(boardState: BoardState): void {
@@ -61,12 +74,26 @@ export class BoardStateService {
 		return this.piecePositions;
 	}
 
-	public subscribeToNonPlayerMoves(onMove: (move: Move) => void): void {
-		this.onlineMoveSubscribers.push(onMove);
+	public subscribeToNonPlayerMoves(onMove: (move: Move) => void): Subscription {
+		this.nonPlayerMoveSubscribers.push(onMove);
+
+		return new Subscription(() => {
+			let callbackIndex = this.playerMoveSubscribers.indexOf(onMove);
+			if (callbackIndex > -1) {
+				this.playerMoveSubscribers.splice(callbackIndex, 1);
+			}
+		});
 	}
 
-	public subscribeToPlayerMoves(onMove: (move: Move) => void): void {
+	public subscribeToPlayerMoves(onMove: (move: Move) => void): Subscription {
 		this.playerMoveSubscribers.push(onMove);
+
+		return new Subscription(() => {
+			let callbackIndex = this.playerMoveSubscribers.indexOf(onMove);
+			if (callbackIndex > -1) {
+				this.playerMoveSubscribers.splice(callbackIndex, 1);
+			}
+		});
 	}
 
 	public subscribeToGameEnd(onGameEnd: (gameResult: GameResult) => void): void {
@@ -91,7 +118,7 @@ export class BoardStateService {
 		}
 	}
 
-	public applyNonPlayerMove(move: Move): void {
+	public applyNonPlayerMove(move: Move, notify: boolean = true): void {
 		let piece = this.piecePositions[move.oldY][move.oldX];
 
 		if (piece) {
@@ -100,7 +127,10 @@ export class BoardStateService {
 
 			this.applyMoveAndSideEffects(piece, movementValidationResult);
 
-			this.notifyOpponentMoveSubscribersOfMove(movementValidationResult.move);
+			if (notify) {
+				this.notifyOpponentMoveSubscribersOfMove(movementValidationResult.move);
+			}
+
 			this.validateCheckmate();
 			this.validateStalemate();
 			this.validateThreefoldRepetition();
@@ -199,7 +229,9 @@ export class BoardStateService {
 		if (piece.color != this.boardState.activeColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
 		if (this.playerColor !== null && piece.color != this.playerColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
 
-		for (let movementStrategy of piece.movementStrategies) {
+		let movementStrategies = this.movementStrategyFactory.createStrategies(piece.pieceType);
+
+		for (let movementStrategy of movementStrategies) {
 			let movementValidationResult = movementStrategy.isValidMove(<Move>{
 				oldX: piece.x,
 				oldY: piece.y,
@@ -356,7 +388,7 @@ export class BoardStateService {
 	}
 
 	private notifyOpponentMoveSubscribersOfMove(move: Move): void {
-		for (let moveSubscriber of this.onlineMoveSubscribers) {
+		for (let moveSubscriber of this.nonPlayerMoveSubscribers) {
 			moveSubscriber(move);
 		}
 	}
