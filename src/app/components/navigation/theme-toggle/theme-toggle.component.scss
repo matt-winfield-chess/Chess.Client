@@ -1,0 +1,16 @@
+@import "../../../styles/themes/themes.scss";
+@import "../../../styles/themes/themify.scss";
+
+.theme-toggle-container {
+	margin: 0 10px;
+
+	.icon {
+		padding: 5px;
+	}
+}
+
+svg {
+	@include themify($themes) {
+		fill: themed("buttonSvgFill");
+	}
+}

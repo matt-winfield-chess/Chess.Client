@@ -1,18 +1,44 @@
 <div class="navbar">
 	<a class="title" routerLink="/">Chess</a>
 	<div class="right-contents">
+		<app-theme-toggle></app-theme-toggle>
 		<ng-container *ngIf="!shouldShowLoggedInButtons()">
 			<button routerLink="/create-account" class="sign-up button">Sign up</button>
 			<button routerLink="/log-in" class="log-in button">Log in</button>
 		</ng-container>
 		<ng-container *ngIf="shouldShowLoggedInButtons()">
-			<div class="username" [matMenuTriggerFor]="userMenu">{{getUsername()}}</div>
-			<mat-menu #userMenu="matMenu">
-				<div class="menu-item" mat-menu-item routerLink="settings">Settings</div>
-			</mat-menu>
+			<div class="desktop-icons">
+				<div class="username" [matMenuTriggerFor]="userMenu">{{getUsername()}}</div>
+				<mat-menu #userMenu="matMenu">
+					<div class="menu-item" mat-menu-item routerLink="settings">Settings</div>
+				</mat-menu>
+			</div>
 			<app-notifications #notifications (onOpened)="onNotificationsOpened()"></app-notifications>
 			<app-challenges #challenges (onOpened)="onChallengesOpened()"></app-challenges>
-			<button (click)="logOut()" class="log-out button">Log out</button>
+			<div class="desktop-icons">
+				<button (click)="logOut()" class="log-out button">Log out</button>
+			</div>
+			<div class="mobile-nav-menu">
+				<div class="mobile-nav-menu-button" #mobileNavMenuButton [matMenuTriggerFor]="mobileNavMenu">
+					<!-- Tablericons-->
+					<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="24"
+						height="24" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round"
+						stroke-linejoin="round">
+						<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+						<line x1="4" y1="6" x2="20" y2="6" />
+						<line x1="4" y1="12" x2="20" y2="12" />
+						<line x1="4" y1="18" x2="20" y2="18" />
+					</svg>
+				</div>
+				<mat-menu #mobileNavMenu="matMenu">
+					<div class="settings" mat-menu-item [matMenuTriggerFor]="mobileUserMenu">Settings</div>
+					<button mat-menu-item (click)="logOut()" class="log-out button">Log out</button>
+				</mat-menu>
+
+				<mat-menu #mobileUserMenu="matMenu">
+					<div class="menu-item" mat-menu-item routerLink="settings">Settings</div>
+				</mat-menu>
+			</div>
 		</ng-container>
 	</div>
 </div>

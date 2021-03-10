@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { SwUpdate } from '@angular/service-worker';
 import { UpdateService } from 'src/app/services/updates/update.service';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
 	selector: 'app-root',
@@ -10,7 +10,11 @@ import { UpdateService } from 'src/app/services/updates/update.service';
 export class AppComponent {
 	title = 'ChessClient';
 
-	constructor(updateService: UpdateService) {
+	constructor(updateService: UpdateService, private themeService: ThemeService) {
 		updateService.checkForUpdates();
+	}
+
+	public getTheme(): string {
+		return this.themeService.getTheme();
 	}
 }

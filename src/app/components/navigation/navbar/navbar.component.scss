@@ -66,3 +66,34 @@ button {
 		}
 	}
 }
+
+.desktop-icons {
+	display: flex;
+	align-items: center;
+
+	@include phone-only {
+		display: none;
+	}
+}
+
+.mobile-nav-menu {
+	display: none;
+
+	@include phone-only {
+		display: flex;
+		align-items: center;
+	}
+
+	.mobile-nav-menu-button {
+		display: flex;
+		align-items: center;
+		margin-right: 10px;
+		cursor: pointer;
+	}
+
+	svg {
+		@include themify($themes) {
+			stroke: themed("buttonSvgFill");
+		}
+	}
+}

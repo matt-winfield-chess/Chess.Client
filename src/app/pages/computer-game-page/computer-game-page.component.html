@@ -4,32 +4,31 @@
 			[disabled]="isBoardDisabled"
 		</app-board>
 
-		<div class="sidebar">
-			<div class="sidebar-title">
-				<div *ngIf="isWhiteActiveColor() && !isGameOver">White to play</div>
-				<div *ngIf="!isWhiteActiveColor() && !isGameOver">Black to play</div>
-				<div *ngIf="isGameOver">Game Over</div>
-				<div>Stockfish {{getEngineState()}}</div>
-			</div>
-			<div class="sidebar-content">
-				<app-move-history (isInPastChanged)="onMoveIntoPast($event)" [moves]="gameMoves"></app-move-history>
-				<div>
-					<div>Computer Difficulty:</div>
-					<div class="difficulty-controls">
-						<mat-slider min="1" max="10" value="{{getDisplayedDifficulty()}}"
-							(input)="setDisplayedDifficulty($event.value)" (change)="setDifficulty($event.value)">
-						</mat-slider>
-						{{getDisplayedDifficulty()}}
-					</div>
-				</div>
-				<div>
-					<button class="button" (click)="switchSides()">Switch Sides</button>
-				</div>
-			</div>
-		</div>
-
 		<app-pawn-promotion (pieceSelected)="onPromotionSelected($event)" [hidden]="!showPromotionPanel">
 		</app-pawn-promotion>
+	</div>
+	<div class="sidebar">
+		<div class="sidebar-title">
+			<div *ngIf="isWhiteActiveColor() && !isGameOver">White to play</div>
+			<div *ngIf="!isWhiteActiveColor() && !isGameOver">Black to play</div>
+			<div *ngIf="isGameOver">Game Over</div>
+			<div>Stockfish {{getEngineState()}}</div>
+		</div>
+		<div class="sidebar-content">
+			<app-move-history (isInPastChanged)="onMoveIntoPast($event)" [moves]="gameMoves"></app-move-history>
+			<div>
+				<div>Computer Difficulty:</div>
+				<div class="difficulty-controls">
+					<mat-slider min="1" max="10" value="{{getDisplayedDifficulty()}}"
+						(input)="setDisplayedDifficulty($event.value)" (change)="setDifficulty($event.value)">
+					</mat-slider>
+					{{getDisplayedDifficulty()}}
+				</div>
+			</div>
+			<div>
+				<button class="button" (click)="switchSides()">Switch Sides</button>
+			</div>
+		</div>
 	</div>
 </div>
 

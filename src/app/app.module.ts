@@ -35,8 +35,10 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { UserSettingsComponent } from './pages/user-settings/user-settings.component';
 import { MoveHistoryComponent } from './components/navigation/move-history/move-history.component';
+import { ThemeToggleComponent } from './components/navigation/theme-toggle/theme-toggle.component';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -66,6 +68,7 @@ export function load(config: ConfigService): () => Promise<void> {
 		ComputerGamePageComponent,
 		UserSettingsComponent,
 		MoveHistoryComponent,
+		ThemeToggleComponent,
 	],
 	imports: [
 		CommonModule,
@@ -84,6 +87,7 @@ export function load(config: ConfigService): () => Promise<void> {
 		MatMenuModule,
 		MatSelectModule,
 		MatFormFieldModule,
+		MatSlideToggleModule,
 		ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
 	],
 	providers: [
