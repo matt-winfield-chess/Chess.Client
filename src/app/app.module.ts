@@ -39,6 +39,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { UserSettingsComponent } from './pages/user-settings/user-settings.component';
 import { MoveHistoryComponent } from './components/navigation/move-history/move-history.component';
 import { ThemeToggleComponent } from './components/navigation/theme-toggle/theme-toggle.component';
+import { GameSidebarComponent } from './components/navigation/game-sidebar/game-sidebar.component';
 
 export function load(config: ConfigService): () => Promise<void> {
 	return () => config.load();
@@ -69,6 +70,7 @@ export function load(config: ConfigService): () => Promise<void> {
 		UserSettingsComponent,
 		MoveHistoryComponent,
 		ThemeToggleComponent,
+		GameSidebarComponent
 	],
 	imports: [
 		CommonModule,

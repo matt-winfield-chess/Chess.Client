@@ -1,0 +1,55 @@
+@import "../../../styles/themes/themify.scss";
+@import "../../../styles/themes/themes.scss";
+@import "../../../styles/mixins/responsive-sizes.scss";
+
+:host {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+}
+
+::ng-deep .sidebar {
+	box-sizing: border-box;
+	border: 1px solid grey;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	flex-grow: 1;
+	flex-basis: 0;
+
+	@include phone-only {
+		transform: initial;
+		width: calc(100% - 10px);
+		min-height: 0;
+		position: static;
+		margin: 5px;
+		flex-grow: 1;
+	}
+}
+
+::ng-deep .sidebar-title {
+	padding: 10px;
+	text-align: center;
+
+	@include themify($themes) {
+		background-color: themed("sectionBackgroundColor");
+	}
+}
+
+::ng-deep .sidebar-content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+	min-height: 0;
+
+	@include phone-only {
+		padding: 5px;
+	}
+
+	@include themify($themes) {
+		background-color: themed("areaBackgroundColor");
+	}
+}

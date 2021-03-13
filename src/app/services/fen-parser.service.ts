@@ -1,11 +1,10 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { CastlingState } from '../classes/castling-state';
 import { BoardState } from '../classes/board-state';
 import { Piece } from '../classes/piece';
 import { PieceType } from '../enums/piece-type.enum';
 import { PlayerColor } from '../enums/player-color.enum';
 import { CoordinateNotationParserService } from './coordinate-notation-parser.service';
-import { MovementStrategyFactoryService } from './factories/movement-strategy-factory.service';
 
 @Injectable({
 	providedIn: 'root'

@@ -1,4 +1,3 @@
-import { Inject, Injectable } from '@angular/core';
 import { DiagonalMovementStrategy } from 'src/app/classes/movement-strategies/diagonal-movement-strategy';
 import { KnightMovementStrategy } from 'src/app/classes/movement-strategies/knight-movement-strategy';
 import { MovementStrategy } from 'src/app/classes/movement-strategies/movement-strategy';
@@ -9,9 +8,6 @@ import { CastleMovementStrategy } from 'src/app/classes/movement-strategies/cast
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { BoardStateService } from '../board-state.service';
 
-@Injectable({
-	providedIn: 'root'
-})
 export class MovementStrategyFactoryService {
 
 	constructor(private boardStateService: BoardStateService) { }
