@@ -70,7 +70,7 @@ export function load(config: ConfigService): () => Promise<void> {
 		UserSettingsComponent,
 		MoveHistoryComponent,
 		ThemeToggleComponent,
-		GameSidebarComponent,
+		GameSidebarComponent
 	],
 	imports: [
 		CommonModule,

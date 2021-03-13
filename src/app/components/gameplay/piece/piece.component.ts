@@ -2,9 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, 
 import { Piece } from 'src/app/classes/piece';
 import { PieceType } from 'src/app/enums/piece-type.enum';
 import { PlayerColor } from 'src/app/enums/player-color.enum';
-import { MovementStrategyFactoryService } from '../../../services/factories/movement-strategy-factory.service';
 import { PieceMovedEvent } from 'src/app/classes/piece-moved-event';
-import { ChallengesComponent } from '../../navigation/challenges/challenges.component';
 
 @Component({
 	selector: 'app-piece',
