@@ -6,7 +6,7 @@
 		<app-pawn-promotion (pieceSelected)="onPromotionSelected($event)" [hidden]="!showPromotionPanel">
 		</app-pawn-promotion>
 	</div>
-	<div class="sidebar">
+	<app-game-sidebar>
 		<div class="sidebar-title">
 			<div *ngIf="isWhiteActiveColor() && !isGameOver">White to play</div>
 			<div *ngIf="!isWhiteActiveColor() && !isGameOver">Black to play</div>
@@ -15,7 +15,7 @@
 		<div class="sidebar-content">
 			<app-move-history (isInPastChanged)="onMoveIntoPast($event)" [moves]="game.moves"></app-move-history>
 		</div>
-	</div>
+	</app-game-sidebar>
 </div>
 
 <app-game-over-modal [gameResult]="gameResult" [hidden]="!shouldShowGameOverModal" (onClose)="onCloseGameOverModal()">
