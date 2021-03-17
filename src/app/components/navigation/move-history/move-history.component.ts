@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, IterableDiffer, IterableDiffers, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, EventEmitter, HostListener, Input, IterableDiffer, IterableDiffers, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Move } from 'src/app/classes/move';
 import { BoardStateService } from 'src/app/services/board-state.service';
 import { CoordinateNotationParserService } from 'src/app/services/coordinate-notation-parser.service';
@@ -29,6 +29,15 @@ export class MoveHistoryComponent implements AfterViewChecked {
 		let scrollOffset = lastMove?.offsetTop;
 		if (lastMove && scrollOffset > this.moveHistoryContainer.nativeElement.offsetHeight && scrollOffset != this.moveHistoryContainer.nativeElement.scrollTop) {
 			this.moveHistoryContainer.nativeElement.scrollTop = scrollOffset;
+		}
+	}
+
+	@HostListener('document:keydown', ['$event'])
+	public handleKeyboardEvent(event: KeyboardEvent): void {
+		if (event.key == 'ArrowLeft') {
+			this.stepBack();
+		} else if (event.key == 'ArrowRight') {
+			this.stepForward();
 		}
 	}
 
