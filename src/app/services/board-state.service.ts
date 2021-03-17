@@ -55,6 +55,7 @@ export class BoardStateService {
 
 	public initialiseBoardState(boardState: BoardState): void {
 		this.boardState = boardState;
+		this.lastMove = null;
 		this.positionsSinceLastIrreversableMove = [boardState.getFen()];
 		this.synchronizeInternalPiecePositionsToBoardState();
 	}
