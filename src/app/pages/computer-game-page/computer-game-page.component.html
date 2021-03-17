@@ -16,7 +16,7 @@
 		</div>
 		<div class="sidebar-content">
 			<app-move-history (isInPastChanged)="onMoveIntoPast($event)" [moves]="gameMoves"></app-move-history>
-			<div>
+			<div class="slider-wrapper">
 				<div>Computer Difficulty:</div>
 				<div class="difficulty-controls">
 					<mat-slider min="1" max="10" value="{{getDisplayedDifficulty()}}"
