@@ -49,7 +49,7 @@ export class BoardStateService {
 		this.setBoardToStandardStartingPosition();
 
 		for (let move of moves) {
-			this.applyNonPlayerMove(move, false);
+			this.forceMove(move);
 		}
 	}
 
@@ -218,6 +218,71 @@ export class BoardStateService {
 
 	public getLastMove(): Move {
 		return this.lastMove;
+	}
+
+	private forceMove(move: Move): void {
+		let piece = this.piecePositions[move.oldY][move.oldX];
+
+		if (piece) {
+			let moveValidationResult = new MoveValidationResult()
+			moveValidationResult.isValid = true;
+			moveValidationResult.move = move;
+			moveValidationResult.castleRookMove = this.getCastleRookMove(move, piece);
+			moveValidationResult.isCastleMove = moveValidationResult.castleRookMove !== null;
+			moveValidationResult.isEnPassantCapture = this.isEnPassantCapture(move, piece);
+			moveValidationResult.isPromotion = this.isPromotion(move, piece);
+
+			this.applyMoveAndSideEffects(piece, moveValidationResult);
+		}
+	}
+
+	private getCastleRookMove(move: Move, piece: Piece): Move {
+		if (piece.pieceType != PieceType.King) return null;
+		if (piece.color === PlayerColor.White) {
+			if (move.newX == 2 && this.boardState.castlingState.whiteQueenside) {
+				return <Move>{
+					oldX: 0,
+					oldY: move.oldY,
+					newX: 3,
+					newY: move.oldY
+				};
+			} else if (move.newX == 6 && this.boardState.castlingState.whiteKingside) {
+				return <Move>{
+					oldX: 7,
+					oldY: move.oldY,
+					newX: 5,
+					newY: move.oldY
+				};
+			}
+		} else {
+			if (move.newX == 2 && this.boardState.castlingState.blackQueenside) {
+				return <Move>{
+					oldX: 0,
+					oldY: move.oldY,
+					newX: 3,
+					newY: move.oldY
+				};
+			} else if (move.newX == 6 && this.boardState.castlingState.blackKingside) {
+				return <Move>{
+					oldX: 7,
+					oldY: move.oldY,
+					newX: 5,
+					newY: move.oldY
+				};
+			}
+		}
+		return null;
+	}
+
+	private isEnPassantCapture(move: Move, piece: Piece): boolean {
+		if (piece.pieceType !== PieceType.Pawn) return false;
+		let targetSquarePiece = this.piecePositions[move.newY][move.newX];
+		return targetSquarePiece === null && move.oldX !== move.newX;
+	}
+
+	private isPromotion(move: Move, piece: Piece): boolean {
+		if (piece.pieceType !== PieceType.Pawn) return false;
+		return move.newY === 0 || move.newY == 7;
 	}
 
 	private validateMove(piece: Piece, newX: number, newY: number, ignoreColor: boolean = false): MoveValidationResult {

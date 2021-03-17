@@ -56,7 +56,7 @@ export class BoardUtils {
 	private static isSquareAttackedByPawn(x: number, y: number, opponentColor: PlayerColor, board: Piece[][]): boolean {
 		let opponentMovementDirection = opponentColor == PlayerColor.White ? -1 : 1;
 
-		if (y - opponentMovementDirection < 0) return false;
+		if (y - opponentMovementDirection < 0 || y - opponentMovementDirection >= 8) return false;
 
 		if (x - 1 >= 0) {
 			let candidateAttacker1 = board[y - opponentMovementDirection][x - 1];
