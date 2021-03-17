@@ -22,6 +22,7 @@ export class BoardStateService {
 	private piecePositions: Piece[][]; // stores piece at it's current position for more efficient retrieval by x/y coordinate
 	private playerColor: PlayerColor = null;
 	private movementStrategyFactory: MovementStrategyFactoryService;
+	private lastMove: Move = null;
 
 	private nonPlayerMoveSubscribers: ((move: Move) => void)[] = [];
 	private playerMoveSubscribers: ((move: Move) => void)[] = [];
@@ -214,6 +215,10 @@ export class BoardStateService {
 		board[move.newY][move.newX] = piece;
 	}
 
+	public getLastMove(): Move {
+		return this.lastMove;
+	}
+
 	private validateMove(piece: Piece, newX: number, newY: number, ignoreColor: boolean = false): MoveValidationResult {
 		if (piece.x == newX && piece.y == newY) return new MoveValidationResult({ isValid: false });
 		if (piece.color != this.boardState.activeColor && !ignoreColor) return new MoveValidationResult({ isValid: false });
@@ -304,6 +309,7 @@ export class BoardStateService {
 		this.handleEnPassant(piece, movementValidationResult);
 
 		this.applyMove(movementValidationResult.move);
+		this.lastMove = movementValidationResult.move;
 
 		if (movementValidationResult.isCastleMove) {
 			this.applyMove(movementValidationResult.castleRookMove);

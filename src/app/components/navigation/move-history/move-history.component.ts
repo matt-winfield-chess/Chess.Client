@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, IterableDiffer, IterableDiffers, Output, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, IterableDiffer, IterableDiffers, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Move } from 'src/app/classes/move';
 import { BoardStateService } from 'src/app/services/board-state.service';
 import { CoordinateNotationParserService } from 'src/app/services/coordinate-notation-parser.service';
@@ -17,7 +17,9 @@ export class MoveHistoryComponent implements AfterViewChecked {
 	public activeMoveNumber: number = 0;
 	public isWhiteActive: boolean = false;
 
-	constructor(private boardStateService: BoardStateService, private coordinateNotationParserService: CoordinateNotationParserService, private elementRef: ElementRef<HTMLElement>) {
+	@ViewChild('moveHistoryContainer') private moveHistoryContainer: ElementRef<HTMLElement>;
+
+	constructor(private boardStateService: BoardStateService, private coordinateNotationParserService: CoordinateNotationParserService) {
 		this.boardStateService.subscribeToPlayerMoves(() => this.onMove());
 		this.boardStateService.subscribeToNonPlayerMoves(() => this.onMove());
 	}
@@ -25,8 +27,8 @@ export class MoveHistoryComponent implements AfterViewChecked {
 	public ngAfterViewChecked(): void {
 		let lastMove = this.moveElements?.last?.nativeElement;
 		let scrollOffset = lastMove?.offsetTop;
-		if (lastMove && scrollOffset > this.elementRef.nativeElement.offsetHeight && scrollOffset != this.elementRef.nativeElement.scrollTop) {
-			this.elementRef.nativeElement.scrollTop = scrollOffset;
+		if (lastMove && scrollOffset > this.moveHistoryContainer.nativeElement.offsetHeight && scrollOffset != this.moveHistoryContainer.nativeElement.scrollTop) {
+			this.moveHistoryContainer.nativeElement.scrollTop = scrollOffset;
 		}
 	}
 
@@ -59,11 +61,45 @@ export class MoveHistoryComponent implements AfterViewChecked {
 	}
 
 	public onMoveClicked(moveNumber: number, isBlack: boolean): void {
+		if (!this.isValidMove(moveNumber, !isBlack)) return;
+		this.goToMove(moveNumber, !isBlack);
+	}
+
+	public setActiveMove(moveNumber: number, isWhiteActive: boolean): void {
 		this.activeMoveNumber = moveNumber;
-		this.isWhiteActive = !isBlack;
+		this.isWhiteActive = isWhiteActive;
+	}
+
+	public stepForward(): void {
+		let newMoveNumber = this.activeMoveNumber + (this.isWhiteActive ? 0 : 1);
+		let isWhiteActive = !this.isWhiteActive;
+
+		if (!this.isValidMove(newMoveNumber, isWhiteActive)) return;
+
+		this.activeMoveNumber = newMoveNumber
+		this.isWhiteActive = isWhiteActive
+
+		this.goToMove(newMoveNumber, isWhiteActive);
+	}
+
+	public stepBack(): void {
+		let newMoveNumber = this.activeMoveNumber - (this.isWhiteActive ? 1 : 0);
+		let isWhiteActive = !this.isWhiteActive;
+
+		if (!this.isValidMove(newMoveNumber, isWhiteActive)) return;
+
+		this.activeMoveNumber = newMoveNumber;
+		this.isWhiteActive = isWhiteActive
+
+		this.goToMove(newMoveNumber, isWhiteActive);
+	}
+
+	private goToMove(moveNumber: number, isWhiteActive: boolean): void {
+		this.activeMoveNumber = moveNumber;
+		this.isWhiteActive = isWhiteActive;
 
 		let moveIndex = (moveNumber - 1) * 2;
-		if (isBlack) {
+		if (!isWhiteActive) {
 			moveIndex += 1;
 		}
 
@@ -72,9 +108,14 @@ export class MoveHistoryComponent implements AfterViewChecked {
 		this.isInPast();
 	}
 
-	public setActiveMove(moveNumber: number, isWhiteActive: boolean): void {
-		this.activeMoveNumber = moveNumber;
-		this.isWhiteActive = isWhiteActive;
+	private isValidMove(moveNumber: number, isWhiteActive: boolean): boolean {
+		if (moveNumber <= 0) {
+			return moveNumber == 0 && !isWhiteActive;
+		}
+		if (moveNumber == Math.ceil(this.moves.length / 2)) {
+			return !isWhiteActive ? this.moves.length % 2 == 0 : true;
+		}
+		return moveNumber < Math.ceil(this.moves.length / 2);
 	}
 
 	private onMove(): void {
